@@ -7,14 +7,26 @@
 
 import Foundation
 
-class TwitterTextWeightedRange {
+public class TwitterTextWeightedRange {
     /// Contiguous unicode region
     ///
     /// @property (nonatomic, readonly) NSRange range;
-    public let range: Range<Int>
+    public let range: Range<String.Index>
 
     /// Weight for each unicode point in the region
     /// 
     /// @property (nonatomic, readonly) NSInteger weight;
     public let weight: Int
+
+    /// - (instancetype)initWithRange:(NSRange)range weight:(NSInteger)weight
+    init(range: Range<String.Index>, weight: Int) {
+        ///self = [super init];
+        ///if (self) {
+        ///    _range = range;
+        ///    _weight = weight;
+        ///}
+        /// return self;
+        self.range = range
+        self.weight = weight
+    }
 }

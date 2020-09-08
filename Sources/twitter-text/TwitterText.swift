@@ -1,9 +1,9 @@
 import Foundation
 
 /// @interface TwitterText : NSObject
-class TwitterText {
+public class TwitterText {
     /// + (NSArray<TwitterTextEntity *> *)entitiesInText:(NSString *)text;
-    static func entities(inText text: String) -> [TwitterTextEntity] {
+    public static func entities(inText text: String) -> [TwitterTextEntity] {
         /// if (!text.length) {
         ///     return @[];
         /// }
@@ -15,23 +15,23 @@ class TwitterText {
         var results: [TwitterTextEntity]
 
         /// NSArray<TwitterTextEntity *> *urls = [self URLsInText:text];
-        let urls: [TwitterTextEntity]
+        let urls = self.URLs(inText: text)
 
         /// [results addObjectsFromArray:urls];
         results.append(contentsOf: urls)
 
         /// NSArray<TwitterTextEntity *> *hashtags = [self hashtagsInText:text withURLEntities:urls];
-        let hashtags: [TwitterTextEntity] = self.hashtags(inText: text, withURLEntities: urls)
+        let hashtags = self.hashtags(inText: text, withURLEntities: urls)
         /// [results addObjectsFromArray:hashtags];
         results.append(contentsOf: hashtags)
 
         /// NSArray<TwitterTextEntity *> *symbols = [self symbolsInText:text withURLEntities:urls];
-        let symbols: [TwitterTextEntity]
+        let symbols = self.symbols(inText: text, withURLEntities: urls)
         /// [results addObjectsFromArray:symbols];
         results.append(contentsOf: symbols)
 
         /// NSArray<TwitterTextEntity *> *mentionsAndLists = [self mentionsOrListsInText:text];
-        let mentionsAndLists: [TwitterTextEntity]
+        let mentionsAndLists = mentionsOrLists(inText: text)
 
         /// NSMutableArray<TwitterTextEntity *> *addingItems = [NSMutableArray<TwitterTextEntity *> array];
         var addingItems: [TwitterTextEntity]
@@ -72,7 +72,7 @@ class TwitterText {
     }
 
     /// + (NSArray<TwitterTextEntity *> *)URLsInText:(NSString *)text;
-    static func urls(inText text: String) -> [TwitterTextEntity] {
+    public static func URLs(inText text: String) -> [TwitterTextEntity] {
         /// if (!text.length) {
         ///     return @[];
         /// }
@@ -88,7 +88,7 @@ class TwitterText {
         /// NSUInteger position = 0;
         var position = 0
         /// NSRange allRange = NSMakeRange(0, 0);
-        var allRange = Range<0, 0>
+        var allRange = 0...0
 
         /// while (1) {
         ///     position = NSMaxRange(allRange);
@@ -155,8 +155,25 @@ class TwitterText {
     }
 
     /// + (NSArray<TwitterTextEntity *> *)hashtagsInText:(NSString *)text checkingURLOverlap:(BOOL)checkingURLOverlap;
-    static func hashtags(inText text: String, checkingURLOverlap: Bool) -> [TwitterTextEntity] {
-        return []
+    public static func hashtags(inText text: String, checkingURLOverlap: Bool) -> [TwitterTextEntity] {
+        /// if (!text.length) {
+        ///     return @[];
+        /// }
+        if text.isEmpty {
+            return []
+        }
+
+        /// NSArray<TwitterTextEntity *> *urls = nil;
+        var urls: [TwitterTextEntity]
+        /// if (checkingURLOverlap) {
+        ///     urls = [self URLsInText:text];
+        /// }
+        if checkingURLOverlap {
+            urls = self.URLs(inText: text)
+        }
+
+        /// return [self hashtagsInText:text withURLEntities:urls];
+        return self.hashtags(inText: text, withURLEntities: urls)
     }
 
     /// + (NSArray<TwitterTextEntity *> *)hashtagsInText:(NSString *)text withURLEntities:(NSArray<TwitterTextEntity *> *)urlEntities
@@ -242,7 +259,7 @@ class TwitterText {
     }
 
     /// + (NSArray<TwitterTextEntity *> *)symbolsInText:(NSString *)text checkingURLOverlap:(BOOL)checkingURLOverlap;
-    static func symbols(inText text: String, checkingURLOverlap: Bool) -> [TwitterTextEntity] {
+    public static func symbols(inText text: String, checkingURLOverlap: Bool) -> [TwitterTextEntity] {
         /// if (!text.length) {
         ///     return @[];
         /// }
@@ -328,7 +345,7 @@ class TwitterText {
     }
 
     /// + (NSArray<TwitterTextEntity *> *)mentionedScreenNamesInText:(NSString *)text;
-    static func mentionedScreenNames(inText text: String) -> [TwitterTextEntity] {
+    public static func mentionedScreenNames(inText text: String) -> [TwitterTextEntity] {
         /// if (!text.length) {
         ///     return @[];
         /// }
@@ -357,7 +374,7 @@ class TwitterText {
     }
 
     /// + (NSArray<TwitterTextEntity *> *)mentionsOrListsInText:(NSString *)text;
-    static func mentionsOrLists(inText text: String) -> [TwitterTextEntity] {
+    public static func mentionsOrLists(inText text: String) -> [TwitterTextEntity] {
         /// if (!text.length) {
         ///     return @[];
         /// }
@@ -430,7 +447,7 @@ class TwitterText {
     }
 
     /// + (nullable TwitterTextEntity *)repliedScreenNameInText:(NSString *)text;
-    static func repliedScreenName(inText text: String) -> TwitterTextEntity? {
+    public static func repliedScreenName(inText text: String) -> TwitterTextEntity? {
         /// if (!text.length) {
         ///     return nil;
         /// }
@@ -469,7 +486,7 @@ class TwitterText {
 
 
     /// + (NSCharacterSet *)validHashtagBoundaryCharacterSet;
-    static func validHashtagBoundaryCharacterSet() -> CharacterSet {
+    public static func validHashtagBoundaryCharacterSet() -> CharacterSet {
         /// static NSCharacterSet *charset;
         var charset: CharacterSet
         /// static dispatch_once_t onceToken;
@@ -486,13 +503,13 @@ class TwitterText {
 
 
     /// + (NSInteger)tweetLength:(NSString *)text;
-    static func tweetLength(text: String) -> Int {
+    public static func tweetLength(text: String) -> Int {
         /// return [self tweetLength:text transformedURLLength:kTransformedURLLength];
         return self.tweetLength(text: text, transformedURLLength: kTransformedURLLength)
     }
 
     /// + (NSInteger)tweetLength:(NSString *)text transformedURLLength:(NSInteger)transformedURLLength;
-    static func tweetLength(text: String, transformedURLLength: Int) -> Int {
+    public static func tweetLength(text: String, transformedURLLength: Int) -> Int {
         /// // Use Unicode Normalization Form Canonical Composition to calculate tweet text length
         /// text = [text precomposedStringWithCanonicalMapping];
 ///
@@ -570,7 +587,7 @@ class TwitterText {
 
     /// + (NSInteger)tweetLength:(NSString *)text httpURLLength:(NSInteger)httpURLLength httpsURLLength:(NSInteger)httpsURLLength __attribute__((deprecated("Use tweetLength:transformedURLLength: instead")));
     @available(*, deprecated, message: "Use `tweetLength(transformedURLLength:)` instead")
-    static func tweetLength(text: String, httpURLLength: Int, httpsURLLength: Int) -> Int {
+    public static func tweetLength(text: String, httpURLLength: Int, httpsURLLength: Int) -> Int {
         /// Deprecated, here for backwards compatibility. Just uses the httpsURLLength,
         /// which has been the same as httpURLLength for some time.
         ///
@@ -580,24 +597,102 @@ class TwitterText {
 
 
     /// + (NSInteger)remainingCharacterCount:(NSString *)text;
-    static func remainingCharacterCount(text: String) -> Int {
-        return 0
+    public static func remainingCharacterCount(text: String) -> Int {
+        /// return [self remainingCharacterCount:text transformedURLLength:kTransformedURLLength];
+        return self.remainingCharacterCount(text: text, transformedURLLength: kTransformedURLLength)
     }
 
     /// + (NSInteger)remainingCharacterCount:(NSString *)text transformedURLLength:(NSInteger)transformedURLLength;
-    static func remainingCharacterCount(text: String, transformedURLLength: Int) -> Int {
-        return 0
+    public static func remainingCharacterCount(text: String, transformedURLLength: Int) -> Int {
+        /// return kMaxTweetLengthLegacy - [self tweetLength:text transformedURLLength:transformedURLLength];
+        return kMaxTweetLengthLegacy - self.tweetLength(text: text, transformedURLLength: transformedURLLength)
     }
 
     /// + (NSInteger)remainingCharacterCount:(NSString *)text httpURLLength:(NSInteger)httpURLLength httpsURLLength:(NSInteger)httpsURLLength __attribute__((deprecated("Use tweetLength:transformedURLLength: instead")));
     @available(*, deprecated, message: "Use `tweetLength(transformedURLLength:)` instead")
-    static func remaningCharacterCount(text: String, httpURLLength: Int, httpsUrlLength: Int) -> Int {
-        return 0
+    public static func remaningCharacterCount(text: String, httpURLLength: Int, httpsUrlLength: Int) -> Int {
+        /// return kMaxTweetLengthLegacy - [self tweetLength:text httpURLLength:httpURLLength httpsURLLength:httpsURLLength];
+        return kMaxTweetLengthLegacy - self.tweetLength(text: text, httpURLLength: httpURLLength, httpsURLLength: httpsUrlLength)
     }
 
 
     /// + (void)eagerlyLoadRegexps;
-    static func eagerlyLoadRegexps() {
+    public static func eagerlyLoadRegexps() {
+        /// static dispatch_once_t onceToken;
+        /// dispatch_once(&onceToken, ^{
+        /// dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0);
 
+        /// dispatch_async(queue, ^{
+        /// @autoreleasepool {
+        /// __unused NSRegularExpression *exp = [self validHashtagRegexp];
+        /// }
+        /// });
+
+        /// dispatch_async(queue, ^{
+        /// @autoreleasepool {
+        /// __unused NSRegularExpression *exp = [self validURLRegexp];
+        /// }
+        /// });
+
+        /// dispatch_async(queue, ^{
+        /// @autoreleasepool {
+        /// __unused NSRegularExpression *exp = [self validGTLDRegexp];
+        /// }
+        /// });
+
+        /// dispatch_async(queue, ^{
+        /// @autoreleasepool {
+        /// __unused NSRegularExpression *exp = [self validDomainRegexp];
+        /// }
+        /// });
+
+        /// dispatch_async(queue, ^{
+        /// @autoreleasepool {
+        /// __unused NSRegularExpression *exp = [self invalidCharacterRegexp];
+        /// }
+        /// });
+
+        /// dispatch_async(queue, ^{
+        /// @autoreleasepool {
+        /// __unused NSRegularExpression *exp = [self validTCOURLRegexp];
+        /// }
+        /// });
+
+        /// dispatch_async(queue, ^{
+        /// @autoreleasepool {
+        /// __unused NSRegularExpression *exp = [self endHashtagRegexp];
+        /// }
+        /// });
+
+        /// dispatch_async(queue, ^{
+        /// @autoreleasepool {
+        /// __unused NSRegularExpression *exp = [self validSymbolRegexp];
+        /// }
+        /// });
+
+        /// dispatch_async(queue, ^{
+        /// @autoreleasepool {
+        /// __unused NSRegularExpression *exp = [self validMentionOrListRegexp];
+        /// }
+        /// });
+
+        /// dispatch_async(queue, ^{
+        /// @autoreleasepool {
+        /// __unused NSRegularExpression *exp = [self validReplyRegexp];
+        /// }
+        /// });
+
+        /// dispatch_async(queue, ^{
+        /// @autoreleasepool {
+        /// __unused NSRegularExpression *exp = [self endMentionRegexp];
+        /// }
+        /// });
+
+        /// dispatch_async(queue, ^{
+        /// @autoreleasepool {
+        /// __unused NSRegularExpression *exp = [self validDomainSucceedingCharRegexp];
+        /// }
+        /// });
+        /// });
     }
 }

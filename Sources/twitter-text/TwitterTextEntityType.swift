@@ -16,7 +16,7 @@ import Foundation
 ///     TwitterTextEntityTweetChar,
 ///     TwitterTextEntityTweetEmojiChar
 /// };
-enum TwitterTextEntityType: Int {
+public enum TwitterTextEntityType: Int {
     case TwitterTextEntityURL
     case TwitterTextEntityScreenName
     case TwitterTextEntityHashtag

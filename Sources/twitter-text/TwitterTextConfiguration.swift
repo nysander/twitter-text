@@ -36,6 +36,49 @@ class TwitterTextConfiguration {
 
     /// + (instancetype)configurationFromJSONString:(NSString *)jsonString;
     public init(jsonString: String) {
+        /// self = [super init];
+        /// if (self) {
+        ///     NSError *jsonError = nil;
+        var jsonError: Error = nil
+        ///     NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+        var jsonData = try JSONEncoder().encode(jsonString)
+        ///     NSDictionary *jsonDictionary = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&jsonError];
+        let jsonDictionary = JSONSerialization().dic
 
+        ///     _version = [jsonDictionary[@"version"] integerValue];
+        version = jsonDictionary["version"] as Int
+        ///     _maxWeightedTweetLength = [jsonDictionary[@"maxWeightedTweetLength"] integerValue];
+        maxWeightedTweetLength = jsonDictionary["maxWeightedTweetLength"] as Int
+        ///     _scale = [jsonDictionary[@"scale"] integerValue];
+        scale = jsonDictionary["scale"] as Int
+        ///     _defaultWeight = [jsonDictionary[@"defaultWeight"] integerValue];
+        defaultWeight = jsonDictionary["defaultWeight"] as Int
+        ///     _transformedURLLength = [jsonDictionary[@"transformedURLLength"] integerValue];
+        transformedURLLength = jsonDictionary["transformedURLLength"] as Int
+        ///     _emojiParsingEnabled = [jsonDictionary[@"emojiParsingEnabled"] boolValue];
+        emojiParsingEnabled = jsonDictionary["emojiParsingEnabled"] as Bool
+        ///     NSArray *jsonRanges = jsonDictionary[@"ranges"];
+        let jsonRanges = jsonDictionary["ranges"]
+        ///     NSMutableArray *ranges = [NSMutableArray arrayWithCapacity:jsonRanges.count];
+        var ranges: [TwitterTextWeightedRange]
+        ///     for (NSDictionary *rangeDict in jsonRanges) {
+        for rangeDict in jsonRanges {
+        ///         NSRange range;
+        ///         range.location = [rangeDict[@"start"] integerValue];
+        ///         range.length = [rangeDict[@"end"] integerValue] - range.location;
+        ///         NSInteger charWeight = [rangeDict[@"weight"] integerValue];
+        ///         TwitterTextWeightedRange *charWeightObject = [[TwitterTextWeightedRange alloc] initWithRange:range weight:charWeight];
+        ///         [ranges addObject:charWeightObject];
+            var range: Range<String.Index>
+            range.lowerBound = rangeDict["start"] as Int
+            let charWeight = rangeDict["weight"] as Int
+            let charWeightObject = TwitterTextWeightedRange(range: range, weight: charWeight)
+            ranges.append(charWeightObject)
+        ///     }
+        }
+        ///     _ranges = [ranges copy];
+        self.ranges = ranges
+        /// }
+        /// return self;
     }
 }
