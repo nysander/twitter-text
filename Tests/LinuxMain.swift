@@ -1,7 +1,7 @@
 import XCTest
 
-import twitter_textTests
+import TwitterTextTests
 
 var tests = [XCTestCaseEntry]()
-tests += twitter_textTests.allTests()
+tests += TwitterTextTests.allTests()
 XCTMain(tests)
