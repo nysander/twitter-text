@@ -12,10 +12,10 @@ public class TwitterTextEntity {
     var type: TwitterTextEntityType
 
     /// @property (nonatomic) NSRange range;
-    var range: Range<String.Index>
+    var range: NSRange
 
     /// + (instancetype)entityWithType:(TwitterTextEntityType)type range:(NSRange)range;
-    public init(withType type: TwitterTextEntityType, range: Range<String.Index>) {
+    public init(withType type: TwitterTextEntityType, range: NSRange) {
         self.type = type
         self.range = range
     }

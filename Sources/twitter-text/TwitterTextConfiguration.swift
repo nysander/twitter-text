@@ -64,7 +64,7 @@ class TwitterTextConfiguration {
         ///         NSInteger charWeight = [rangeDict[@"weight"] integerValue];
         ///         TwitterTextWeightedRange *charWeightObject = [[TwitterTextWeightedRange alloc] initWithRange:range weight:charWeight];
         ///         [ranges addObject:charWeightObject];
-            var range: Range<String.Index>
+            var range: NSRange
             range.lowerBound = rangeDict["start"] as Int
             let charWeight = rangeDict["weight"] as Int
             let charWeightObject = TwitterTextWeightedRange(range: range, weight: charWeight)

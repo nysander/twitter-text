@@ -392,7 +392,7 @@ public class TwitterText {
         /// while (1) {
         while true {
         ///     NSTextCheckingResult *matchResult = [[self validMentionOrListRegexp] firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(position, len - position)];
-            let matchResult = self.validMentionOrListRegexp(firstMatchInString: text, options: , range: position...len - position)
+            let matchResult = self.validMentionOrListRegexp(firstMatchInString: text, options: , range: NSMakeRange(position, len - position))
         ///     if (!matchResult || matchResult.numberOfRanges < 5) {
         ///         break;
         ///     }
@@ -403,10 +403,10 @@ public class TwitterText {
         ///     NSRange allRange = matchResult.range;
             let allRange = matchResult.range
         ///     NSUInteger end = NSMaxRange(allRange);
-            let end = allRange.max
+            let end = NSMaxRange(allRange)
 
         ///     NSRange endMentionRange = [[self endMentionRegexp] rangeOfFirstMatchInString:text options:0 range:NSMakeRange(end, len - end)];
-            let endMentionRange = self.endMentionRegexp(rangeOfFirstMatchInString: text, options: 0, range: end...(len - end))
+            let endMentionRange = self.endMentionRegexp(rangeOfFirstMatchInString: text, options: 0, range: NSMakeRange(end, len - end))
         ///     if (endMentionRange.location == NSNotFound) {
             if endMentionRange.location.notfound {
         ///         NSRange atSignRange = [matchResult rangeAtIndex:2];

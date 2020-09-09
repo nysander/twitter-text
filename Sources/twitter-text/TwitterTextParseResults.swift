@@ -17,7 +17,7 @@ public class TwitterTextParseResults {
     /// Compute true weightedLength by weightedLength/permillage
     ///
     /// @property (nonatomic, readonly) NSInteger permillage;
-    public let permillage: Int
+    public private(set) var permillage: Int
 
     /// If the tweet is valid or not.
     ///
@@ -27,19 +27,19 @@ public class TwitterTextParseResults {
     /// Text range that is visible
     ///
     /// @property (nonatomic, readonly) NSRange displayTextRange;
-    public let displayTextRange: Range<String.Index>
+    public let displayTextRange: NSRange
 
     /// Text range that is valid under Twitter
     ///
     /// @property (nonatomic, readonly) NSRange validDisplayTextRange;
-    public let validDisplayTextRange: Range<String.Index>
+    public let validDisplayTextRange: NSRange
 
     /// - (instancetype)initWithWeightedLength:(NSInteger)length permillage:(NSInteger)permillage valid:(BOOL)valid displayRange:(NSRange)displayRange validRange:(NSRange)validRange;
     public init(weightedLength length: Int,
          permillage: Int,
          valid: Bool,
-         displayRange: Range<String.Index>,
-         validRange: Range<String.Index>) {
+         displayRange: NSRange,
+         validRange: NSRange) {
         self.weightedLength = length
         self.permillage = permillage
         self.isValid = valid

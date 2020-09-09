@@ -89,7 +89,7 @@ class TwitterTextParser {
         ///     return [[TwitterTextParseResults alloc] initWithWeightedLength:0 permillage:0 valid:YES displayRange:rangeZero validRange:rangeZero];
         /// }
         if normalizedTextLength == 0 {
-            let rangeZero: Range<String.Index> = 0...0
+            let rangeZero: NSRange = NSMakeRange(0, 0)
             return TwitterTextParseResults(weightedLength: 0, permillage: 0, valid: true, displayRange: rangeZero, validRange: rangeZero)
         }
 
@@ -275,5 +275,137 @@ class TwitterTextParser {
     func maxWeightedTweetLength() -> Int {
         /// return _configuration.maxWeightedTweetLength;
         return configuration.maxWeightedTweetLength
+    }
+
+    // MARK: - Private methods
+
+    /// - (NSInteger)_tt_lengthOfText:(NSString *)text range:(NSRange)range countingBlock:(nonnull TextUnitCounterBlock)countingBlock
+    private func tt_length(ofText text: String, range: NSRange, countingBlock: TextUnitCounterBlock) -> Int {
+    ///     __block NSInteger length = 0;
+///
+    ///     NSMutableArray *emojiRanges = [[NSMutableArray alloc] init];
+    ///     if (self.configuration.isEmojiParsingEnabled) {
+    ///         // With emoji parsing enabled, we first find all emoji in the input text (so that we only
+    ///         // have to match vs. the complex emoji regex once).
+    ///         NSArray<NSTextCheckingResult *> *emojiMatches = [TwitterTextEmojiRegex() matchesInString:text options:0 range:NSMakeRange(0, text.length)];
+    ///         for (NSTextCheckingResult *match in emojiMatches) {
+    ///             [emojiRanges addObject:[NSValue valueWithRange:match.range]];
+    ///         }
+    ///     }
+///
+    ///     if (range.location + range.length <= text.length) {
+    ///         // TODO: drop-iOS-10: when dropping support for iOS 10, remove the #if, #endif and everything in between
+    ///         #if __IPHONE_11_0 > __IPHONE_OS_VERSION_MIN_REQUIRED
+    ///         #if 0
+    ///         // Unicode 10.0 isn't fully supported on iOS 10.
+///
+    ///         // e.g. on iOS 10, closure block arg of [NSString enumerateSubstringsInRange:options:usingBlock:]
+    ///         // is called an "incorrect" number of times for some Unicode10 composed character sequences
+///
+    ///         // i.e. calling enumerateSubstringsInRange:options:usingBlock: on the string
+///
+    ///         @"🤪; 🧕; 🧕🏾; 🏴󠁧󠁢󠁥󠁮󠁧󠁿"
+///
+    ///         // results in the following values of `substringRange` and `substring` within the block
+    ///         // and of the __block var `length` once the block is complete:
+///
+    ///         //  iOS 11 and above
+///
+    ///         substringRange = @"{1, 2}" , substring = @"🤪"
+    ///         substringRange = @"{3, 1}" , substring = @";"
+    ///         substringRange = @"{4, 1}" , substring = @" "
+    ///         substringRange = @"{5, 2}" , substring = @"🧕"
+    ///         substringRange = @"{7, 1}" , substring = @";"
+    ///         substringRange = @"{8, 1}" , substring = @" "
+    ///         substringRange = @"{9, 4}" , substring = @"🧕🏾"
+    ///         substringRange = @"{13, 1}" , substring = @";"
+    ///         substringRange = @"{14, 1}" , substring = @" "
+    ///         substringRange = @"{15, 14}" , substring = @"🏴󠁧󠁢󠁥󠁮󠁧󠁿"
+///
+    ///         length = 15
+///
+    ///         //  iOS 10
+///
+    ///         substringRange = @"{1, 2}" , substring = @"🤪"
+    ///         substringRange = @"{3, 1}" , substring = @";"
+    ///         substringRange = @"{4, 1}" , substring = @" "
+    ///         substringRange = @"{5, 2}" , substring = @"🧕"
+    ///         substringRange = @"{7, 1}" , substring = @";"
+    ///         substringRange = @"{8, 1}" , substring = @" "
+    ///         substringRange = @"{9, 2}" , substring = @"🧕"
+    ///         substringRange = @"{11, 2}" , substring = @"🏾"
+    ///         substringRange = @"{13, 1}" , substring = @";"
+    ///         substringRange = @"{14, 1}" , substring = @" "
+    ///         substringRange = @"{15, 2}" , substring = @"🏴"
+    ///         substringRange = @"{17, 2}" , substring = @"󠁧"
+    ///         substringRange = @"{19, 2}" , substring = @"󠁢"
+    ///         substringRange = @"{21, 2}" , substring = @"󠁥"
+    ///         substringRange = @"{23, 2}" , substring = @"󠁮"
+    ///         substringRange = @"{25, 2}" , substring = @"󠁧"
+    ///         substringRange = @"{27, 2}" , substring = @"󠁿"
+///
+    ///         length = 29
+///
+    ///         #endif // #if 0
+    ///         #endif // #if __IPHONE_11_0 > __IPHONE_OS_VERSION_MIN_REQUIRED
+    ///         [text enumerateSubstringsInRange:range options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+    ///          if (countingBlock != NULL) {
+    ///          TwitterTextEntityType type = (self.configuration.isEmojiParsingEnabled && [emojiRanges containsObject:[NSValue valueWithRange:substringRange]]) ? TwitterTextEntityTweetEmojiChar : TwitterTextEntityTweetChar;
+    ///          length = countingBlock(length, text, [TwitterTextEntity entityWithType:type range:substringRange], substring);
+    ///          }
+    ///          }];
+    ///     } else {
+    ///         NSAssert(NO, @"range (%@) outside bounds of text.length (%lu) for text \"%@\"", NSStringFromRange(range), (unsigned long)text.length, text);
+    ///         length = text.length;
+    ///     }
+///
+    ///     return length;
+    /// }
+    }
+
+    /// - (NSInteger)_tt_lengthOfWeightedChar:(NSString *)text
+    private func tt_length(ofWeightedChar text: String) -> Int {
+    ///     NSInteger length = text.length;
+    ///     if (length == 0) {
+    ///         return 0;
+    ///     }
+///
+    ///     UniChar buffer[length];
+    ///     [text getCharacters:buffer range:NSMakeRange(0, length)];
+///
+    ///     NSInteger weightedLength = 0;
+    ///     NSInteger codepointCount = 0;
+    ///     UniChar *ptr = buffer;
+    ///     for (NSUInteger i = 0; i < length; i++) {
+    ///         __block NSInteger charWeight = _configuration.defaultWeight;
+    ///         BOOL isSurrogatePair = (i + 1 < length && CFStringIsSurrogateHighCharacter(ptr[i]) && CFStringIsSurrogateLowCharacter(ptr[i+1]));
+    ///         for (TwitterTextWeightedRange *weightedRange in _configuration.ranges) {
+    ///             NSInteger begin = weightedRange.range.location;
+    ///             NSInteger end = weightedRange.range.location + weightedRange.range.length;
+///
+    ///             if (isSurrogatePair) {
+    ///                 UTF32Char char32 = CFStringGetLongCharacterForSurrogatePair(ptr[i], ptr[i+1]);
+    ///                 if (char32 >= begin && char32 <= end) {
+    ///                     charWeight = weightedRange.weight;
+    ///                     break;
+    ///                 }
+    ///             } else if (ptr[i] >= begin && ptr[i] <= end) {
+    ///                 charWeight = weightedRange.weight;
+    ///                 break;
+    ///             }
+    ///         }
+///
+    ///         // skip the next char of the surrogate pair.
+    ///         if (isSurrogatePair) {
+    ///             i++;
+    ///         }
+///
+    ///         codepointCount++;
+///
+    ///         weightedLength += charWeight;
+    ///     }
+///
+    ///     return weightedLength;
+    /// }
     }
 }
