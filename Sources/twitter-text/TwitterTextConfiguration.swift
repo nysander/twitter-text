@@ -29,13 +29,8 @@ class TwitterTextConfiguration {
     /// @property (nonatomic, readonly) NSArray<TwitterTextWeightedRange *> *ranges;
     let ranges: [TwitterTextWeightedRange]
 
-    /// + (instancetype)configurationFromJSONResource:(NSString *)jsonResource;
-    public init(jsonResource: String) {
-
-    }
-
     /// + (instancetype)configurationFromJSONString:(NSString *)jsonString;
-    public init(jsonString: String) {
+    init(jsonString: String) {
         /// self = [super init];
         /// if (self) {
         ///     NSError *jsonError = nil;
@@ -80,5 +75,26 @@ class TwitterTextConfiguration {
         self.ranges = ranges
         /// }
         /// return self;
+    }
+
+    /// + (instancetype)configurationFromJSONResource:(NSString *)jsonResource;
+    public static func configuration(fromJSONResource jsonResource: String) {
+        /// NSError *error = nil;
+
+        /// NSString *sourceFile = [[NSBundle bundleForClass:self] pathForResource:jsonResource ofType:@"json"];
+        /// NSString *jsonString = [NSString stringWithContentsOfFile:sourceFile encoding:NSUTF8StringEncoding error:&error];
+        guard let sourceFile = Bundle().path(forResource: jsonResource, ofType: "json"),
+              let url = URL(string: sourceFile),
+              let jsonString = try? String(contentsOf: url, encoding: .utf8) else {
+            return
+        }
+        /// return !error ? [self configurationFromJSONString:jsonString] : nil;
+        self.configuration(fromJSONString: jsonString)
+    }
+
+    /// + (instancetype)configurationFromJSONString:(NSString *)jsonString
+    public static func configuration(fromJSONString jsonString: String) {
+        /// return [[TwitterTextConfiguration alloc] initWithJSONString:jsonString];
+        _ = TwitterTextConfiguration(jsonString: jsonString)
     }
 }
