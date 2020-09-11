@@ -1,5 +1,5 @@
 import XCTest
-@testable import twitter_text
+@testable import TwitterText
 
 final class twitter_textTests: XCTestCase {
     func testExample() {
@@ -9,6 +9,13 @@ final class twitter_textTests: XCTestCase {
 //        XCTAssertEqual(twitter_text().text, "Hello, World!")
     }
 
+    /// - (void)testRemainingCharacterCountForLongTweet
+    func testRemainingCharacterCountForLongTweet() {
+//    {
+//    ;
+//    }
+        XCTAssertEqual(TwitterText.remainingCharacterCount( "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890", transformedURLLength:23), -10)
+    }
     static var allTests = [
         ("testExample", testExample),
     ]

@@ -36,7 +36,9 @@ extension String {
         /// for (NSInteger index = 0; index < (NSInteger)length; index++) {
         for i in 0..<length {
         ///     unichar c = buffer[index];
+            let c = buffer[index]
         ///     if (CFStringIsSurrogateHighCharacter(c)) {
+            if CFStringIsSurrogateHighCharacter(c) {
         ///         if (pendingSurrogateHigh) {
         ///             // Surrogate high after surrogate high
         ///             return NO;
@@ -50,17 +52,25 @@ extension String {
                         pendingSurrogateHigh = true
                     }
         ///     } else if (CFStringIsSurrogateLowCharacter(c)) {
+            } else if CFStringIsSurrogateLowCharacter(c) {
         ///         if (pendingSurrogateHigh) {
         ///             pendingSurrogateHigh = NO;
         ///         } else {
         ///             // Isolated surrogate low
         ///             return NO;
         ///         }
+                if pendingSurrogateHigh {
+                    pendingSurrogateHigh = false
+                } else {
+                    return false
+                }
         ///     } else {
+            } else {
         ///         if (pendingSurrogateHigh) {
         ///             // Isolated surrogate high
         ///             return NO;
         ///         }
+                if 
         ///     }
         /// }
         }

@@ -45,7 +45,7 @@ class TwitterTextConfiguration {
                   let transformedURLLength = jsonDictionary["transformedURLLength"] as? Int,
                   let emojiParsingEnabled = jsonDictionary["emojiParsingEnabled"] as? Bool,
                   let jsonRanges = jsonDictionary["ranges"] as? [[String:Int]] else {
-                return
+                return nil
             }
 
         ///     _version = [jsonDictionary[@"version"] integerValue];
@@ -75,7 +75,7 @@ class TwitterTextConfiguration {
             guard let start = rangeDict["start"],
                   let end = rangeDict["end"],
                   let charWeight = rangeDict["weight"] else {
-                return
+                return nil
             }
             var range = NSMakeRange(NSNotFound, NSNotFound)
             range.location = start

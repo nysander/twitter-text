@@ -94,53 +94,89 @@ public class TwitterText {
         /// NSUInteger position = 0;
         var position = 0
         /// NSRange allRange = NSMakeRange(0, 0);
-        var allRange = 0...0
+        var allRange = NSMakeRange(0, 0)
 
         /// while (1) {
+        while true {
         ///     position = NSMaxRange(allRange);
+            position = NSMaxRange(allRange)
         ///     if (len <= position) {
         ///         break;
         ///     }
+            if len <= position {
+                break
+            }
 
         ///     NSTextCheckingResult *urlResult = [[self validURLRegexp] firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(position, len - position)];
         ///     if (!urlResult) {
         ///         break;
         ///     }
+            guard let urlResult = self.validURLRegexp.firstMatch(in: text, options: .withoutAnchoringBounds, range: NSMakeRange(position, len - position)) else {
+                break
+            }
 
         ///     allRange = urlResult.range;
+            allRange = urlResult.range
         ///     if (urlResult.numberOfRanges < 9) {
         ///         // Continue processing after the end of this invalid result.
         ///         continue;
         ///     }
+            if urlResult.numberOfRanges < 9 {
+                continue
+            }
 
         ///     NSRange urlRange = [urlResult rangeAtIndex:TWUValidURLGroupURL];
+            let urlRange = urlResult.range(at: TWUValidURLGroup.TWUValidURLGroupURL.rawValue)
         ///     NSRange precedingRange = [urlResult rangeAtIndex:TWUValidURLGroupPreceding];
+            let precedingRange = urlResult.range(at: TWUValidURLGroup.TWUValidURLGroupPreceding.rawValue)
         ///     NSRange protocolRange = [urlResult rangeAtIndex:TWUValidURLGroupProtocol];
+            let protocolRange = urlResult.range(at: TWUValidURLGroup.TWUValidURLGroupProtocol.rawValue)
         ///     NSRange domainRange = [urlResult rangeAtIndex:TWUValidURLGroupDomain];
+            let domainRange = urlResult.range(at: TWUValidURLGroup.TWUValidURLGroupDomain.rawValue)
 
         ///     NSString *protocol = (protocolRange.location != NSNotFound) ? [text substringWithRange:protocolRange] : nil;
+            let protocolStr = protocolRange.location != NSNotFound ? NSString(string: text).substring(with: protocolRange) : nil
         ///     if (protocol.length == 0) {
+            if let protocolStr = protocolStr, protocolStr.count == 0 {
         ///         NSString *preceding = (precedingRange.location != NSNotFound) ? [text substringWithRange:precedingRange] : nil;
+                let preceding = precedingRange.location != NSNotFound ? NSString(string: text).substring(with: precedingRange) : nil
         ///         NSRange suffixRange = [preceding rangeOfCharacterFromSet:[self invalidURLWithoutProtocolPrecedingCharSet] options:NSBackwardsSearch | NSAnchoredSearch];
+                let suffixRange = preceding?.rangeOfCharacter(from: self.invalidURLWithoutProtocolPrecedingCharSet)
         ///         if (suffixRange.location != NSNotFound) {
         ///             continue;
         ///         }
+                if suffixRange?.location != NSNotFound {
+                    continue
+                }
         ///     }
+            }
 
         ///     NSString *url = (urlRange.location != NSNotFound) ? [text substringWithRange:urlRange] : nil;
+            let url = urlRange.location != NSNotFound ? text.substring(with: urlRange) : nil
         ///     NSString *host = (domainRange.location != NSNotFound) ? [text substringWithRange:domainRange] : nil;
+            let host = domainRange.location != NSNotFound ? text.substring(with: Range(domainRange)!) : nil
 
         ///     NSInteger start = urlRange.location;
+            let start = urlRange.location
         ///     NSInteger end = NSMaxRange(urlRange);
+            let end = NSMaxRange(urlRange)
 
         ///     NSTextCheckingResult *tcoResult = url ? [[self validTCOURLRegexp] firstMatchInString:url options:0 range:NSMakeRange(0, url.length)] : nil;
+            let tcoResult = url ? self.validTCOURLRegexp.firstMatch(in: url, options: 0, range: NSMaxRange(0, url.length)) : nil
         ///     if (tcoResult && tcoResult.numberOfRanges >= 2) {
+            if let tcoResult = tcoResult, tcoResult.numberOfRanges >= 2 {
         ///         NSRange tcoRange = [tcoResult rangeAtIndex:0];
+                let tcoRange = tcoResult.range(at: 0)
         ///         NSRange tcoUrlSlugRange = [tcoResult rangeAtIndex:1];
+                let tcoUrlSlugRange = tcoResult.range(at: 0)
         ///         if (tcoRange.location == NSNotFound || tcoUrlSlugRange.location == NSNotFound) {
         ///             continue;
         ///         }
+                if tcoRange.location == NSNotFound || tcoUrlSlugRange.location == NSNotFound {
+                    continue
+                }
         ///         NSString *tcoUrlSlug = [text substringWithRange:tcoUrlSlugRange];
+                let tcoUrlSlug = text.substring(with: tcoUrlSlugRange)
         ///         // In the case of t.co URLs, don't allow additional path characters and ensure that the slug is under 40 chars.
         ///         if ([tcoUrlSlug length] > kMaxTCOSlugLength) {
         ///             continue;
@@ -148,13 +184,26 @@ public class TwitterText {
         ///             url = [url substringWithRange:tcoRange];
         ///             end = start + url.length;
         ///         }
+                if tcoUrlSlug.count > TwitterText.kMaxTCOSlugLength {
+                    continue
+                } else {
+                    url = url.substring(with: tcoRange)
+                    end = start + url.count
+                }
         ///     }
+            }
         ///     if ([self isValidHostAndLength:url.length protocol:protocol host:host]) {
+            if self.isValidHostAndLength(url.length, protocol: protocolStr, host: host) {
         ///         TwitterTextEntity *entity = [TwitterTextEntity entityWithType:TwitterTextEntityURL range:NSMakeRange(start, end - start)];
-        ///         [results addObject:entity];
+                let entity = TwitterTextEntity(withType: .TwitterTextEntityURL, range: NSMakeRange(start, end - start))
+                ///         [results addObject:entity];
+                results.append(entity)
         ///         allRange = entity.range;
+                allRange = entity.range
         ///     }
+            }
         /// }
+        }
 
         /// return results;
         return results
@@ -494,17 +543,21 @@ public class TwitterText {
     /// + (NSCharacterSet *)validHashtagBoundaryCharacterSet;
     public static func validHashtagBoundaryCharacterSet() -> CharacterSet {
         /// static NSCharacterSet *charset;
-        var charset: CharacterSet
+//        var charset: CharacterSet
         /// static dispatch_once_t onceToken;
         /// dispatch_once(&onceToken, ^{
         /// // Generate equivalent character set matched by TWUHashtagBoundaryInvalidChars regex and invert
         /// NSMutableCharacterSet *set = [NSMutableCharacterSet letterCharacterSet];
+        var set: CharacterSet = .letters
         /// [set formUnionWithCharacterSet:[NSCharacterSet decimalDigitCharacterSet]];
+        set.formUnion(.decimalDigits)
         /// [set formUnionWithCharacterSet:[NSCharacterSet characterSetWithCharactersInString: TWHashtagSpecialChars @"&"]];
+        set.formUnion(CharacterSet(charactersIn: TwitterTextRegexp.TWHashtagSpecialChars + "&"))
         /// charset = [set invertedSet];
+        let charset = set.inverted
         /// });
         /// return charset;
-        return CharacterSet(charactersIn: "")
+        return charset
     }
 
 
@@ -540,7 +593,7 @@ public class TwitterText {
         ///     urlLengthOffset += transformedURLLength;
         ///     [string deleteCharactersInRange:urlRange];
         /// }
-        for (index, urlEntity) in urlEntities.enumerated().reversed() {
+        for urlEntity in urlEntities.reversed() {
             let entity = urlEntity
             let urlRange = entity.range
             urlLengthOffset += transformedURLLength
@@ -854,21 +907,25 @@ public class TwitterText {
     private static let validDomainSucceedingCharRegexp = try! NSRegularExpression(pattern: TwitterTextRegexp.TWUEndMentionMatch, options: .caseInsensitive)
 
     /// + (BOOL)isValidHostAndLength:(NSUInteger)urlLength protocol:(NSString *)protocol host:(NSString *)host
+    private func isValidHostAndLength(urlLength: Int, protocol: String, host: String?) -> Bool {
     /// {
     /// if (!host) {
     /// return NO;
     /// }
-    private func isValidHostAndLength(urlLength: Int, protocol: String, host: String?) -> Bool {
         if host == nil {
             return false
         }
-
+        var urlLength = urlLength
         /// NSError *error;
         do {
             /// NSInteger originalHostLength = [host length];
-            let originalHostLength = host?.count
             ///
             /// NSURL *url = [NSURL URLWithUnicodeString:host error:&error];
+            guard var host = host, let url = URL(string: host) else {
+                return false
+            }
+
+            let originalHostLength = host.count
             /// if (error) {
             ///     if (error.code == IFUnicodeURLConvertErrorInvalidDNSLength) {
             ///         // If the error is specifically IFUnicodeURLConvertErrorInvalidDNSLength,
@@ -891,13 +948,20 @@ public class TwitterText {
             ///
             /// // Should be encoded if necessary.
             /// host = url.absoluteString;
+            host = url.absoluteString
             ///
             /// NSInteger updatedHostLength = [host length];
+            let updatedHostLength = host.count
             /// if (updatedHostLength == 0) {
             ///     return NO;
             /// } else if (updatedHostLength > originalHostLength) {
             ///     urlLength += (updatedHostLength - originalHostLength);
             /// }
+            if updatedHostLength == 0 {
+                return false
+            } else {
+                urlLength += updatedHostLength - originalHostLength
+            }
             ///
             /// // Because the backend always adds https:// if we're missing a protocol, add this length
             /// // back in when checking vs. our maximum allowed length of a URL, if necessary.
