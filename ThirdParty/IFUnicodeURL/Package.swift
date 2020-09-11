@@ -5,8 +5,13 @@ import PackageDescription
 
 let package = Package(
     name: "IFUnicodeURL",
-    dependencies: [
-        // Dependencies declare other packages that this package depends on.
-        // .package(url: /* package url */, from: "1.0.0"),
+    products: [
+        .library(name: "IFUnicodeURL", targets: ["IFUnicodeURL"]),
+        .library(name: "IFUnicodeURLSwift", targets: ["IFUnicodeURLSwift"]),
+    ],
+    dependencies: [],
+    targets: [
+        .systemLibrary(name: "IFUnicodeURL", path: "./Sources/"),
+        .target(name: "IFUnicodeURLSwift"),
     ]
 )

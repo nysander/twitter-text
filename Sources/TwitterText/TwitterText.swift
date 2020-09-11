@@ -16,6 +16,7 @@ public class TwitterText {
         if text.isEmpty {
             return []
         }
+        IFUnicodeURL.ConvertUnicodeURLString()
 
         /// NSMutableArray<TwitterTextEntity *> *results = [NSMutableArray<TwitterTextEntity *> array];
         var results: [TwitterTextEntity] = []
