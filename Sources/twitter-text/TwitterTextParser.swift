@@ -125,7 +125,8 @@ class TwitterTextParser {
         }
 
         /// NSRange normalizedRanges[normalizedTextLength], *normalizedRangesPtr = normalizedRanges;
-        let normalizedRanges[normalizedTextLength], normalizedRangesPtr = normalizedRanges
+        let normalizedRanges: [NSRange] = Array.init(repeating: NSMakeRange(NSNotFound, NSNotFound), count: normalizedTextLength)
+        let normalizedRangesPtr: NSRangePointer = NSRangePointer(mutating: normalizedRanges)
         /// for (NSUInteger i = 0; i < normalizedTextLength; i++) {
         ///     normalizedRangesPtr[i] = rangeNotFound;
         /// }
@@ -208,6 +209,17 @@ class TwitterTextParser {
         ///         case TwitterTextEntitySymbol:
         ///             // Do nothing for these entity types.
         ///             break;
+                // Do nothing for these entity types.
+                case .TwitterTextEntityScreenName:
+                    fallthrough
+                case .TwitterTextEntityHashtag:
+                    fallthrough
+                case .TwitterTextEntityListName:
+                    fallthrough
+                case .TwitterTextEntitySymbol:
+                    fallthrough
+                default:
+                    break
         ///     }
             }
         ///     if (validStartIndex == NSNotFound) {
