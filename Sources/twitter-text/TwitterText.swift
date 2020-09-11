@@ -18,7 +18,7 @@ public class TwitterText {
         }
 
         /// NSMutableArray<TwitterTextEntity *> *results = [NSMutableArray<TwitterTextEntity *> array];
-        var results: [TwitterTextEntity]
+        var results: [TwitterTextEntity] = []
 
         /// NSArray<TwitterTextEntity *> *urls = [self URLsInText:text];
         let urls = self.URLs(inText: text)
@@ -40,7 +40,7 @@ public class TwitterText {
         let mentionsAndLists = mentionsOrLists(inText: text)
 
         /// NSMutableArray<TwitterTextEntity *> *addingItems = [NSMutableArray<TwitterTextEntity *> array];
-        var addingItems: [TwitterTextEntity]
+        var addingItems: [TwitterTextEntity] = []
 
         /// for (TwitterTextEntity *entity in mentionsAndLists) {
         ///     NSRange entityRange = entity.range;
@@ -87,7 +87,7 @@ public class TwitterText {
         }
 
         /// NSMutableArray<TwitterTextEntity *> *results = [NSMutableArray<TwitterTextEntity *> array];
-        var results: [TwitterTextEntity]
+        var results: [TwitterTextEntity] = []
         /// NSUInteger len = text.length;
         let len = text.count
 
@@ -170,7 +170,7 @@ public class TwitterText {
         }
 
         /// NSArray<TwitterTextEntity *> *urls = nil;
-        var urls: [TwitterTextEntity]
+        var urls: [TwitterTextEntity] = []
         /// if (checkingURLOverlap) {
         ///     urls = [self URLsInText:text];
         /// }
@@ -192,7 +192,7 @@ public class TwitterText {
         }
 
         /// NSMutableArray<TwitterTextEntity *> *results = [NSMutableArray<TwitterTextEntity *> array];
-        var results: [TwitterTextEntity]
+        var results: [TwitterTextEntity] = []
         /// NSUInteger len = text.length;
         let len = text.count
         /// NSUInteger position = 0;
@@ -239,24 +239,24 @@ public class TwitterText {
             if matchOk {
                 let afterStart = NSMaxRange(hashtagRange)
                 if afterStart < len {
-                    let endMatchRange = self.endHashtagRegexp(rangeOfFirstMatchInString: text, options: 0, range: afterStart...len - afterStart)
-                    if endMatchRange.location.notfound {
+                    let endMatchRange = self.endHashtagRegexp.rangeOfFirstMatch(in: text, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(afterStart, len - afterStart))
+                    if endMatchRange.location != NSNotFound {
                         matchOk = false
                     }
                 }
 
-            /// if (matchOk) {
-            /// TwitterTextEntity *entity = [TwitterTextEntity entityWithType:TwitterTextEntityHashtag range:hashtagRange];
-            /// [results addObject:entity];
-            /// }
-            /// }
+                /// if (matchOk) {
+                /// TwitterTextEntity *entity = [TwitterTextEntity entityWithType:TwitterTextEntityHashtag range:hashtagRange];
+                /// [results addObject:entity];
+                /// }
+                /// }
                 if matchOk {
                     let entity = TwitterTextEntity(withType: .TwitterTextEntityHashtag, range: hashtagRange)
                     results.append(entity)
                 }
             }
             /// position = NSMaxRange(matchResult.range);
-            position = NSMaxRange(matchResult.range)
+            position = NSMaxRange(result.range)
             /// }
         }
 
@@ -277,7 +277,7 @@ public class TwitterText {
         /// if (checkingURLOverlap) {
         ///     urls = [self URLsInText:text];
         /// }
-        var urls: [TwitterTextEntity]
+        var urls: [TwitterTextEntity] = []
         if checkingURLOverlap {
             urls = self.URLs(inText: text)
         }
@@ -296,7 +296,7 @@ public class TwitterText {
         }
 
         /// NSMutableArray<TwitterTextEntity *> *results = [NSMutableArray<TwitterTextEntity *> array];
-        var results: [TwitterTextEntity]
+        var results: [TwitterTextEntity] = []
         /// NSUInteger len = text.length;
         let len = text.count
         /// NSUInteger position = 0;
@@ -304,27 +304,27 @@ public class TwitterText {
 
         /// while (1) {
         while true {
-        ///     NSTextCheckingResult *matchResult = [[self validSymbolRegexp] firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(position, len - position)];
+            ///     NSTextCheckingResult *matchResult = [[self validSymbolRegexp] firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(position, len - position)];
             let matchResult = self.validSymbolRegexp.firstMatch(in: text, options: .withoutAnchoringBounds, range: NSMakeRange(position, len - position))
-        ///     if (!matchResult || matchResult.numberOfRanges < 2) {
-        ///         break;
-        ///     }
+            ///     if (!matchResult || matchResult.numberOfRanges < 2) {
+            ///         break;
+            ///     }
             guard let result = matchResult, result.numberOfRanges < 2 else {
                 break
             }
 
-        ///     NSRange symbolRange = [matchResult rangeAtIndex:1];
+            ///     NSRange symbolRange = [matchResult rangeAtIndex:1];
             let symbolRange = result.range(at: 1)
-        ///     BOOL matchOk = YES;
+            ///     BOOL matchOk = YES;
             var matchOk = true
 
-        ///     // Check URL overlap
-        ///     for (TwitterTextEntity *urlEntity in urlEntities) {
-        ///         if (NSIntersectionRange(urlEntity.range, symbolRange).length > 0) {
-        ///             matchOk = NO;
-        ///             break;
-        ///         }
-        ///     }
+            ///     // Check URL overlap
+            ///     for (TwitterTextEntity *urlEntity in urlEntities) {
+            ///         if (NSIntersectionRange(urlEntity.range, symbolRange).length > 0) {
+            ///             matchOk = NO;
+            ///             break;
+            ///         }
+            ///     }
             for urlEntity in urlEntities {
                 if NSIntersectionRange(urlEntity.range, symbolRange).length > 0 {
                     matchOk = false
@@ -332,18 +332,18 @@ public class TwitterText {
                 }
             }
 
-        ///     if (matchOk) {
-        ///         TwitterTextEntity *entity = [TwitterTextEntity entityWithType:TwitterTextEntitySymbol range:symbolRange];
-        ///         [results addObject:entity];
-        ///     }
+            ///     if (matchOk) {
+            ///         TwitterTextEntity *entity = [TwitterTextEntity entityWithType:TwitterTextEntitySymbol range:symbolRange];
+            ///         [results addObject:entity];
+            ///     }
             if matchOk {
                 let entity = TwitterTextEntity(withType: .TwitterTextEntitySymbol, range: symbolRange)
                 results.append(entity)
             }
 
-        ///     position = NSMaxRange(matchResult.range);
+            ///     position = NSMaxRange(matchResult.range);
             position = NSMaxRange(result.range)
-        /// }
+            /// }
         }
 
         /// return results;
@@ -362,7 +362,7 @@ public class TwitterText {
         /// NSArray<TwitterTextEntity *> *mentionsOrLists = [self mentionsOrListsInText:text];
         let mentionsOrLists = self.mentionsOrLists(inText: text)
         /// NSMutableArray<TwitterTextEntity *> *results = [NSMutableArray<TwitterTextEntity *> array];
-        var results: [TwitterTextEntity]
+        var results: [TwitterTextEntity] = []
 
         /// for (TwitterTextEntity *entity in mentionsOrLists) {
         ///     if (entity.type == TwitterTextEntityScreenName) {
@@ -389,7 +389,7 @@ public class TwitterText {
         }
 
         /// NSMutableArray<TwitterTextEntity *> *results = [NSMutableArray<TwitterTextEntity *> array];
-        var results: [TwitterTextEntity]
+        var results: [TwitterTextEntity] = []
         /// NSUInteger len = text.length;
         let len = text.count
         /// NSUInteger position = 0;
@@ -397,37 +397,37 @@ public class TwitterText {
 
         /// while (1) {
         while true {
-        ///     NSTextCheckingResult *matchResult = [[self validMentionOrListRegexp] firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(position, len - position)];
+            ///     NSTextCheckingResult *matchResult = [[self validMentionOrListRegexp] firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(position, len - position)];
             let matchResult = self.validMentionOrListRegexp.firstMatch(in: text, options: .withoutAnchoringBounds, range: NSMakeRange(position, len - position))
-        ///     if (!matchResult || matchResult.numberOfRanges < 5) {
-        ///         break;
-        ///     }
+            ///     if (!matchResult || matchResult.numberOfRanges < 5) {
+            ///         break;
+            ///     }
             guard let result = matchResult, result.numberOfRanges < 5 else {
                 break
             }
 
-        ///     NSRange allRange = matchResult.range;
+            ///     NSRange allRange = matchResult.range;
             let allRange = result.range
-        ///     NSUInteger end = NSMaxRange(allRange);
+            ///     NSUInteger end = NSMaxRange(allRange);
             var end = NSMaxRange(allRange)
 
-        ///     NSRange endMentionRange = [[self endMentionRegexp] rangeOfFirstMatchInString:text options:0 range:NSMakeRange(end, len - end)];
-            let endMentionRange = self.endMentionRegexp(rangeOfFirstMatchInString: text, options: 0, range: NSMakeRange(end, len - end))
-        ///     if (endMentionRange.location == NSNotFound) {
+            ///     NSRange endMentionRange = [[self endMentionRegexp] rangeOfFirstMatchInString:text options:0 range:NSMakeRange(end, len - end)];
+            let endMentionRange = self.endMentionRegexp.rangeOfFirstMatch(in: text, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(end, len - end))
+            ///     if (endMentionRange.location == NSNotFound) {
             if endMentionRange.location == NSNotFound {
-        ///         NSRange atSignRange = [matchResult rangeAtIndex:2];
-        ///         NSRange screenNameRange = [matchResult rangeAtIndex:3];
-        ///         NSRange listNameRange = [matchResult rangeAtIndex:4];
+                ///         NSRange atSignRange = [matchResult rangeAtIndex:2];
+                ///         NSRange screenNameRange = [matchResult rangeAtIndex:3];
+                ///         NSRange listNameRange = [matchResult rangeAtIndex:4];
                 let atSignRange = result.range(at: 2)
                 let screenNameRange = result.range(at: 3)
                 let listNameRange = result.range(at: 4)
-        ///         if (listNameRange.location == NSNotFound) {
-        ///             TwitterTextEntity *entity = [TwitterTextEntity entityWithType:TwitterTextEntityScreenName range:NSMakeRange(atSignRange.location, NSMaxRange(screenNameRange) - atSignRange.location)];
-        ///             [results addObject:entity];
-        ///         } else {
-        ///             TwitterTextEntity *entity = [TwitterTextEntity entityWithType:TwitterTextEntityListName range:NSMakeRange(atSignRange.location, NSMaxRange(listNameRange) - atSignRange.location)];
-        ///             [results addObject:entity];
-        ///         }
+                ///         if (listNameRange.location == NSNotFound) {
+                ///             TwitterTextEntity *entity = [TwitterTextEntity entityWithType:TwitterTextEntityScreenName range:NSMakeRange(atSignRange.location, NSMaxRange(screenNameRange) - atSignRange.location)];
+                ///             [results addObject:entity];
+                ///         } else {
+                ///             TwitterTextEntity *entity = [TwitterTextEntity entityWithType:TwitterTextEntityListName range:NSMakeRange(atSignRange.location, NSMaxRange(listNameRange) - atSignRange.location)];
+                ///             [results addObject:entity];
+                ///         }
                 if listNameRange.location == NSNotFound {
                     let entity = TwitterTextEntity(withType: .TwitterTextEntityScreenName, range: NSMakeRange(atSignRange.location, NSMaxRange(screenNameRange) - atSignRange.location))
                     results.append(entity)
@@ -435,17 +435,17 @@ public class TwitterText {
                     let entity = TwitterTextEntity(withType: .TwitterTextEntityListName, range: NSMakeRange(atSignRange.location, NSMaxRange(listNameRange) - atSignRange.location))
                     results.append(entity)
                 }
-        ///     } else {
-        ///         // Avoid matching the second username in @username@username
-        ///         end++;
-        ///     }
+                ///     } else {
+                ///         // Avoid matching the second username in @username@username
+                ///         end++;
+                ///     }
             } else {
                 end += 1
             }
 
-        ///     position = end;
+            ///     position = end;
             position = end
-        /// }
+            /// }
         }
 
         /// return results;
@@ -464,7 +464,7 @@ public class TwitterText {
         let len = text.count
 
         /// NSTextCheckingResult *matchResult = [[self validReplyRegexp] firstMatchInString:text options:(NSMatchingWithoutAnchoringBounds | NSMatchingAnchored) range:NSMakeRange(0, len)];
-        let matchResult = self.validReplyRegexp(firstMatchInString: text, options: .withoutAnchoringBounds, range: NSMakeRange(0, len))
+        let matchResult = self.validReplyRegexp.firstMatch(in: text, options: .withoutAnchoringBounds, range: NSMakeRange(0, len))
         /// if (!matchResult || matchResult.numberOfRanges < 2) {
         ///     return nil;
         /// }
@@ -478,14 +478,14 @@ public class TwitterText {
         let replyEnd = NSMaxRange(replyRange)
 
         /// NSRange endMentionRange = [[self endMentionRegexp] rangeOfFirstMatchInString:text options:0 range:NSMakeRange(replyEnd, len - replyEnd)];
-        let endMentionRange = self.endMentionRegexp(rangeOfFirstMatchInString: text, options: 0, range: NSMakeRange(replyEnd, len - replyEnd))
+        let endMentionRange = self.endMentionRegexp.rangeOfFirstMatch(in: text, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(replyEnd, len - replyEnd))
         /// if (endMentionRange.location != NSNotFound) {
         ///     return nil;
         /// }
         if endMentionRange.location != NSNotFound {
             return nil
         }
-///
+        ///
         /// return [TwitterTextEntity entityWithType:TwitterTextEntityScreenName range:replyRange];
         return TwitterTextEntity(withType: .TwitterTextEntityScreenName, range: replyRange)
     }
@@ -518,7 +518,7 @@ public class TwitterText {
     public static func tweetLength(text: String, transformedURLLength: Int) -> Int {
         /// // Use Unicode Normalization Form Canonical Composition to calculate tweet text length
         /// text = [text precomposedStringWithCanonicalMapping];
-///
+        let text = text.precomposedStringWithCanonicalMapping
         /// if (!text.length) {
         ///     return 0;
         /// }
@@ -544,7 +544,10 @@ public class TwitterText {
             let entity = urlEntity
             let urlRange = entity.range
             urlLengthOffset += transformedURLLength
-            string.removeSubrange(urlRange)
+
+            let mutableString = NSMutableString(string: string)
+            mutableString.deleteCharacters(in: urlRange)
+            string = String(mutableString)
         }
 
         /// NSUInteger len = string.length;
@@ -555,36 +558,37 @@ public class TwitterText {
         /// // Adjust count for surrogate pair characters
         /// if (len > 0) {
         if len > 0 {
-        ///     UniChar buffer[len];
-            var buffer: Int
+            ///     UniChar buffer[len];
+            var buffer: [UniChar] = Array.init(repeating: UniChar(), count: len)
 
-        ///     [string getCharacters:buffer range:NSMakeRange(0, len)];
-            string.get(characters: buffer, range: NSMakeRange(0, len))
+            ///     [string getCharacters:buffer range:NSMakeRange(0, len)];
+            let mutableString = NSMutableString(string: string)
+            mutableString.getCharacters(&buffer, range: NSMakeRange(0, len))
 
-        ///     for (NSUInteger i = 0; i < len; i++) {
+            ///     for (NSUInteger i = 0; i < len; i++) {
             for index in 0..<len {
-        ///         UniChar c = buffer[i];
-                let c = buffer(atIndex: index)
-        ///         if (CFStringIsSurrogateHighCharacter(c)) {
+                /// UniChar c = buffer[i];
+                let c = buffer[index]
+                /// if (CFStringIsSurrogateHighCharacter(c)) {
                 if CFStringIsSurrogateHighCharacter(c) {
-        ///             if (i + 1 < len) {
+                    ///             if (i + 1 < len) {
                     if index + 1 < len {
-        ///                 UniChar d = buffer[i + 1];
+                        ///                 UniChar d = buffer[i + 1];
                         let d = buffer[index + 1]
-        ///                 if (CFStringIsSurrogateLowCharacter(d)) {
+                        ///                 if (CFStringIsSurrogateLowCharacter(d)) {
                         if CFStringIsSurrogateHighCharacter(d) {
-        ///                     charCount--;
+                            ///                     charCount--;
                             charCount -= 1
-        ///                     i++;
-        ///                 }
+                            ///                     i++;
+                            ///                 }
                         }
-        ///             }
+                        ///             }
                     }
-        ///         }
+                    ///         }
                 }
-        ///     }
+                ///     }
             }
-        /// }
+            /// }
         }
 
         /// return (NSInteger)charCount;
@@ -758,7 +762,7 @@ public class TwitterText {
     /// return regexp;
     /// }
     private static let validTCOURLRegexp = try! NSRegularExpression(pattern: TwitterTextRegexp.TWUValidTCOURL, options: .caseInsensitive)
-///
+    ///
     /// + (NSRegularExpression *)validHashtagRegexp
     /// {
     /// static NSRegularExpression *regexp;
@@ -861,48 +865,47 @@ public class TwitterText {
 
         /// NSError *error;
         do {
-        /// NSInteger originalHostLength = [host length];
+            /// NSInteger originalHostLength = [host length];
             let originalHostLength = host?.count
-///
-        /// NSURL *url = [NSURL URLWithUnicodeString:host error:&error];
-            let url = try URLWith
-        /// if (error) {
-        ///     if (error.code == IFUnicodeURLConvertErrorInvalidDNSLength) {
-        ///         // If the error is specifically IFUnicodeURLConvertErrorInvalidDNSLength,
-        ///         // just return a false result. NSURL will happily create a URL for a host
-        ///         // with labels > 63 characters (radar 35802213).
-        ///         return NO;
-        ///     } else {
-        ///         // Attempt to create a NSURL object. We may have received an error from
-        ///         // URLWithUnicodeString above because the input is not valid for punycode
-        ///         // conversion (example: non-LDH characters are invalid and will trigger
-        ///         // an error with code == IFUnicodeURLConvertErrorSTD3NonLDH but may be
-        ///         // allowed normally per RFC 1035.
-        ///         url = [NSURL URLWithString:host];
-        ///     }
-        /// }
-///
-        /// if (!url) {
-        ///     return NO;
-        /// }
-///
-        /// // Should be encoded if necessary.
-        /// host = url.absoluteString;
-///
-        /// NSInteger updatedHostLength = [host length];
-        /// if (updatedHostLength == 0) {
-        ///     return NO;
-        /// } else if (updatedHostLength > originalHostLength) {
-        ///     urlLength += (updatedHostLength - originalHostLength);
-        /// }
-///
-        /// // Because the backend always adds https:// if we're missing a protocol, add this length
-        /// // back in when checking vs. our maximum allowed length of a URL, if necessary.
-        /// NSInteger urlLengthWithProtocol = urlLength;
-        /// if (!protocol) {
-        ///     urlLengthWithProtocol += kURLProtocolLength;
-        /// }
-        /// return urlLengthWithProtocol <= kMaxURLLength;
+            ///
+            /// NSURL *url = [NSURL URLWithUnicodeString:host error:&error];
+            /// if (error) {
+            ///     if (error.code == IFUnicodeURLConvertErrorInvalidDNSLength) {
+            ///         // If the error is specifically IFUnicodeURLConvertErrorInvalidDNSLength,
+            ///         // just return a false result. NSURL will happily create a URL for a host
+            ///         // with labels > 63 characters (radar 35802213).
+            ///         return NO;
+            ///     } else {
+            ///         // Attempt to create a NSURL object. We may have received an error from
+            ///         // URLWithUnicodeString above because the input is not valid for punycode
+            ///         // conversion (example: non-LDH characters are invalid and will trigger
+            ///         // an error with code == IFUnicodeURLConvertErrorSTD3NonLDH but may be
+            ///         // allowed normally per RFC 1035.
+            ///         url = [NSURL URLWithString:host];
+            ///     }
+            /// }
+            ///
+            /// if (!url) {
+            ///     return NO;
+            /// }
+            ///
+            /// // Should be encoded if necessary.
+            /// host = url.absoluteString;
+            ///
+            /// NSInteger updatedHostLength = [host length];
+            /// if (updatedHostLength == 0) {
+            ///     return NO;
+            /// } else if (updatedHostLength > originalHostLength) {
+            ///     urlLength += (updatedHostLength - originalHostLength);
+            /// }
+            ///
+            /// // Because the backend always adds https:// if we're missing a protocol, add this length
+            /// // back in when checking vs. our maximum allowed length of a URL, if necessary.
+            /// NSInteger urlLengthWithProtocol = urlLength;
+            /// if (!protocol) {
+            ///     urlLengthWithProtocol += kURLProtocolLength;
+            /// }
+            /// return urlLengthWithProtocol <= kMaxURLLength;
         } catch let error {
             print(error)
         }
