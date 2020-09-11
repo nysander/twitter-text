@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum TwitterTextRegex {
+enum TwitterTextRegexp {
     /// #define TWUControlCharacters        @"\\u0009-\\u000D"
     static let TWUControlCharacters         = "\\u0009-\\u000D"
     /// #define TWUSpace                    @"\\u0020"

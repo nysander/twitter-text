@@ -1,0 +1,5 @@
+module IFUnicodeURL {
+  header "IFUnicodeURL/IFUnicodeURL.h"
+  link "IFUnicodeURL"
+  export *
+}
