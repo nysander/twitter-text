@@ -2,6 +2,12 @@ import Foundation
 
 /// @interface TwitterText : NSObject
 public class TwitterText {
+    static let kMaxURLLength = 4096;
+    static let kMaxTCOSlugLength = 40;
+    static let kMaxTweetLengthLegacy = 140;
+    static let kTransformedURLLength = 23;
+    static let kPermillageScaleFactor = 1000;
+
     /// + (NSArray<TwitterTextEntity *> *)entitiesInText:(NSString *)text;
     public static func entities(inText text: String) -> [TwitterTextEntity] {
         /// if (!text.length) {
@@ -53,7 +59,7 @@ public class TwitterText {
             let entityRange = entity.range
             var found = false
             for existingEntity in results {
-                if existingEntity.range, !entityRange.isEmpty {
+                if NSIntersectionRange(existingEntity.range, entityRange).length > 0 {
                     found = true
                     break
                 }
@@ -216,7 +222,7 @@ public class TwitterText {
             ///     }
             /// }
             for urlEntity in urlEntities {
-                if urlEntity.range, hashtagRange.count > 0 {
+                if NSIntersectionRange(urlEntity.range, hashtagRange).length > 0 {
                     matchOk = false
                     break
                 }
@@ -476,7 +482,7 @@ public class TwitterText {
         /// if (endMentionRange.location != NSNotFound) {
         ///     return nil;
         /// }
-        if endMentionRange.location not found {
+        if endMentionRange.location != NSNotFound {
             return nil
         }
 ///
@@ -534,8 +540,8 @@ public class TwitterText {
         ///     urlLengthOffset += transformedURLLength;
         ///     [string deleteCharactersInRange:urlRange];
         /// }
-        for index in urlEntities.enumerated().reversed() {
-            let entity = urlEntities(atIndex: index)
+        for (index, urlEntity) in urlEntities.enumerated().reversed() {
+            let entity = urlEntity
             let urlRange = entity.range
             urlLengthOffset += transformedURLLength
             string.removeSubrange(urlRange)
@@ -553,7 +559,7 @@ public class TwitterText {
             var buffer: Int
 
         ///     [string getCharacters:buffer range:NSMakeRange(0, len)];
-            string.get(characters: buffer, range: 0...len)
+            string.get(characters: buffer, range: NSMakeRange(0, len))
 
         ///     for (NSUInteger i = 0; i < len; i++) {
             for index in 0..<len {
@@ -695,4 +701,186 @@ public class TwitterText {
         /// });
         /// });
     }
+
+    // MARK: - Private Methods
+
+    /// + (NSRegularExpression *)validGTLDRegexp
+    /// {
+    /// static NSRegularExpression *regexp;
+    /// static dispatch_once_t onceToken;
+    /// dispatch_once(&onceToken, ^{
+    /// regexp = [[NSRegularExpression alloc] initWithPattern:TWUValidGTLD options:NSRegularExpressionCaseInsensitive error:NULL];
+    /// });
+    /// return regexp;
+    /// }
+///
+    /// + (NSRegularExpression *)validURLRegexp
+    /// {
+    /// static NSRegularExpression *regexp;
+    /// static dispatch_once_t onceToken;
+    /// dispatch_once(&onceToken, ^{
+    /// regexp = [[NSRegularExpression alloc] initWithPattern:TWUValidURLPatternString options:NSRegularExpressionCaseInsensitive error:NULL];
+    /// });
+    /// return regexp;
+    /// }
+///
+    /// + (NSRegularExpression *)validDomainRegexp
+    /// {
+    /// static NSRegularExpression *regexp;
+    /// static dispatch_once_t onceToken;
+    /// dispatch_once(&onceToken, ^{
+    /// regexp = [[NSRegularExpression alloc] initWithPattern:TWUValidDomain options:NSRegularExpressionCaseInsensitive error:NULL];
+    /// });
+    /// return regexp;
+    /// }
+///
+    /// + (NSRegularExpression *)invalidCharacterRegexp
+    /// {
+    /// static NSRegularExpression *regexp;
+    /// static dispatch_once_t onceToken;
+    /// dispatch_once(&onceToken, ^{
+    /// regexp = [[NSRegularExpression alloc] initWithPattern:TWUInvalidCharactersPattern options:NSRegularExpressionCaseInsensitive error:NULL];
+    /// });
+    /// return regexp;
+    /// }
+    static let invalidCharacterRegexp = try! NSRegularExpression(pattern: TwitterTextRegex.TWUInvalidCharactersPattern, options: .caseInsensitive)
+///
+    /// + (NSRegularExpression *)validTCOURLRegexp
+    /// {
+    /// static NSRegularExpression *regexp;
+    /// static dispatch_once_t onceToken;
+    /// dispatch_once(&onceToken, ^{
+    /// regexp = [[NSRegularExpression alloc] initWithPattern:TWUValidTCOURL options:NSRegularExpressionCaseInsensitive error:NULL];
+    /// });
+    /// return regexp;
+    /// }
+///
+    /// + (NSRegularExpression *)validHashtagRegexp
+    /// {
+    /// static NSRegularExpression *regexp;
+    /// static dispatch_once_t onceToken;
+    /// dispatch_once(&onceToken, ^{
+    /// regexp = [[NSRegularExpression alloc] initWithPattern:TWUValidHashtag options:NSRegularExpressionCaseInsensitive error:NULL];
+    /// });
+    /// return regexp;
+    /// }
+///
+    /// + (NSRegularExpression *)endHashtagRegexp
+    /// {
+    /// static NSRegularExpression *regexp;
+    /// static dispatch_once_t onceToken;
+    /// dispatch_once(&onceToken, ^{
+    /// regexp = [[NSRegularExpression alloc] initWithPattern:TWUEndHashTagMatch options:NSRegularExpressionCaseInsensitive error:NULL];
+    /// });
+    /// return regexp;
+    /// }
+///
+    /// + (NSRegularExpression *)validSymbolRegexp
+    /// {
+    /// static NSRegularExpression *regexp;
+    /// static dispatch_once_t onceToken;
+    /// dispatch_once(&onceToken, ^{
+    /// regexp = [[NSRegularExpression alloc] initWithPattern:TWUValidSymbol options:NSRegularExpressionCaseInsensitive error:NULL];
+    /// });
+    /// return regexp;
+    /// }
+///
+    /// + (NSRegularExpression *)validMentionOrListRegexp
+    /// {
+    /// static NSRegularExpression *regexp;
+    /// static dispatch_once_t onceToken;
+    /// dispatch_once(&onceToken, ^{
+    /// regexp = [[NSRegularExpression alloc] initWithPattern:TWUValidMentionOrList options:NSRegularExpressionCaseInsensitive error:NULL];
+    /// });
+    /// return regexp;
+    /// }
+///
+    /// + (NSRegularExpression *)validReplyRegexp
+    /// {
+    /// static NSRegularExpression *regexp;
+    /// static dispatch_once_t onceToken;
+    /// dispatch_once(&onceToken, ^{
+    /// regexp = [[NSRegularExpression alloc] initWithPattern:TWUValidReply options:NSRegularExpressionCaseInsensitive error:NULL];
+    /// });
+    /// return regexp;
+    /// }
+///
+    /// + (NSRegularExpression *)endMentionRegexp
+    /// {
+    /// static NSRegularExpression *regexp;
+    /// static dispatch_once_t onceToken;
+    /// dispatch_once(&onceToken, ^{
+    /// regexp = [[NSRegularExpression alloc] initWithPattern:TWUEndMentionMatch options:NSRegularExpressionCaseInsensitive error:NULL];
+    /// });
+    /// return regexp;
+    /// }
+///
+    /// + (NSCharacterSet *)invalidURLWithoutProtocolPrecedingCharSet
+    /// {
+    /// static NSCharacterSet *charset;
+    /// static dispatch_once_t onceToken;
+    /// dispatch_once(&onceToken, ^{
+    /// charset = [NSCharacterSet characterSetWithCharactersInString:@"-_./"];
+    /// });
+    /// return charset;
+    /// }
+///
+    /// + (NSRegularExpression *)validDomainSucceedingCharRegexp
+    /// {
+    /// static NSRegularExpression *regexp;
+    /// static dispatch_once_t onceToken;
+    /// dispatch_once(&onceToken, ^{
+    /// regexp = [[NSRegularExpression alloc] initWithPattern:TWUEndMentionMatch options:NSRegularExpressionCaseInsensitive error:NULL];
+    /// });
+    /// return regexp;
+    /// }
+///
+    /// + (BOOL)isValidHostAndLength:(NSUInteger)urlLength protocol:(NSString *)protocol host:(NSString *)host
+    /// {
+    /// if (!host) {
+    /// return NO;
+    /// }
+///
+    /// NSError *error;
+    /// NSInteger originalHostLength = [host length];
+///
+    /// NSURL *url = [NSURL URLWithUnicodeString:host error:&error];
+    /// if (error) {
+    /// if (error.code == IFUnicodeURLConvertErrorInvalidDNSLength) {
+    /// // If the error is specifically IFUnicodeURLConvertErrorInvalidDNSLength,
+    /// // just return a false result. NSURL will happily create a URL for a host
+    /// // with labels > 63 characters (radar 35802213).
+    /// return NO;
+    /// } else {
+    /// // Attempt to create a NSURL object. We may have received an error from
+    /// // URLWithUnicodeString above because the input is not valid for punycode
+    /// // conversion (example: non-LDH characters are invalid and will trigger
+    /// // an error with code == IFUnicodeURLConvertErrorSTD3NonLDH but may be
+    /// // allowed normally per RFC 1035.
+    /// url = [NSURL URLWithString:host];
+    /// }
+    /// }
+///
+    /// if (!url) {
+    /// return NO;
+    /// }
+///
+    /// // Should be encoded if necessary.
+    /// host = url.absoluteString;
+///
+    /// NSInteger updatedHostLength = [host length];
+    /// if (updatedHostLength == 0) {
+    /// return NO;
+    /// } else if (updatedHostLength > originalHostLength) {
+    /// urlLength += (updatedHostLength - originalHostLength);
+    /// }
+///
+    /// // Because the backend always adds https:// if we're missing a protocol, add this length
+    /// // back in when checking vs. our maximum allowed length of a URL, if necessary.
+    /// NSInteger urlLengthWithProtocol = urlLength;
+    /// if (!protocol) {
+    /// urlLengthWithProtocol += kURLProtocolLength;
+    /// }
+    /// return urlLengthWithProtocol <= kMaxURLLength;
+    /// }
 }

@@ -34,7 +34,7 @@ class TwitterTextConfiguration {
         /// self = [super init];
         /// if (self) {
         ///     NSError *jsonError = nil;
-        var jsonError: Error = nil
+        do {
         ///     NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
         var jsonData = try JSONEncoder().encode(jsonString)
         ///     NSDictionary *jsonDictionary = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&jsonError];
@@ -75,10 +75,13 @@ class TwitterTextConfiguration {
         self.ranges = ranges
         /// }
         /// return self;
+        } catch let error {
+            print(error)
+        }
     }
 
     /// + (instancetype)configurationFromJSONResource:(NSString *)jsonResource;
-    public static func configuration(fromJSONResource jsonResource: String) {
+    public static func configuration(fromJSONResource jsonResource: String) -> TwitterTextConfiguration? {
         /// NSError *error = nil;
 
         /// NSString *sourceFile = [[NSBundle bundleForClass:self] pathForResource:jsonResource ofType:@"json"];
@@ -86,15 +89,15 @@ class TwitterTextConfiguration {
         guard let sourceFile = Bundle().path(forResource: jsonResource, ofType: "json"),
               let url = URL(string: sourceFile),
               let jsonString = try? String(contentsOf: url, encoding: .utf8) else {
-            return
+            return nil
         }
         /// return !error ? [self configurationFromJSONString:jsonString] : nil;
-        self.configuration(fromJSONString: jsonString)
+        return self.configuration(fromJSONString: jsonString)
     }
 
     /// + (instancetype)configurationFromJSONString:(NSString *)jsonString
-    public static func configuration(fromJSONString jsonString: String) {
+    public static func configuration(fromJSONString jsonString: String) -> TwitterTextConfiguration {
         /// return [[TwitterTextConfiguration alloc] initWithJSONString:jsonString];
-        _ = TwitterTextConfiguration(jsonString: jsonString)
+        return TwitterTextConfiguration(jsonString: jsonString)
     }
 }

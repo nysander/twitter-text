@@ -23,5 +23,5 @@ public enum TwitterTextEntityType: Int {
     case TwitterTextEntityListName
     case TwitterTextEntitySymbol
     case TwitterTextEntityTweetChar
-    case TwitterTextEntityTweetEmojiCha
+    case TwitterTextEntityTweetEmojiChar
 }

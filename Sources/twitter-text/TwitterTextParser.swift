@@ -8,6 +8,33 @@
 import Foundation
 
 class TwitterTextParser {
+    static let kTwitterTextParserConfigurationClassic = "v1"
+    static let kTwitterTextParserConfigurationV2 = "v2"
+    static let kTwitterTextParserConfigurationV3 = "v3"
+
+    /// + (instancetype)defaultParser NS_SWIFT_NAME(defaultParser());
+    /// dispatch_sync([self _queue], ^{
+    ///     @autoreleasepool {
+    ///         if (!sDefaultParser) {
+    ///             TwitterTextConfiguration *configuration = [TwitterTextConfiguration configurationFromJSONResource:kTwitterTextParserConfigurationV3];
+    ///             sDefaultParser = [[TwitterTextParser alloc] initWithConfiguration:configuration];
+    ///         }
+    ///     }
+    /// });
+    /// return sDefaultParser;
+    /// }
+
+    /// + (void)setDefaultParserWithConfiguration:(TwitterTextConfiguration *)configuration {
+    /// dispatch_async([self _queue], ^{
+    ///     @autoreleasepool {
+    ///         sDefaultParser = [[TwitterTextParser alloc] initWithConfiguration:configuration];
+    ///     }
+    /// });
+    static var sDefaultParser: TwitterTextParser {
+        let configuration = TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!
+        return TwitterTextParser(withConfiguration: configuration)
+    }
+
     /// @property (nonatomic, readonly) TwitterTextConfiguration *configuration;
     let configuration: TwitterTextConfiguration
 
@@ -20,39 +47,6 @@ class TwitterTextParser {
         /// });
         /// return sQueue;
         return DispatchQueue(label: "twitterText")
-    }
-
-    /// + (instancetype)defaultParser NS_SWIFT_NAME(defaultParser());
-    static var defaultParser: TwitterTextParser {
-        /// dispatch_sync([self _queue], ^{
-        ///     @autoreleasepool {
-        ///         if (!sDefaultParser) {
-        ///             TwitterTextConfiguration *configuration = [TwitterTextConfiguration configurationFromJSONResource:kTwitterTextParserConfigurationV3];
-        ///             sDefaultParser = [[TwitterTextParser alloc] initWithConfiguration:configuration];
-        ///         }
-        ///     }
-        /// });
-        /// return sDefaultParser;
-        let sDefaultParser: TwitterTextParser
-        queue.sync {
-            if !sDefaultParser {
-                let configuration = TwitterTextConfiguration.configuration(fromJSONResource: kTwitterTextParserConfigurationV3)
-                sDefaultParser = self.init(withConfiguration: configuration)
-            }
-        }
-        return sDefaultParser
-    }
-
-    /// + (void)setDefaultParserWithConfiguration:(TwitterTextConfiguration *)configuration;
-    static func setDefaultParser(withConfiguration configuration: TwitterTextConfiguration) {
-        /// dispatch_async([self _queue], ^{
-        ///     @autoreleasepool {
-        ///         sDefaultParser = [[TwitterTextParser alloc] initWithConfiguration:configuration];
-        ///     }
-        /// });
-        queue.async {
-            sDefaultParser = TwitterTextParser(withConfiguration: configuration)
-        }
     }
 
     /// - (instancetype)initWithConfiguration:(TwitterTextConfiguration *)configuration;
@@ -99,8 +93,9 @@ class TwitterTextParser {
         /// // Build an map of ranges, assuming the original character count does not change after normalization
         /// const NSUInteger textLength = text.length;
         let textLength = text.count
+// FIXME !!!
         /// NSRange textRanges[textLength], *ptr = textRanges;
-        var textRanges: [Int]
+        var textRanges: [NSRange]
         /// for (NSUInteger i = 0; i < textLength; i++) {
         ///     textRanges[i] = rangeNotFound;
         /// }
@@ -108,7 +103,7 @@ class TwitterTextParser {
             textRanges[i] = rangeNotFound
         }
         /// [self _tt_lengthOfText:text range:NSMakeRange(0, text.length) countingBlock:^NSInteger(NSInteger index, NSString *blockText, TwitterTextEntity *entity, NSString *substring) {
-        self.tt_length(ofText: text, range: NSMakeRange(0, text.count)) { index, blockText, entity, subscring -> Int in
+        let block = self.tt_length(ofText: text, range: NSMakeRange(0, text.count)) { index, blockText, entity, subscring -> Int in
         /// // entity.range.length can be > 1 for emoji, decomposed characters, etc.
         ///     for (NSInteger i = 0; i < entity.range.length; i++) {
                 for i in 0..<entity.range.count {
@@ -141,7 +136,7 @@ class TwitterTextParser {
         /// __block NSInteger offset = 0;
         var offset = 0
         /// [self _tt_lengthOfText:normalizedText range:NSMakeRange(0, normalizedTextLength) countingBlock:^NSInteger(NSInteger composedCharIndex, NSString *blockText, TwitterTextEntity *entity, NSString *substring) {
-        self.tt_length(ofText: normalizedText, range: NSMakeRange(0, normalizedTextLength)) { composedCharIndex, blockText, entity, subscring -> Int in
+        let countingBlock = self.tt_length(ofText: normalizedText, range: NSMakeRange(0, normalizedTextLength)) { composedCharIndex, blockText, entity, subscring -> Int in
         /// // map index of each composed char back to its pre-normalized index.
         ///     if (composedCharIndex+offset < textLength) {
             if composedCharIndex + offset < textLength {
@@ -174,22 +169,39 @@ class TwitterTextParser {
         let urlEntities = TwitterText.URLs(inText: normalizedText)
 
         /// __block BOOL isValid = YES;
+        var isValid = true
         /// __block NSInteger weightedLength = 0;
+        var weightedLength = 0
         /// __block NSInteger validStartIndex = NSNotFound, validEndIndex = NSNotFound;
+        var validStartIndex = NSNotFound
+        var validEndIndex = NSNotFound
         /// __block NSInteger displayStartIndex = NSNotFound, displayEndIndex = NSNotFound;
+        var displayStartIndex = NSNotFound
+        var displayEndIndex = NSNotFound
+
         /// TextUnitCounterBlock textUnitCountingBlock = ^NSInteger(NSInteger previousLength, NSString *blockText, TwitterTextEntity *entity, NSString *substring) {
+        let textUnitCountingBlock: (_ previousLength: Int, _ blockText: String, _ entity: TwitterTextEntity, _ substring: String) -> Int = { previousLength, blockText, entity, substring in
         ///     NSRange range = entity.range;
+            let range = entity.range
         ///     NSInteger updatedLength = previousLength;
+            var updatedLength = previousLength
         ///     switch (entity.type) {
+            switch entity.type {
         ///         case TwitterTextEntityURL:
         ///             updatedLength = previousLength + (self->_configuration.transformedURLLength * self->_configuration.scale);
         ///             break;
+                case .TwitterTextEntityURL:
+                    updatedLength = previousLength + self.configuration.transformedURLLength * self.configuration.scale
         ///         case TwitterTextEntityTweetEmojiChar:
         ///             updatedLength = previousLength + self.configuration.defaultWeight;
         ///             break;
+                case .TwitterTextEntityTweetEmojiChar:
+                    updatedLength = previousLength + self.configuration.defaultWeight
         ///         case TwitterTextEntityTweetChar:
         ///             updatedLength = previousLength + [self _tt_lengthOfWeightedChar:substring];
         ///             break;
+                case .TwitterTextEntityTweetChar:
+                    updatedLength = previousLength + self.tt_length(ofWeightedChar: substring)
         ///         case TwitterTextEntityScreenName:
         ///         case TwitterTextEntityHashtag:
         ///         case TwitterTextEntityListName:
@@ -197,17 +209,29 @@ class TwitterTextParser {
         ///             // Do nothing for these entity types.
         ///             break;
         ///     }
+            }
         ///     if (validStartIndex == NSNotFound) {
         ///         validStartIndex = range.location;
         ///     }
+            if validStartIndex == NSNotFound {
+                validStartIndex = range.location
+            }
         ///     if (displayStartIndex == NSNotFound) {
         ///         displayStartIndex = range.location;
         ///     }
+            if displayStartIndex == NSNotFound {
+                displayStartIndex = range.location
+            }
         ///     if (range.length > 0) {
         ///         displayEndIndex = NSMaxRange(range) - 1;
         ///     }
+            if range.length > 0 {
+                displayEndIndex = NSMaxRange(range) - 1
+            }
         ///     if (range.location + range.length <= blockText.length) {
+            if range.location + range.length <= blockText.count {
         ///         NSTextCheckingResult *invalidResult = [[TwitterText invalidCharacterRegexp] firstMatchInString:blockText options:0 range:range];
+                let invalidResult = TwitterText.invalidCharacterRegexp.firstMatch(in: blockText, options: .init(rawValue: 0), range: range)
         ///         if (invalidResult) {
         ///             isValid = NO;
         ///         } else if (isValid && (updatedLength + weightedLength <= self.maxWeightedTweetLength * self->_configuration.scale)) {
@@ -215,13 +239,26 @@ class TwitterTextParser {
         ///         } else {
         ///             isValid = NO;
         ///         }
+                if invalidResult != nil {
+                    isValid = false
+                } else if isValid && (updatedLength + weightedLength <= self.maxWeightedTweetLength() * self.configuration.scale) {
+                    validEndIndex = (range.length > 0) ? NSMaxRange(range) - 1 : range.location
+                } else {
+                    isValid = false
+                }
         ///     } else {
         ///         NSAssert(NO, @"range (%@) outside bounds of blockText.length (%lu) for blockText \"%@\"", NSStringFromRange(range), (unsigned long)blockText.length, blockText);
         ///         isValid = NO;
         ///     }
+            } else {
+                isValid = false
+                assert(false, "range (\(NSStringFromRange(range))) outside of bounds of blockText.count (\(blockText.count) for blockText \"\(blockText)\"")
+            }
         ///     return updatedLength;
+            return updatedLength
         /// };
-///
+        }
+
         /// NSInteger textIndex = 0;
         var textIndex = 0
         /// for (TwitterTextEntity *urlEntity in urlEntities) {
@@ -230,45 +267,65 @@ class TwitterTextParser {
         ///         weightedLength += [self _tt_lengthOfText:normalizedText range:NSMakeRange(textIndex, urlEntity.range.location - textIndex) countingBlock:textUnitCountingBlock];
         ///     }
             if textIndex < urlEntity.range.location {
-                weightedLength += self.tt_length(ofText: normalizedText, range: NSMakeRange(textIndex, urlEntity.range.location - textIndex), countingBlock: )
+                weightedLength += self.tt_length(ofText: normalizedText, range: NSMakeRange(textIndex, urlEntity.range.location - textIndex), countingBlock: textUnitCountingBlock)
             }
         ///     weightedLength += textUnitCountingBlock(0, normalizedText, urlEntity, [normalizedText substringWithRange:urlEntity.range]);
-            weightedLength += textUnitCountingBlock(0, normalizedText, urlEntity, normalizedText.substring(with: urlEntity.range))
-///
+            weightedLength += textUnitCountingBlock(0, normalizedText, urlEntity, normalizedText.substring(with: (urlEntity.range))
+
         ///     textIndex = urlEntity.range.location + urlEntity.range.length;
             textIndex = urlEntity.range.location + urlEntity.range.length
         /// }
         }
-///
+
         /// // handle trailing text
         /// weightedLength += [self _tt_lengthOfText:normalizedText range:NSMakeRange(textIndex, normalizedTextLength - textIndex) countingBlock:textUnitCountingBlock];
         weightedLength += self.tt_length(ofText: normalizedText, range: NSMakeRange(textIndex, normalizedTextLength - textLength), countingBlock: textUnitCountingBlock)
-///
+
         /// NSAssert(!NSEqualRanges(normalizedRanges[displayStartIndex], rangeNotFound), @"displayStartIndex should map to existing index in original string");
+        assert(!NSEqualRanges(normalizedRanges[displayStartIndex], rangeNotFound), "displayStartIndex should map to existing index in original string")
         /// NSAssert(!NSEqualRanges(normalizedRanges[displayEndIndex], rangeNotFound), @"displayEndIndex should map to existing index in original string");
+        assert(!NSEqualRanges(normalizedRanges[displayEndIndex], rangeNotFound), "displayEndIndex should map to existing index in original string")
         /// NSAssert(!NSEqualRanges(normalizedRanges[validStartIndex], rangeNotFound), @"validStartIndex should map to existing index in original string");
+        assert(!NSEqualRanges(normalizedRanges[validStartIndex], rangeNotFound), "validStartIndex should map to existing index in original string")
         /// NSAssert(!NSEqualRanges(normalizedRanges[validEndIndex], rangeNotFound), @"validEndIndex should map to existing index in original string");
-///
+        assert(!NSEqualRanges(normalizedRanges[validEndIndex], rangeNotFound), "validEndIndex should map to existing index in original string")
+
         /// if (displayStartIndex == NSNotFound) {
         ///     displayStartIndex = 0;
         /// }
+        if displayStartIndex == NSNotFound {
+            displayStartIndex = 0
+        }
         /// if (displayEndIndex == NSNotFound) {
         ///     displayEndIndex = 0;
         /// }
+        if displayEndIndex == NSNotFound {
+            displayEndIndex = 0
+        }
         /// if (validStartIndex == NSNotFound) {
         ///     validStartIndex = 0;
         /// }
+        if validStartIndex == NSNotFound {
+            validStartIndex = 0
+        }
         /// if (validEndIndex == NSNotFound) {
         ///     validEndIndex = 0;
         /// }
-///
+        if validEndIndex == NSNotFound {
+            validEndIndex = 0
+        }
+
         /// NSRange displayRange = NSMakeRange(normalizedRanges[displayStartIndex].location, NSMaxRange(normalizedRanges[displayEndIndex]) - normalizedRanges[displayStartIndex].location);
+        let displayRange = NSMakeRange(normalizedRanges[displayStartIndex].location, NSMaxRange(normalizedRanges[displayEndIndex]) - normalizedRanges[displayStartIndex].location)
         /// NSRange validRange = NSMakeRange(normalizedRanges[validStartIndex].location, NSMaxRange(normalizedRanges[validEndIndex]) - normalizedRanges[validStartIndex].location);
-///
+        let validRange = NSMakeRange(normalizedRanges[validStartIndex].location, NSMaxRange(normalizedRanges[validEndIndex]) - normalizedRanges[validStartIndex].location)
+
         /// NSInteger scaledWeightedLength = weightedLength / _configuration.scale;
+        let scaledWeightedLength = weightedLength / configuration.scale
         /// NSInteger permillage = (NSInteger)(kPermillageScaleFactor * (scaledWeightedLength / (float)[self maxWeightedTweetLength]));
+        let permillage = TwitterText.kPermillageScaleFactor * (scaledWeightedLength / self.maxWeightedTweetLength())
         /// return [[TwitterTextParseResults alloc] initWithWeightedLength:scaledWeightedLength permillage:permillage valid:isValid displayRange:displayRange validRange:validRange];
-        return TwitterTextParseResults()
+        return TwitterTextParseResults(weightedLength: weightedLength, permillage: permillage, valid: isValid, displayRange: displayRange, validRange: validRange)
     }
 
     /// - (NSInteger)maxWeightedTweetLength;
@@ -280,8 +337,9 @@ class TwitterTextParser {
     // MARK: - Private methods
 
     /// - (NSInteger)_tt_lengthOfText:(NSString *)text range:(NSRange)range countingBlock:(nonnull TextUnitCounterBlock)countingBlock
-    private func tt_length(ofText text: String, range: NSRange, countingBlock: TextUnitCounterBlock) -> Int {
+    private func tt_length(ofText text: String, range: NSRange, countingBlock: (Int) -> Int) -> Int {
     ///     __block NSInteger length = 0;
+        var length = 0
 ///
     ///     NSMutableArray *emojiRanges = [[NSMutableArray alloc] init];
     ///     if (self.configuration.isEmojiParsingEnabled) {
