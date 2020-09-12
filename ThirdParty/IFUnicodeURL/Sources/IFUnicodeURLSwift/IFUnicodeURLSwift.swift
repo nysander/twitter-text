@@ -304,7 +304,7 @@ struct IFUnicodeURLSwift {
 
         /// // Now that we have isolated just the hostname, do the magic decoding...
         /// hostname = ConvertUnicodeDomainString(hostname, toAscii, error);
-        hostname = ConvertUnicodeDomainString(hostname, toAscii)
+        hostname = ConvertUnicodeDomainString(hostname: hostname, toAscii: toAscii)
         /// if (!hostname) {
         ///     return nil;
         /// }
@@ -314,28 +314,42 @@ struct IFUnicodeURLSwift {
         /// // This will try to clean up the stuff after the hostname in the URL by making sure it's all encoded properly.
         /// // NSURL doesn't normally do anything like this, but I found it useful for my purposes to put it in here.
         /// NSString *afterHostname = [[urlParts objectAtIndex:4] stringByAppendingString:[urlParts objectAtIndex:2]];
+        let afterHostname = ""
         /// NSString *processedAfterHostname = [afterHostname stringByRemovingPercentEncoding] ?: afterHostname;
+        let processedAfterHostname = afterHostname.removingPercentEncoding ?? afterHostname
         /// static NSCharacterSet *sURLFragmentPlusHashtagPlusBracketsCharacterSet;
         /// static dispatch_once_t sConstructURLFragmentPlusHashtagPlusBracketsOnceToken;
         /// dispatch_once(&sConstructURLFragmentPlusHashtagPlusBracketsOnceToken, ^{
         /// NSMutableCharacterSet *URLFragmentPlusHashtagPlusBracketsMutableCharacterSet = [[NSCharacterSet URLFragmentAllowedCharacterSet] mutableCopy];
+        var URLFragmentPlusHashtagPlusBracketsCharacterSet: CharacterSet = .urlFragmentAllowed
         /// [URLFragmentPlusHashtagPlusBracketsMutableCharacterSet addCharactersInString:@"#[]"];
+        URLFragmentPlusHashtagPlusBracketsCharacterSet.formUnion(CharacterSet(charactersIn: "#[]"))
         /// sURLFragmentPlusHashtagPlusBracketsCharacterSet = [URLFragmentPlusHashtagPlusBracketsMutableCharacterSet copy];
         /// });
         /// NSString* finalAfterHostname = [processedAfterHostname stringByAddingPercentEncodingWithAllowedCharacters:sURLFragmentPlusHashtagPlusBracketsCharacterSet];
+        let finalAfterHostname = processedAfterHostname.addingPercentEncoding(withAllowedCharacters: URLFragmentPlusHashtagPlusBracketsCharacterSet)
 ///
         /// // Now recreate the URL safely with the new hostname (if it was successful) instead...
         /// NSArray *reconstructedArray = [NSArray arrayWithObjects:[urlParts objectAtIndex:0], [urlParts objectAtIndex:1], [urlParts objectAtIndex:3], hostname, finalAfterHostname, nil];
+        let reconstructedArray = [urlParts[0], urlParts[1], urlParts[3], hostname, finalAfterHostname ?? ""]
         /// NSString *reconstructedURLString = [reconstructedArray componentsJoinedByString:@""];
-///
+        let reconstructedURLString = reconstructedArray.joined(separator: "")
+
         /// if (reconstructedURLString.length == 0) {
         ///     return nil;
         /// }
+        if reconstructedURLString.count == 0 {
+            return nil
+        }
         /// if (![reconstructedURLString _IFUnicodeURL_isValidCharacterSequence]) {
         ///     // If reconstructedURLString contains invalid UTF-16 sequence,
         ///     // we treat it as an error.
         ///     return nil;
         /// }
+        if !reconstructedURLString.IFUnicodeURL_isValidCharacterSequence {
+            return nil
+        }
         /// return reconstructedURLString;
+        return reconstructedURLString
     }
 }
