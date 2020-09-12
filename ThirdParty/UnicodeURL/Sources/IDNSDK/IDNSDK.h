@@ -4,8 +4,8 @@
 //
 //#import "NSURL+IFUnicodeURL.h"
 
-#import "IDNSDK/toxxx.h"
-#import "IDNSDK/xcode.h"
+#import "toxxx.h"
+#import "xcode.h"
 
 @import Foundation;
 

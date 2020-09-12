@@ -1,8 +1,0 @@
-module IFUnicodeURL {
-    umbrella header "IFUnicodeURL.h"
-
-    export *
-    module * {
-        export *
-    }
-}

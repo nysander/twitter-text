@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import IFUnicodeURL
+import IDNSDK
 
 extension URL {
     /// + (NSURL *)URLWithUnicodeString:(NSString *)str
