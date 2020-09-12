@@ -10,49 +10,56 @@ import IDNSDK
 
 extension URL {
     /// + (NSURL *)URLWithUnicodeString:(NSString *)str
-    static func urlWithUnicodeString(str: String) {
+    static func urlWithUnicodeString(str: String) -> Self {
         /// return [self URLWithUnicodeString:str error:nil];
-        return self.urlWithUnicodeString(str)
+        return self.urlWithUnicodeString(str: str)
     }
 
     /// + (NSURL *)URLWithUnicodeString:(NSString *)str error:(NSError **)error
-    static func urlWithUnicodeString(str: String) -> URL? {
+    static func urlWithUnicodeString(str: String) -> Self? {
         /// return ([str length]) ? [[self alloc] initWithUnicodeString:str error:error] : nil;
-        str.count > 0 ? self.initWithUnicodeString(str) : nil
+        str.count > 0 ? self.init(urlWithUnicodeString: str) : nil
     }
 
     /// - (instancetype)initWithUnicodeString:(NSString *)str
-    init(urlWithUnicodeString str: String) {
+    init?(urlWithUnicodeString str: String) {
     /// return [self initWithUnicodeString:str error:nil];
-        return
+        self.init(str: str) 
     }
 
     /// - (instancetype)initWithUnicodeString:(NSString *)str error:(NSError **)error
-    init(str: String) {
+    init?(str: String) {
+//        var str = str
     /// str = ConvertUnicodeURLString(str, YES, error);
-        str = ConvertUnicodeURLString(str, true)
+        if let asciiStr = UnicodeURL.ConvertUnicodeURLString(str: str, toAscii: true) {
+            self.init(string: asciiStr)
+        }
+        return nil
     /// self = (str) ? [self initWithString:str] : nil;
-        self = str ? self.initWithString : nil
+//        self = str ? self.initWithString : nil
     /// return self;
-        return self
+//        return asciiStr != nil ? self.init(string: asciiStr) : nil
     }
 
     /// - (NSString *)unicodeAbsoluteString
-    var unicodeAbsoluteString: String {
+    var unicodeAbsoluteString: String? {
     /// return ConvertUnicodeURLString([self absoluteString], NO, nil);
-        return ConvertUnicodeURLString(self.absoluteString, false)
+        return UnicodeURL.ConvertUnicodeURLString(str: self.absoluteString, toAscii: false)
     }
 
     /// - (NSString *)unicodeHost
-    var unicodeHost: String {
+    var unicodeHost: String? {
     /// return ConvertUnicodeDomainString([self host], NO, nil);
-        return ConvertUnicodeURLString(self.host, false)
+        if let host = self.host {
+            return UnicodeURL.ConvertUnicodeURLString(str: host, toAscii: false)
+        }
+        return nil
     }
 
     /// + (NSString *)decodeUnicodeDomainString:(NSString*)domain
-    func decodeUnicodeDomain(from domain: String) -> String{
+    func decodeUnicodeDomain(from domain: String) -> String? {
     /// return ConvertUnicodeDomainString(domain, NO, nil);
-        return ConvertUnicodeURLString(domain, false)
+        return UnicodeURL.ConvertUnicodeURLString(str: domain, toAscii: false)
     }
 
 }
@@ -70,17 +77,19 @@ extension String {
         }
 ///
         /// unichar buffer[length];
+        var buffer = Array(repeating: Int8(), count: length)
         /// [self getCharacters:buffer range:NSMakeRange(0, length)];
+        _ = self.getCString(&buffer, maxLength: length, encoding: .utf8)
         
 ///
         /// BOOL pendingSurrogateHigh = NO;
         var pendingSurrogateHigh = false
         /// for (NSInteger index = 0; index < (NSInteger)length; index++) {
-        for i in 0..<length {
+        for index in 0..<length {
         ///     unichar c = buffer[index];
             let c = buffer[index]
         ///     if (CFStringIsSurrogateHighCharacter(c)) {
-            if CFStringIsSurrogateHighCharacter(c) {
+            if CFStringIsSurrogateHighCharacter(UniChar(c)) {
         ///         if (pendingSurrogateHigh) {
         ///             // Surrogate high after surrogate high
         ///             return NO;
@@ -94,7 +103,7 @@ extension String {
                         pendingSurrogateHigh = true
                     }
         ///     } else if (CFStringIsSurrogateLowCharacter(c)) {
-            } else if CFStringIsSurrogateLowCharacter(c) {
+            } else if CFStringIsSurrogateLowCharacter(UniChar(c)) {
         ///         if (pendingSurrogateHigh) {
         ///             pendingSurrogateHigh = NO;
         ///         } else {
@@ -184,31 +193,36 @@ extension String {
     }
 }
 
-struct IFUnicodeURLSwift {
+struct UnicodeURL {
     ///static NSString *ConvertUnicodeDomainString(NSString *hostname, BOOL toAscii, NSError **error)
     static func ConvertUnicodeDomainString(hostname: String, toAscii: Bool) -> String? {
-        var hostname: String? = hostname
         /// const UTF16CHAR *inputString = (const UTF16CHAR *)[hostname cStringUsingEncoding:NSUTF16StringEncoding];
-        let inputString = hostname?.cString(using: .utf8)
-        /// NSUInteger inputLength = [hostname lengthOfBytesUsingEncoding:NSUTF16StringEncoding] / sizeof(UTF16CHAR);
-        let inputLength = hostname?.lengthOfBytes(using: .utf8)
+        var inputString = (hostname.cString(using: .utf16) ?? []).map { UInt16($0) }
+        let inputStringPointer = Data(bytes: inputString, count: inputString.count)
+            .withUnsafeBytes { $0.load(as: UnsafePointer<UInt16>.self) }
 
+        /// NSUInteger inputLength = [hostname lengthOfBytesUsingEncoding:NSUTF16StringEncoding] / sizeof(UTF16CHAR);
+        let inputLength = hostname.lengthOfBytes(using: .utf16)
+
+        var hostname: String? = hostname
         /// int ret = XCODE_SUCCESS;
         var ret = XCODE_SUCCESS
         /// if (toAscii) {
         if toAscii {
         ///     int outputLength = MAX_DOMAIN_SIZE_8;
-            let outputLength = MAX_DOMAIN_SIZE_8
+            var outputLength = MAX_DOMAIN_SIZE_8
         ///     UCHAR8 outputString[outputLength];
-            var outputString: Buffer
+            var outputString = UnsafeMutablePointer<UInt8>.allocate(capacity: Int(outputLength))
 
         ///     ret = Xcode_DomainToASCII(inputString, (int) inputLength, outputString, &outputLength);
-            ret = Xcode_DomainToASCII(inputString, inputLength, outputString, outputLength)
+            ret = Xcode_DomainToASCII(inputStringPointer, Int32(inputLength), outputString, &outputLength)
 
         ///     if (XCODE_SUCCESS == ret) {
             if ret == XCODE_SUCCESS {
         ///         hostname = [[NSString alloc] initWithBytes:outputString length:outputLength encoding:NSASCIIStringEncoding];
-                hostname = String(bytes: outputString, encoding: .ascii)
+                let data = Data(bytes: outputString, count: Int(outputLength))
+                let bytes = data.withUnsafeBytes { $0.load(as: UnsafePointer<CChar>.self) }
+                hostname = String(cString: bytes, encoding: .ascii)
             } else {
         ///     } else {
         ///         // NSURL specifies that if a URL is malformed then URLWithString: returns nil, so
@@ -220,14 +234,18 @@ struct IFUnicodeURLSwift {
         /// } else {
         } else {
         ///     int outputLength = MAX_DOMAIN_SIZE_16;
-            let outputLength = MAX_DOMAIN_SIZE_16
+            var outputLength = MAX_DOMAIN_SIZE_16
         ///     UTF16CHAR outputString[outputLength];
+            var outputString = UnsafeMutablePointer<UInt16>.allocate(capacity: Int(outputLength))
+
         ///     ret = Xcode_DomainToUnicode16(inputString, (int) inputLength, outputString, &outputLength);
-            ret = Xcode_DomainToUnicode16(inputString, inputLength, outputString, &outputLength)
+            ret = Xcode_DomainToUnicode16(inputString, Int32(inputLength), outputString, &outputLength)
         ///     if (XCODE_SUCCESS == ret) {
             if ret == XCODE_SUCCESS {
         ///         hostname = [[NSString alloc] initWithCharacters:outputString length:outputLength];
-                hostname = String(bytes: outputString)
+                let data = Data(bytes: outputString, count: Int(outputLength))
+                let bytes = data.withUnsafeBytes { $0.load(as: UnsafePointer<CChar>.self) }
+                hostname = String(cString: bytes, encoding: .utf8)
         ///     } else {
             } else {
         ///         // NSURL specifies that if a URL is malformed then URLWithString: returns nil, so
@@ -242,9 +260,6 @@ struct IFUnicodeURLSwift {
         /// if (error && ret != XCODE_SUCCESS) {
         ///     *error = [NSError errorWithDomain:kIFUnicodeURLErrorDomain code:ret userInfo:nil];
         /// }
-        if ret != XCODE_SUCCESS {
-            let error = Error(kIFUnicode)
-        }
 
         /// return hostname;
         return hostname
@@ -263,7 +278,7 @@ struct IFUnicodeURLSwift {
         /// NSMutableArray *urlParts = [NSMutableArray array];
         var urlParts: [String] = []
         /// NSString *hostname = nil;
-        var hostname: String = ""
+        var hostname: String? = nil
         /// NSArray *parts = nil;
         var parts: [String] = []
 
@@ -275,28 +290,28 @@ struct IFUnicodeURLSwift {
         urlParts.append(parts[0])
 
         /// parts = [hostname _IFUnicodeURL_splitAfterString:@"//"];
-        parts = hostname.split(after: "//")
+        parts = hostname?.split(after: "//") ?? []
         /// hostname = [parts objectAtIndex:1];
         hostname = parts[1]
         /// [urlParts addObject:[parts objectAtIndex:0]];
         urlParts.append(parts[0])
 
         /// parts = [hostname _IFUnicodeURL_splitBeforeCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/?#"]];
-        parts = hostname.split(before: CharacterSet(charactersIn: "/?#"))
+        parts = hostname?.split(before: CharacterSet(charactersIn: "/?#")) ?? []
         /// hostname = [parts objectAtIndex:0];
         hostname = parts[0]
         /// [urlParts addObject:[parts objectAtIndex:1]];
         urlParts.append(parts[1])
 
         /// parts = [hostname _IFUnicodeURL_splitAfterString:@"@"];
-        parts = hostname.split(after: "@")
+        parts = hostname?.split(after: "@") ?? []
         /// hostname = [parts objectAtIndex:1];
         hostname = parts[1]
         /// [urlParts addObject:[parts objectAtIndex:0]];
         urlParts.append(parts[0])
 
         /// parts = [hostname _IFUnicodeURL_splitBeforeCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@":"]];
-        parts = hostname.split(before: CharacterSet(charactersIn: ":"))
+        parts = hostname?.split(before: CharacterSet(charactersIn: ":")) ?? []
         /// hostname = [parts objectAtIndex:0];
         hostname = parts[0]
         /// [urlParts addObject:[parts objectAtIndex:1]];
@@ -304,7 +319,9 @@ struct IFUnicodeURLSwift {
 
         /// // Now that we have isolated just the hostname, do the magic decoding...
         /// hostname = ConvertUnicodeDomainString(hostname, toAscii, error);
-        hostname = ConvertUnicodeDomainString(hostname: hostname, toAscii: toAscii)
+        if let hostnameDecoded = hostname {
+            hostname = UnicodeURL.ConvertUnicodeDomainString(hostname: hostnameDecoded, toAscii: toAscii)
+        }
         /// if (!hostname) {
         ///     return nil;
         /// }
@@ -331,7 +348,7 @@ struct IFUnicodeURLSwift {
 ///
         /// // Now recreate the URL safely with the new hostname (if it was successful) instead...
         /// NSArray *reconstructedArray = [NSArray arrayWithObjects:[urlParts objectAtIndex:0], [urlParts objectAtIndex:1], [urlParts objectAtIndex:3], hostname, finalAfterHostname, nil];
-        let reconstructedArray = [urlParts[0], urlParts[1], urlParts[3], hostname, finalAfterHostname ?? ""]
+        let reconstructedArray = [urlParts[0], urlParts[1], urlParts[3], hostname ?? "", finalAfterHostname ?? ""]
         /// NSString *reconstructedURLString = [reconstructedArray componentsJoinedByString:@""];
         let reconstructedURLString = reconstructedArray.joined(separator: "")
 
