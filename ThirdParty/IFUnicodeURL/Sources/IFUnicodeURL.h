@@ -2,7 +2,10 @@
 //  IFUnicodeURL.h
 //  IFUnicodeURL
 //
-#import "../IFUnicodeURL/NSURL+IFUnicodeURL.h"
+//#import "NSURL+IFUnicodeURL.h"
+
+#import "IDNSDK/toxxx.h"
+#import "IDNSDK/xcode.h"
 
 @import Foundation;
 

@@ -12,6 +12,6 @@ let package = Package(
     dependencies: [],
     targets: [
         .systemLibrary(name: "IFUnicodeURL", path: "./Sources/"),
-        .target(name: "IFUnicodeURLSwift"),
+        .target(name: "IFUnicodeURLSwift", dependencies: ["IFUnicodeURL"]),
     ]
 )
