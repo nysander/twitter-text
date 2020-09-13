@@ -17,13 +17,13 @@ extension URL {
     /// + (NSURL *)URLWithUnicodeString:(NSString *)str error:(NSError **)error
     static func urlWithUnicodeString(str: String) -> Self? {
         /// return ([str length]) ? [[self alloc] initWithUnicodeString:str error:error] : nil;
-        str.count > 0 ? self.init(urlWithUnicodeString: str) : nil
+        str.count > 0 ? self.init(unicodeString: str) : nil
     }
 
     /// - (instancetype)initWithUnicodeString:(NSString *)str
-    init?(urlWithUnicodeString str: String) {
+    init?(unicodeString string: String) {
         /// return [self initWithUnicodeString:str error:nil];
-        self.init(str: str)
+        self.init(str: string)
     }
 
     /// - (instancetype)initWithUnicodeString:(NSString *)str error:(NSError **)error
@@ -56,7 +56,7 @@ extension URL {
     }
 
     /// + (NSString *)decodeUnicodeDomainString:(NSString*)domain
-    func decodeUnicodeDomain(from domain: String) -> String? {
+    static func decode(unicodeDomain domain: String) -> String? {
         /// return ConvertUnicodeDomainString(domain, NO, nil);
         return UnicodeURL.ConvertUnicodeURLString(str: domain, toAscii: false)
     }
