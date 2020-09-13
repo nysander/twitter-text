@@ -1,4 +1,5 @@
 import Foundation
+import UnicodeURL
 
 /// @interface TwitterText : NSObject
 public class TwitterText {
@@ -16,7 +17,6 @@ public class TwitterText {
         if text.isEmpty {
             return []
         }
-        IFUnicodeURL.ConvertUnicodeURLString()
 
         /// NSMutableArray<TwitterTextEntity *> *results = [NSMutableArray<TwitterTextEntity *> array];
         var results: [TwitterTextEntity] = []
@@ -142,18 +142,19 @@ public class TwitterText {
         ///         NSString *preceding = (precedingRange.location != NSNotFound) ? [text substringWithRange:precedingRange] : nil;
                 let preceding = precedingRange.location != NSNotFound ? NSString(string: text).substring(with: precedingRange) : nil
         ///         NSRange suffixRange = [preceding rangeOfCharacterFromSet:[self invalidURLWithoutProtocolPrecedingCharSet] options:NSBackwardsSearch | NSAnchoredSearch];
-                let suffixRange = preceding?.rangeOfCharacter(from: self.invalidURLWithoutProtocolPrecedingCharSet)
+
+                let suffixRange = NSRange((preceding?.rangeOfCharacter(from: self.invalidURLWithoutProtocolPrecedingCharSet))!, in: preceding!)
         ///         if (suffixRange.location != NSNotFound) {
         ///             continue;
         ///         }
-                if suffixRange?.location != NSNotFound {
+                if suffixRange.location != NSNotFound {
                     continue
                 }
         ///     }
             }
-
+            let r = Range(urlResult.range, in: text)
         ///     NSString *url = (urlRange.location != NSNotFound) ? [text substringWithRange:urlRange] : nil;
-            let url = urlRange.location != NSNotFound ? text.substring(with: urlRange) : nil
+            let url = urlRange.location != NSNotFound ? text.substring(with: r!) : nil
         ///     NSString *host = (domainRange.location != NSNotFound) ? [text substringWithRange:domainRange] : nil;
             let host = domainRange.location != NSNotFound ? text.substring(with: Range(domainRange)!) : nil
 

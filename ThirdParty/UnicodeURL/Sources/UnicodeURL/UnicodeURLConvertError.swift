@@ -16,11 +16,11 @@ import Foundation
 ///     IFUnicodeURLConvertErrorCircleCheck      = 304
 /// };
 
-enum IFUnicodeURLConvertError: Int {
-    case IFUnicodeURLConvertErrorNone             = 0
-    case IFUnicodeURLConvertErrorSTD3NonLDH       = 300
-    case IFUnicodeURLConvertErrorSTD3Hyphen       = 301
-    case IFUnicodeURLConvertErrorAlreadyEncoded   = 302
-    case IFUnicodeURLConvertErrorInvalidDNSLength = 303
-    case IFUnicodeURLConvertErrorCircleCheck      = 30
+enum UnicodeURLConvertError: Int {
+    case UnicodeURLConvertErrorNone             = 0
+    case UnicodeURLConvertErrorSTD3NonLDH       = 300
+    case UnicodeURLConvertErrorSTD3Hyphen       = 301
+    case UnicodeURLConvertErrorAlreadyEncoded   = 302
+    case UnicodeURLConvertErrorInvalidDNSLength = 303
+    case UnicodeURLConvertErrorCircleCheck      = 30
 }
