@@ -10,8 +10,8 @@ let package = Package(
     ],
     dependencies: [],
     targets: [
-        .systemLibrary(name: "IDNSDK", path: "./Sources/IDNSDK"),
+        .target(name: "IDNSDK", publicHeadersPath: "./"),
         .target(name: "UnicodeURL", dependencies: ["IDNSDK"]),
-//        .testTarget(name: "UnicodeURLTests", dependencies: ["UnicodeURL"]),
+        .testTarget(name: "UnicodeURLTests", dependencies: ["UnicodeURL"]),
     ]
 )
