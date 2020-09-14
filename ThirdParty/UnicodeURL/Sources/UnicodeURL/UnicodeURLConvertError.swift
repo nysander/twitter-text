@@ -1,20 +1,9 @@
+//  UnicodeURL
 //
-//  File.swift
-//  
-//
-//  Created by Pawel Madej on 11/09/2020.
-//
+//  Copyright (c) Paweł Madej 2020 | Twitter: @PawelMadejCK
+//  License: Apache Licence 2.0 (see LICENCE files for details)
 
 import Foundation
-
-/// typedef NS_ENUM(NSUInteger, IFUnicodeURLConvertError) {
-///     IFUnicodeURLConvertErrorNone             = 0,
-///     IFUnicodeURLConvertErrorSTD3NonLDH       = 300,
-///     IFUnicodeURLConvertErrorSTD3Hyphen       = 301,
-///     IFUnicodeURLConvertErrorAlreadyEncoded   = 302,
-///     IFUnicodeURLConvertErrorInvalidDNSLength = 303,
-///     IFUnicodeURLConvertErrorCircleCheck      = 304
-/// };
 
 enum UnicodeURLConvertError: Int {
     case UnicodeURLConvertErrorNone             = 0

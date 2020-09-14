@@ -1,9 +1,7 @@
+//  UnicodeURL
 //
-//  UnicodeURLTests.swift
-//  
-//
-//  Created by Pawel Madej on 13/09/2020.
-//
+//  Copyright (c) Paweł Madej 2020 | Twitter: @PawelMadejCK
+//  License: Apache Licence 2.0 (see LICENCE files for details)
 
 import XCTest
 @testable import UnicodeURL

@@ -1,5 +1,10 @@
 // swift-tools-version:5.1
 
+//  UnicodeURL
+//
+//  Copyright (c) Paweł Madej 2020 | Twitter: @PawelMadejCK
+//  License: Apache Licence 2.0 (see LICENCE files for details)
+
 import PackageDescription
 
 let package = Package(
