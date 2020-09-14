@@ -125,7 +125,7 @@ extension String {
         var index = self.startIndex
         while index != self.endIndex {
             let set = CharacterSet(charactersIn: "\(self[index])")
-            if set.isSuperset(of: chars) {
+            if chars.isSuperset(of: set) {
                 break
             }
             index = self.index(index, offsetBy: 1)

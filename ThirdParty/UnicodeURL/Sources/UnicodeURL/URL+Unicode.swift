@@ -32,8 +32,7 @@ extension URL {
         /// str = ConvertUnicodeURLString(str, YES, error);
         if let asciiStr = UnicodeURL.ConvertUnicodeURLString(str: str, toAscii: true) {
             self.init(string: asciiStr)
-        }
-        else {
+        } else {
             return nil
         }
         /// self = (str) ? [self initWithString:str] : nil;

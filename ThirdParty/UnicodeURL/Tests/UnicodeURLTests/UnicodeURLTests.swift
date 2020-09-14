@@ -13,28 +13,28 @@ final class UnicodeURLTests: XCTestCase {
     /// - (void)testURLWithStringWithNormalDomain
     func testURLWithStringWithNormalDomain() {
         /// NSURL *url = [NSURL URLWithString:@"https://www.google.com"];
-        let url = URL(str: "https://www.google.com")!
+        let url = URL(str: "https://www.google.com")
 
         /// XCTAssertEqualObjects([url unicodeAbsoluteString], @"https://www.google.com");
-        XCTAssertEqual(url.unicodeAbsoluteString, "https://www.google.com")
+        XCTAssertEqual(url?.unicodeAbsoluteString, "https://www.google.com")
         /// XCTAssertEqualObjects([url absoluteString], @"https://www.google.com");
-        XCTAssertEqual(url.absoluteString, "https://www.google.com")
+        XCTAssertEqual(url?.absoluteString, "https://www.google.com")
         /// XCTAssertEqualObjects([url unicodeHost], @"www.google.com");
-        XCTAssertEqual(url.unicodeHost, "www.google.com")
+        XCTAssertEqual(url?.unicodeHost, "www.google.com")
     }
 
 //    CRASH
     /// - (void)testURLWithUnicodeStringWithNormalDomain
     func testURLWithUnicodeStringWithNormalDomain() {
         /// NSURL *url = [NSURL URLWithUnicodeString:@"https://www.google.com"];
-        let url = URL(unicodeString: "https://www.google.com")!
+        let url = URL(unicodeString: "https://www.google.com")
 
         ///XCTAssertEqualObjects([url unicodeAbsoluteString], @"https://www.google.com");
-        XCTAssertEqual(url.unicodeAbsoluteString, "https://www.google.com")
+        XCTAssertEqual(url?.unicodeAbsoluteString, "https://www.google.com")
         ///XCTAssertEqualObjects([url absoluteString], @"https://www.google.com");
-        XCTAssertEqual(url.absoluteString, "https://www.google.com")
+        XCTAssertEqual(url?.absoluteString, "https://www.google.com")
         ///XCTAssertEqualObjects([url unicodeHost], @"www.google.com");
-        XCTAssertEqual(url.unicodeHost, "www.google.com")
+        XCTAssertEqual(url?.unicodeHost, "www.google.com")
     }
 
 //    FAIL
@@ -55,28 +55,28 @@ final class UnicodeURLTests: XCTestCase {
     /// - (void)testURLWithUnicodeStringWithJapaneseDomain
     func testURLWithUnicodeStringWithJapaneseDomain() {
         /// NSURL *url = [NSURL URLWithUnicodeString:@"http://ドメイン名例.jp"];
-        let url = URL(unicodeString: "http://ドメイン名例.jp")!
+        let url = URL(unicodeString: "http://ドメイン名例.jp")
 
         /// XCTAssertEqualObjects([url unicodeAbsoluteString], @"http://ドメイン名例.jp");
-        XCTAssertEqual(url.unicodeAbsoluteString, "http://ドメイン名例.jp")
+        XCTAssertEqual(url?.unicodeAbsoluteString, "http://ドメイン名例.jp")
         /// XCTAssertEqualObjects([url absoluteString], @"http://xn--eckwd4c7cu47r2wf.jp");
-        XCTAssertEqual(url.absoluteString, "http://xn--eckwd4c7cu47r2wf.jp")
+        XCTAssertEqual(url?.absoluteString, "http://xn--eckwd4c7cu47r2wf.jp")
         /// XCTAssertEqualObjects([url unicodeHost], @"ドメイン名例.jp");
-        XCTAssertEqual(url.unicodeHost, "ドメイン名例.jp")
+        XCTAssertEqual(url?.unicodeHost, "ドメイン名例.jp")
     }
 
 //    CRASH
     /// - (void)testURLWithUnicodeStringWithEmojiDomain
     func testURLWithUnicodeStringWithEmojiDomain() {
         /// NSURL *url = [NSURL URLWithUnicodeString:@"https://😭😭😭😂😂😂😭😭😭💯💯💯💯💯.com/😭😭"];
-        let url = URL(unicodeString: "https://😭😭😭😂😂😂😭😭😭💯💯💯💯💯.com/😭😭")!
+        let url = URL(unicodeString: "https://😭😭😭😂😂😂😭😭😭💯💯💯💯💯.com/😭😭")
 
         /// XCTAssertEqualObjects([url unicodeAbsoluteString], @"https://😭😭😭😂😂😂😭😭😭💯💯💯💯💯.com/%F0%9F%98%AD%F0%9F%98%AD");
-        XCTAssertEqual(url.unicodeAbsoluteString, "https://😭😭😭😂😂😂😭😭😭💯💯💯💯💯.com/%F0%9F%98%AD%F0%9F%98%AD")
+        XCTAssertEqual(url?.unicodeAbsoluteString, "https://😭😭😭😂😂😂😭😭😭💯💯💯💯💯.com/%F0%9F%98%AD%F0%9F%98%AD")
         /// XCTAssertEqualObjects([url absoluteString], @"https://xn--rs8haaaa34raa89aaadaa.com/%F0%9F%98%AD%F0%9F%98%AD");
-        XCTAssertEqual(url.absoluteString, "https://xn--rs8haaaa34raa89aaadaa.com/%F0%9F%98%AD%F0%9F%98%AD")
+        XCTAssertEqual(url?.absoluteString, "https://xn--rs8haaaa34raa89aaadaa.com/%F0%9F%98%AD%F0%9F%98%AD")
         /// XCTAssertEqualObjects([url unicodeHost], @"😭😭😭😂😂😂😭😭😭💯💯💯💯💯.com");
-        XCTAssertEqual(url.unicodeHost, "😭😭😭😂😂😂😭😭😭💯💯💯💯💯.com")
+        XCTAssertEqual(url?.unicodeHost, "😭😭😭😂😂😂😭😭😭💯💯💯💯💯.com")
     }
 
 //    CRASH
