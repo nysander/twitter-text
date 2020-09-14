@@ -12,12 +12,16 @@ struct UnicodeURL {
     ///static NSString *ConvertUnicodeDomainString(NSString *hostname, BOOL toAscii, NSError **error)
     static func ConvertUnicodeDomainString(hostname: String, toAscii: Bool) -> String? {
         /// const UTF16CHAR *inputString = (const UTF16CHAR *)[hostname cStringUsingEncoding:NSUTF16StringEncoding];
-        var inputString = (hostname.cString(using: .utf16) ?? []).map { UInt16($0) }
-        let inputStringPointer = Data(bytes: inputString, count: inputString.count)
-            .withUnsafeBytes { $0.load(as: UnsafePointer<UInt16>.self) }
-
+        let inputLength = hostname.lengthOfBytes(using: .utf8)
+        var inputString = (hostname.cString(using: .utf16) ?? [])
+        var mappedInputString = inputString.compactMap { UInt16(exactly: $0) }
+        var inputStringData = Data(bytes: inputString, count: inputString.count)
+//        let inputStringPointer = inputStringData.withUnsafeMutableBytes { bytes in
+//            print(bytes.debugDescription)
+//            return bytes.load(as: UnsafePointer<UInt16>.self)
+//        }
+//        let inputStringPointer: UnsafePointer<UInt16>
         /// NSUInteger inputLength = [hostname lengthOfBytesUsingEncoding:NSUTF16StringEncoding] / sizeof(UTF16CHAR);
-        let inputLength = hostname.lengthOfBytes(using: .utf16)
 
         var hostname: String? = hostname
         /// int ret = XCODE_SUCCESS;
@@ -30,7 +34,7 @@ struct UnicodeURL {
             var outputString = UnsafeMutablePointer<UInt8>.allocate(capacity: Int(outputLength))
 
         ///     ret = Xcode_DomainToASCII(inputString, (int) inputLength, outputString, &outputLength);
-            ret = Xcode_DomainToASCII(inputStringPointer, Int32(inputLength), outputString, &outputLength)
+            ret = Xcode_DomainToASCII(&mappedInputString, Int32(inputLength), outputString, &outputLength)
 
         ///     if (XCODE_SUCCESS == ret) {
             if ret == XCODE_SUCCESS {
@@ -54,13 +58,18 @@ struct UnicodeURL {
             var outputString = UnsafeMutablePointer<UInt16>.allocate(capacity: Int(outputLength))
 
         ///     ret = Xcode_DomainToUnicode16(inputString, (int) inputLength, outputString, &outputLength);
-            ret = Xcode_DomainToUnicode16(inputString, Int32(inputLength), outputString, &outputLength)
+            ret = Xcode_DomainToUnicode16(mappedInputString, Int32(inputLength), outputString, &outputLength)
         ///     if (XCODE_SUCCESS == ret) {
             if ret == XCODE_SUCCESS {
         ///         hostname = [[NSString alloc] initWithCharacters:outputString length:outputLength];
-                let data = Data(bytes: outputString, count: Int(outputLength))
-                let bytes = data.withUnsafeBytes { $0.load(as: UnsafePointer<CChar>.self) }
-                hostname = String(cString: bytes, encoding: .utf8)
+                let oo = outputString.withMemoryRebound(to: Int8.self, capacity: Int(outputLength)) {
+                    $0
+                }
+                let ox: UnsafePointer<CChar> = .init(oo)
+//                let data = Data(bytes: oo, count: Int(outputLength))
+//                let bytes = data.withUnsafeBytes { $0.load(as: UnsafePointer<CChar>.self) }
+//                let xx = String(data:data, encoding: .utf16)
+                hostname = String(cString: ox, encoding: .utf8)
         ///     } else {
             } else {
         ///         // NSURL specifies that if a URL is malformed then URLWithString: returns nil, so

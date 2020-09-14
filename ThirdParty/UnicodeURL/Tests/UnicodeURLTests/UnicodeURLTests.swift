@@ -9,10 +9,11 @@ import XCTest
 @testable import UnicodeURL
 
 final class UnicodeURLTests: XCTestCase {
+//    PASS
     /// - (void)testURLWithStringWithNormalDomain
     func testURLWithStringWithNormalDomain() {
         /// NSURL *url = [NSURL URLWithString:@"https://www.google.com"];
-        let url = URL(string: "https://www.google.com")!
+        let url = URL(str: "https://www.google.com")!
 
         /// XCTAssertEqualObjects([url unicodeAbsoluteString], @"https://www.google.com");
         XCTAssertEqual(url.unicodeAbsoluteString, "https://www.google.com")
@@ -22,6 +23,7 @@ final class UnicodeURLTests: XCTestCase {
         XCTAssertEqual(url.unicodeHost, "www.google.com")
     }
 
+//    CRASH
     /// - (void)testURLWithUnicodeStringWithNormalDomain
     func testURLWithUnicodeStringWithNormalDomain() {
         /// NSURL *url = [NSURL URLWithUnicodeString:@"https://www.google.com"];
@@ -35,19 +37,21 @@ final class UnicodeURLTests: XCTestCase {
         XCTAssertEqual(url.unicodeHost, "www.google.com")
     }
 
+//    FAIL
     /// - (void)testURLWithStringWithJapaneseDomain
     func testURLWithStringWithJapaneseDomain() {
         /// NSURL *url = [NSURL URLWithString:@"https://xn--eckwd4c7cu47r2wf.jp"];
-        let url = URL(string: "https://xn--eckwd4c7cu47r2wf.jp")!
+        let url = URL(str: "https://xn--eckwd4c7cu47r2wf.jp")
 
         /// XCTAssertEqualObjects([url unicodeAbsoluteString], @"https://ドメイン名例.jp");
-        XCTAssertEqual(url.unicodeAbsoluteString, "https://ドメイン名例.jp")
+        XCTAssertEqual(url?.unicodeAbsoluteString, "https://ドメイン名例.jp")
         /// XCTAssertEqualObjects([url absoluteString], @"https://xn--eckwd4c7cu47r2wf.jp");
-        XCTAssertEqual(url.absoluteString, "https://xn--eckwd4c7cu47r2wf.jp")
+        XCTAssertEqual(url?.absoluteString, "https://xn--eckwd4c7cu47r2wf.jp")
         /// XCTAssertEqualObjects([url unicodeHost], @"ドメイン名例.jp");
-        XCTAssertEqual(url.unicodeHost, "ドメイン名例.jp")
+        XCTAssertEqual(url?.unicodeHost, "ドメイン名例.jp")
     }
 
+//    CRASH
     /// - (void)testURLWithUnicodeStringWithJapaneseDomain
     func testURLWithUnicodeStringWithJapaneseDomain() {
         /// NSURL *url = [NSURL URLWithUnicodeString:@"http://ドメイン名例.jp"];
@@ -61,6 +65,7 @@ final class UnicodeURLTests: XCTestCase {
         XCTAssertEqual(url.unicodeHost, "ドメイン名例.jp")
     }
 
+//    CRASH
     /// - (void)testURLWithUnicodeStringWithEmojiDomain
     func testURLWithUnicodeStringWithEmojiDomain() {
         /// NSURL *url = [NSURL URLWithUnicodeString:@"https://😭😭😭😂😂😂😭😭😭💯💯💯💯💯.com/😭😭"];
@@ -74,6 +79,7 @@ final class UnicodeURLTests: XCTestCase {
         XCTAssertEqual(url.unicodeHost, "😭😭😭😂😂😂😭😭😭💯💯💯💯💯.com")
     }
 
+//    CRASH
     /// - (void)testURLWithUnicodeStringWithInvalidLongUnicodeDomain
     func testURLWithUnicodeStringWithInvalidLongUnicodeDomain() {
         /// NSURL *url = [NSURL URLWithUnicodeString:@"http://あいうえおかきくけこあいうえおかきくけこあいうえおかきくけこあいうえおかきくけこあいうえおかきくけこあいう.com"];
@@ -83,6 +89,7 @@ final class UnicodeURLTests: XCTestCase {
         XCTAssertNil(url)
     }
 
+//    PASS
     /// - (void)testDecodeUnicodeDomainStringWithNormalDomain
     func testDecodeUnicodeDomainStringWithNormalDomain() {
         /// NSString *decodedDomain = [NSURL decodeUnicodeDomainString:@"www.google.com"];
@@ -91,6 +98,7 @@ final class UnicodeURLTests: XCTestCase {
         XCTAssertEqual(decodedDomain, "www.google.com")
     }
 
+//    CRASH
     /// - (void)testDecodeUnicodeDomainStringWithTCO
     func testDecodeUnicodeDomainStringWithTCO() {
         /// NSString *decodedDomain = [NSURL decodeUnicodeDomainString:@"t.co"];
@@ -99,6 +107,7 @@ final class UnicodeURLTests: XCTestCase {
         XCTAssertEqual(decodedDomain, "t.co")
     }
 
+//    FAIL
     /// - (void)testDecodeUnicodeDomainStringWithJapaneseDomain
     func testDecodeUnicodeDomainStringWithJapaneseDomain() {
         /// NSString *decodedDomain = [NSURL decodeUnicodeDomainString:@"xn--eckwd4c7cu47r2wf.jp"];
@@ -108,6 +117,7 @@ final class UnicodeURLTests: XCTestCase {
         XCTAssertEqual(decodedDomain, "ドメイン名例.jp")
     }
 
+//    FAIL
     /// - (void)testDecodeUnicodeDomainStringWithEmojiDomain
     func testDecodeUnicodeDomainStringWithEmojiDomain() {
         /// NSString *decodedDomain = [NSURL decodeUnicodeDomainString:@"xn--rs8haaaa34raa89aaadaa.com"];
@@ -116,6 +126,7 @@ final class UnicodeURLTests: XCTestCase {
         XCTAssertEqual(decodedDomain, "😭😭😭😂😂😂😭😭😭💯💯💯💯💯.com")
     }
 
+//    PASS
     /// - (void)testDecodeUnicodeDomainStringWithInvalidPunycodeInternational
     func testDecodeUnicodeDomainStringWithInvalidPunycodeInternational() {
         /// NSString *decodedDomain = [NSURL decodeUnicodeDomainString:@"xn--みんな.com"];
@@ -124,6 +135,7 @@ final class UnicodeURLTests: XCTestCase {
         XCTAssertEqual(decodedDomain, "xn--みんな.com")
     }
 
+//    FAIL
     /// - (void)testDecodeUnicodeDomainStringWithInvalidPunycode
     func testDecodeUnicodeDomainStringWithInvalidPunycode() {
         // This looks strange. But this is the current library spec.
@@ -133,6 +145,7 @@ final class UnicodeURLTests: XCTestCase {
         XCTAssertEqual(decodedDomain, ".com")
     }
 
+//    FAIL
     /// - (void)testDecodeUnicodeDomainStringWithInvalidInternationalDomain
     func testDecodeUnicodeDomainStringWithInvalidInternationalDomain() {
         // This looks strange. But this is the current library spec.
