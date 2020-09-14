@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  URL+Unicode.swift
 //  
 //
 //  Created by Pawel Madej on 13/09/2020.
@@ -26,39 +26,26 @@ extension URL {
         self.init(str: string)
     }
 
-    /// - (instancetype)initWithUnicodeString:(NSString *)str error:(NSError **)error
     init?(str: String) {
-        //        var str = str
-        /// str = ConvertUnicodeURLString(str, YES, error);
         if let asciiStr = UnicodeURL.ConvertUnicodeURLString(str: str, toAscii: true) {
             self.init(string: asciiStr)
         } else {
             return nil
         }
-        /// self = (str) ? [self initWithString:str] : nil;
-        //        self = str ? self.initWithString : nil
-        /// return self;
-        //        return asciiStr != nil ? self.init(string: asciiStr) : nil
     }
 
-    /// - (NSString *)unicodeAbsoluteString
     var unicodeAbsoluteString: String? {
-        /// return ConvertUnicodeURLString([self absoluteString], NO, nil);
         return UnicodeURL.ConvertUnicodeURLString(str: self.absoluteString, toAscii: false)
     }
 
-    /// - (NSString *)unicodeHost
     var unicodeHost: String? {
-        /// return ConvertUnicodeDomainString([self host], NO, nil);
         if let host = self.host {
             return UnicodeURL.ConvertUnicodeURLString(str: host, toAscii: false)
         }
         return nil
     }
 
-    /// + (NSString *)decodeUnicodeDomainString:(NSString*)domain
     static func decode(unicodeDomain domain: String) -> String? {
-        /// return ConvertUnicodeDomainString(domain, NO, nil);
         return UnicodeURL.ConvertUnicodeURLString(str: domain, toAscii: false)
     }
 }
