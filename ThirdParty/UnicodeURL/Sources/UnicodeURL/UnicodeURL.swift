@@ -31,7 +31,7 @@ struct UnicodeURL {
         ///     if (XCODE_SUCCESS == ret) {
             if ret == XCODE_SUCCESS {
         ///         hostname = [[NSString alloc] initWithBytes:outputString length:outputLength encoding:NSASCIIStringEncoding];
-                hostname = String(cString: &outputString)
+                hostname = String(cString: outputString)
             } else {
         ///     } else {
         ///         // NSURL specifies that if a URL is malformed then URLWithString: returns nil, so
@@ -137,7 +137,7 @@ struct UnicodeURL {
         /// // This will try to clean up the stuff after the hostname in the URL by making sure it's all encoded properly.
         /// // NSURL doesn't normally do anything like this, but I found it useful for my purposes to put it in here.
         /// NSString *afterHostname = [[urlParts objectAtIndex:4] stringByAppendingString:[urlParts objectAtIndex:2]];
-        let afterHostname = ""
+        let afterHostname = urlParts[4].appending(urlParts[2])
         /// NSString *processedAfterHostname = [afterHostname stringByRemovingPercentEncoding] ?: afterHostname;
         let processedAfterHostname = afterHostname.removingPercentEncoding ?? afterHostname
         /// static NSCharacterSet *sURLFragmentPlusHashtagPlusBracketsCharacterSet;
