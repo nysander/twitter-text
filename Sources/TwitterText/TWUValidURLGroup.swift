@@ -1,9 +1,7 @@
+//  twitter-text
 //
-//  File.swift
-//  
-//
-//  Created by Pawel Madej on 08/09/2020.
-//
+//  Copyright (c) Paweł Madej 2020 | Twitter: @PawelMadejCK
+//  License: MIT (see LICENCE files for details)
 
 import Foundation
 

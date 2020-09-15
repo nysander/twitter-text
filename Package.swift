@@ -1,5 +1,10 @@
 // swift-tools-version:5.1
 
+//  twitter-text
+//
+//  Copyright (c) Paweł Madej 2020 | Twitter: @PawelMadejCK
+//  License: MIT (see LICENCE files for details)
+
 import PackageDescription
 
 let package = Package(
@@ -9,7 +14,7 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(path: "./ThirdParty/UnicodeURL")
+        .package(url: "https://github.com/nysander/UnicodeURL.git", from: "0.0.1")
     ],
 
     targets: [
