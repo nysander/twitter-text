@@ -14,6 +14,12 @@ public class TwitterText {
     static let kTransformedURLLength = 23;
     static let kPermillageScaleFactor = 1000;
 
+    /// The backend adds http:// for normal links and https to *.twitter.com URLs
+    /// (it also rewrites http to https for URLs matching *.twitter.com).
+    /// We always add https://. By making the assumption that kURLProtocolLength
+    /// is https, the trade off is we'll disallow a http URL that is 4096 characters.
+    static let kURLProtocolLength = 8
+
     /// + (NSArray<TwitterTextEntity *> *)entitiesInText:(NSString *)text;
     public static func entities(inText text: String) -> [TwitterTextEntity] {
         /// if (!text.length) {
@@ -159,9 +165,9 @@ public class TwitterText {
             }
             let r = Range(urlResult.range, in: text)
         ///     NSString *url = (urlRange.location != NSNotFound) ? [text substringWithRange:urlRange] : nil;
-            let url = urlRange.location != NSNotFound ? text.substring(with: r!) : nil
+            var url = urlRange.location != NSNotFound ? text.substring(with: r!) : nil
         ///     NSString *host = (domainRange.location != NSNotFound) ? [text substringWithRange:domainRange] : nil;
-            let host = domainRange.location != NSNotFound ? text.substring(with: Range(domainRange)!) : nil
+            let host = domainRange.location != NSNotFound ? text.substring(with: Range(domainRange, in: text)!) : nil
 
         ///     NSInteger start = urlRange.location;
             let start = urlRange.location
@@ -169,7 +175,12 @@ public class TwitterText {
             var end = NSMaxRange(urlRange)
 
         ///     NSTextCheckingResult *tcoResult = url ? [[self validTCOURLRegexp] firstMatchInString:url options:0 range:NSMakeRange(0, url.length)] : nil;
-            let tcoResult = url ? self.validTCOURLRegexp.firstMatch(in: url, options: 0, range: NSMaxRange(0, url.length)) : nil
+            let tcoResult: NSTextCheckingResult?
+            if let url = url {
+                tcoResult = self.validTCOURLRegexp.firstMatch(in: url, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, url.count))
+            } else {
+                tcoResult = nil
+            }
         ///     if (tcoResult && tcoResult.numberOfRanges >= 2) {
             if let tcoResult = tcoResult, tcoResult.numberOfRanges >= 2 {
         ///         NSRange tcoRange = [tcoResult rangeAtIndex:0];
@@ -183,7 +194,7 @@ public class TwitterText {
                     continue
                 }
         ///         NSString *tcoUrlSlug = [text substringWithRange:tcoUrlSlugRange];
-                let tcoUrlSlug = text.substring(with: tcoUrlSlugRange)
+                let tcoUrlSlug = text.substring(with: Range(tcoUrlSlugRange, in: text)!)
         ///         // In the case of t.co URLs, don't allow additional path characters and ensure that the slug is under 40 chars.
         ///         if ([tcoUrlSlug length] > kMaxTCOSlugLength) {
         ///             continue;
@@ -194,13 +205,13 @@ public class TwitterText {
                 if tcoUrlSlug.count > TwitterText.kMaxTCOSlugLength {
                     continue
                 } else {
-                    url = url.substring(with: tcoRange)
-                    end = start + url.count
+                    url = url?.substring(with: Range(tcoRange, in: url!)!)
+                    end = start + url!.count
                 }
         ///     }
             }
         ///     if ([self isValidHostAndLength:url.length protocol:protocol host:host]) {
-            if self.isValidHostAndLength(url.length, protocol: protocolStr, host: host) {
+            if isValidHostAndLength(urlLength: url!.count, urlProtocol: protocolStr!, host: host) {
         ///         TwitterTextEntity *entity = [TwitterTextEntity entityWithType:TwitterTextEntityURL range:NSMakeRange(start, end - start)];
                 let entity = TwitterTextEntity(withType: .TwitterTextEntityURL, range: NSMakeRange(start, end - start))
                 ///         [results addObject:entity];
@@ -914,7 +925,7 @@ public class TwitterText {
     private static let validDomainSucceedingCharRegexp = try! NSRegularExpression(pattern: TwitterTextRegexp.TWUEndMentionMatch, options: .caseInsensitive)
 
     /// + (BOOL)isValidHostAndLength:(NSUInteger)urlLength protocol:(NSString *)protocol host:(NSString *)host
-    private func isValidHostAndLength(urlLength: Int, protocol: String, host: String?) -> Bool {
+    private static func isValidHostAndLength(urlLength: Int, urlProtocol: String?, host: String?) -> Bool {
     /// {
     /// if (!host) {
     /// return NO;
@@ -931,8 +942,9 @@ public class TwitterText {
             guard var host = host, let url = URL(string: host) else {
                 return false
             }
-
             let originalHostLength = host.count
+
+// TODO
             /// if (error) {
             ///     if (error.code == IFUnicodeURLConvertErrorInvalidDNSLength) {
             ///         // If the error is specifically IFUnicodeURLConvertErrorInvalidDNSLength,
@@ -952,6 +964,10 @@ public class TwitterText {
             /// if (!url) {
             ///     return NO;
             /// }
+            if url == nil {
+                return false
+            }
+            ///
             ///
             /// // Should be encoded if necessary.
             /// host = url.absoluteString;
@@ -976,7 +992,12 @@ public class TwitterText {
             /// if (!protocol) {
             ///     urlLengthWithProtocol += kURLProtocolLength;
             /// }
+            var urlLengthWithProtocol = urlLength
+            if urlProtocol == nil {
+                urlLengthWithProtocol += TwitterText.kURLProtocolLength
+            }
             /// return urlLengthWithProtocol <= kMaxURLLength;
+            return urlLengthWithProtocol <= kMaxURLLength
         } catch let error {
             print(error)
         }

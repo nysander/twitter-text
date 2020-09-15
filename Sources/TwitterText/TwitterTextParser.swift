@@ -60,7 +60,7 @@ class TwitterTextParser {
     func parseTweet(text: String) -> TwitterTextParseResults {
         /// // Use Unicode Normalization Form Canonical Composition
         /// NSString *normalizedText;
-        var normalizedText: String
+        var normalizedText: String = ""
         /// NSUInteger normalizedTextLength;
         var normalizedTextLength: Int
         /// if (text.length != 0) {
@@ -93,7 +93,7 @@ class TwitterTextParser {
         let textLength = text.count
         // FIXME !!!
         /// NSRange textRanges[textLength], *ptr = textRanges;
-        var textRanges: [NSRange]
+        var textRanges: [NSRange] = []
         /// for (NSUInteger i = 0; i < textLength; i++) {
         ///     textRanges[i] = rangeNotFound;
         /// }
@@ -104,16 +104,16 @@ class TwitterTextParser {
         let block = self.length(of: text, range: NSMakeRange(0, text.count)) { index, blockText, entity, subscring -> Int in
             /// // entity.range.length can be > 1 for emoji, decomposed characters, etc.
             ///     for (NSInteger i = 0; i < entity.range.length; i++) {
-            for i in 0..<entity.range.count {
+            for i in 0..<entity.range.length {
                 ///         if (index+i < textLength) {
                 ///             ptr[index+i] = entity.range;
                 ///         } else {
                 ///             NSAssert(NO, @"index+i (%ld+%ld) greater than text.length (%lu) for text \"%@\"", (long)index, (long)i, (unsigned long)textLength, text);  // casts will be unnecessary when TwitterText is no longer built for 32-bit targets
                 ///         }
                 if index + i < textLength {
-                    ptr[index + i] = entity.range
+                    textRanges[index + i] = entity.range
                 } else {
-                    assert(false, "index+i (\(index + i)) greater than text.count (\(txtLength)) for text \"\(text)\"")
+                    assert(false, "index+i (\(index + i)) greater than text.count (\(textLength)) for text \"\(text)\"")
                 }
                 ///     }
             }
@@ -140,18 +140,18 @@ class TwitterTextParser {
             ///     if (composedCharIndex+offset < textLength) {
             if composedCharIndex + offset < textLength {
                 ///         NSRange originalRange = ptr[composedCharIndex+offset];
-                let originalRange = ptr[composedCharIndex + offset]
+                let originalRange = textRanges[composedCharIndex + offset]
                 ///         for (NSInteger i = 0; i < entity.range.length; i++) {
                 ///             normalizedRangesPtr[composedCharIndex+i] = originalRange;
                 ///         }
-                for i in 0..<entity.range.count {
+                for i in 0..<entity.range.length {
                     normalizedRangesPtr[composedCharIndex + i] = originalRange
                 }
                 ///         if (originalRange.length > entity.range.length) {
                 ///             offset += (originalRange.length - entity.range.length);
                 ///         }
-                if originalRange.count > entity.range.count {
-                    offset += originalRange.count - entity.range.count
+                if originalRange.length > entity.range.length {
+                    offset += originalRange.length - entity.range.length
                 }
                 ///     } else {
                 ///         NSAssert(NO, @"composedCharIndex+offset (%ld+%ld) greater than text.length (%lu) for text \"%@\"", (long)composedCharIndex, (long)offset, (unsigned long)textLength, text); // casts will be unnecessary when TwitterText is no longer /// built for 32-bit targets
@@ -280,10 +280,10 @@ class TwitterTextParser {
                 weightedLength += self.length(of: normalizedText, range: NSMakeRange(textIndex, urlEntity.range.location - textIndex), countingBlock: textUnitCountingBlock)
             }
             ///     weightedLength += textUnitCountingBlock(0, normalizedText, urlEntity, [normalizedText substringWithRange:urlEntity.range]);
-            weightedLength += textUnitCountingBlock(0, normalizedText, urlEntity, normalizedText.substring(with: Range(urlEntity.range, in: normalizedText)!)
+            weightedLength += textUnitCountingBlock(0, normalizedText, urlEntity, normalizedText.substring(with: Range(urlEntity.range, in: normalizedText)!))
 
-                                                    ///     textIndex = urlEntity.range.location + urlEntity.range.length;
-                                                    textIndex = urlEntity.range.location + urlEntity.range.length
+            ///     textIndex = urlEntity.range.location + urlEntity.range.length;
+            textIndex = urlEntity.range.location + urlEntity.range.length
             /// }
         }
 
@@ -336,18 +336,20 @@ class TwitterTextParser {
     // MARK: - Private methods
 
     /// - (NSInteger)_tt_lengthOfText:(NSString *)text range:(NSRange)range countingBlock:(nonnull TextUnitCounterBlock)countingBlock
-    private func length(of text: String, range: NSRange, countingBlock: (Int) -> Int) -> Int {
+    private func length(of text: String, range: NSRange, countingBlock: (Int, String, TwitterTextEntity, String) -> Int) -> Int {
         ///     __block NSInteger length = 0;
         var length = 0
         ///
         ///     NSMutableArray *emojiRanges = [[NSMutableArray alloc] init];
-        var emojiRanges: [NSRange]
+        var emojiRanges: [NSRange] = []
         ///     if (self.configuration.isEmojiParsingEnabled) {
         if self.configuration.emojiParsingEnabled {
             ///         // With emoji parsing enabled, we first find all emoji in the input text (so that we only
             ///         // have to match vs. the complex emoji regex once).
             ///         NSArray<NSTextCheckingResult *> *emojiMatches = [TwitterTextEmojiRegex() matchesInString:text options:0 range:NSMakeRange(0, text.length)];
-            let emojiRegexp = try NSRegularExpression(pattern: TwitterTextRegexp.emojiPattern, options: NSRegularExpression.Options(rawValue: 0))
+
+            // TODO: How to handle this?
+            let emojiRegexp = try! NSRegularExpression(pattern: TwitterTextRegexp.emojiPattern, options: NSRegularExpression.Options(rawValue: 0))
             let emojiMatches = emojiRegexp.matches(in: text, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: range)
             ///         for (NSTextCheckingResult *match in emojiMatches) {
             ///             [emojiRanges addObject:[NSValue valueWithRange:match.range]];
@@ -460,7 +462,7 @@ class TwitterTextParser {
         ///         __block NSInteger charWeight = _configuration.defaultWeight;
             var charWeight = configuration.defaultWeight
         ///         BOOL isSurrogatePair = (i + 1 < length && CFStringIsSurrogateHighCharacter(ptr[i]) && CFStringIsSurrogateLowCharacter(ptr[i+1]));
-            var isSurrogatePair = index + 1 < length && CFStringIsSurrogateHighCharacter(buffer[index]) && CFStringIsSurrogateLowCharacter(buffer[index + 1])
+            let isSurrogatePair = index + 1 < length && CFStringIsSurrogateHighCharacter(buffer[index]) && CFStringIsSurrogateLowCharacter(buffer[index + 1])
         ///         for (TwitterTextWeightedRange *weightedRange in _configuration.ranges) {
             for weightedRange in configuration.ranges {
         ///             NSInteger begin = weightedRange.range.location;
@@ -469,25 +471,41 @@ class TwitterTextParser {
                 let end = weightedRange.range.location + weightedRange.range.length
         ///
         ///             if (isSurrogatePair) {
+                if isSurrogatePair {
         ///                 UTF32Char char32 = CFStringGetLongCharacterForSurrogatePair(ptr[i], ptr[i+1]);
+                    let char32 = CFStringGetLongCharacterForSurrogatePair(buffer[index], buffer[index+1])
         ///                 if (char32 >= begin && char32 <= end) {
+                    if char32 >= begin && char32 <= end {
         ///                     charWeight = weightedRange.weight;
         ///                     break;
+                        charWeight = weightedRange.weight
+                        break
         ///                 }
+                    }
         ///             } else if (ptr[i] >= begin && ptr[i] <= end) {
+                } else if buffer[index] >= begin && buffer[index] <= end {
         ///                 charWeight = weightedRange.weight;
         ///                 break;
+                    charWeight = weightedRange.weight
+                    break
         ///             }
+                }
         ///         }
-        ///
-        ///         // skip the next char of the surrogate pair.
+            }
+            ///         // skip the next char of the surrogate pair.
         ///         if (isSurrogatePair) {
         ///             i++;
         ///         }
+            // skip the next char of the surrogate pair.
+            if isSurrogatePair {
+                continue
+            }
         ///
         ///         codepointCount++;
+            codepointCount += 1
         ///
         ///         weightedLength += charWeight;
+            weightedLength += charWeight
         ///     }
         }
         ///
