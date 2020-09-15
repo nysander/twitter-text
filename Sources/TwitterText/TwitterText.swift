@@ -166,7 +166,7 @@ public class TwitterText {
         ///     NSInteger start = urlRange.location;
             let start = urlRange.location
         ///     NSInteger end = NSMaxRange(urlRange);
-            let end = NSMaxRange(urlRange)
+            var end = NSMaxRange(urlRange)
 
         ///     NSTextCheckingResult *tcoResult = url ? [[self validTCOURLRegexp] firstMatchInString:url options:0 range:NSMakeRange(0, url.length)] : nil;
             let tcoResult = url ? self.validTCOURLRegexp.firstMatch(in: url, options: 0, range: NSMaxRange(0, url.length)) : nil
