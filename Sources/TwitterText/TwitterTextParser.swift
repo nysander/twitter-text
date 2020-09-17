@@ -21,6 +21,12 @@ class TwitterTextParser {
     /// });
     /// return sDefaultParser;
     /// }
+    static var defaultParser: TwitterTextParser?
+//    {
+//
+//        let configuration = TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!
+//        return TwitterTextParser(withConfiguration: configuration)
+//    }
 
     /// + (void)setDefaultParserWithConfiguration:(TwitterTextConfiguration *)configuration {
     /// dispatch_async([self _queue], ^{
@@ -28,9 +34,8 @@ class TwitterTextParser {
     ///         sDefaultParser = [[TwitterTextParser alloc] initWithConfiguration:configuration];
     ///     }
     /// });
-    static var sDefaultParser: TwitterTextParser {
-        let configuration = TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!
-        return TwitterTextParser(withConfiguration: configuration)
+    static func setDefaultParser(with configuration: TwitterTextConfiguration) {
+        defaultParser = TwitterTextParser(with: configuration)
     }
 
     /// @property (nonatomic, readonly) TwitterTextConfiguration *configuration;
@@ -48,7 +53,7 @@ class TwitterTextParser {
     }
 
     /// - (instancetype)initWithConfiguration:(TwitterTextConfiguration *)configuration;
-    init(withConfiguration configuration: TwitterTextConfiguration) {
+    init(with configuration: TwitterTextConfiguration) {
         /// if (self = [super init]) {
         ///     _configuration = configuration;
         /// }

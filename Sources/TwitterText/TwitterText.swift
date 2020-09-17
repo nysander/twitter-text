@@ -211,7 +211,7 @@ public class TwitterText {
         ///     }
             }
         ///     if ([self isValidHostAndLength:url.length protocol:protocol host:host]) {
-            if isValidHostAndLength(urlLength: url!.count, urlProtocol: protocolStr!, host: host) {
+            if isValidHostAndLength(urlLength: url!.count, urlProtocol: protocolStr, host: host) {
         ///         TwitterTextEntity *entity = [TwitterTextEntity entityWithType:TwitterTextEntityURL range:NSMakeRange(start, end - start)];
                 let entity = TwitterTextEntity(withType: .TwitterTextEntityURL, range: NSMakeRange(start, end - start))
                 ///         [results addObject:entity];
