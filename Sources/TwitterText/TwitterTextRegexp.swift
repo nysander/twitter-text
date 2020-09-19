@@ -5,6 +5,10 @@
 
 import Foundation
 
+let TwitterTextEmojiRegex: NSRegularExpression? = {
+    try? NSRegularExpression.init(pattern: TwitterTextRegexp.emojiPattern, options: NSRegularExpression.Options(rawValue: 0))
+}()
+
 enum TwitterTextRegexp {
     /// #define TWUControlCharacters        @"\\u0009-\\u000D"
     static let TWUControlCharacters         = "\\u0009-\\u000D"
