@@ -629,8 +629,9 @@ final class TwitterTextTests: XCTestCase {
         // this implementation and other platforms.
         /// [TwitterTextParser setDefaultParserWithConfiguration:[TwitterTextConfiguration configurationFromJSONResource:kTwitterTextParserConfigurationV3]];
         /// NSString *text = @"ZWJ: क्ष -> क्\u200Dष; ZWNJ: क्ष -> क्\u200Cष";
-        let text = "ZWJ: क्ष -> क्\u{200d}ष; ZWNJ: क्ष -> क्\u{200c}ष"
+        var text = "ZWJ: क्ष -> क्\u{200D}ष; ZWNJ: क्ष -> क्\u{200C}ष"
         /// text = [self stringByParsingUnicodeEscapes:text];
+        text = self.stringByParsingUnicodeEscapes(string: text)
         TwitterTextParser.setDefaultParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!)
         /// TwitterTextParseResults *results = [[TwitterTextParser defaultParser] parseTweet:text];
         let results = TwitterTextParser.defaultParser.parseTweet(text: text)

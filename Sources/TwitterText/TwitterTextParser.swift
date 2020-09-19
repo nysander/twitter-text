@@ -76,7 +76,7 @@ class TwitterTextParser {
         /// }
         if !text.isEmpty {
             normalizedText = text.precomposedStringWithCanonicalMapping
-            normalizedTextLength = normalizedText.count
+            normalizedTextLength = normalizedText.utf16.count
         } else {
             normalizedTextLength = 0
         }
@@ -95,7 +95,7 @@ class TwitterTextParser {
 
         /// // Build an map of ranges, assuming the original character count does not change after normalization
         /// const NSUInteger textLength = text.length;
-        let textLength = text.count
+        let textLength = text.utf16.count
 
         /// NSRange textRanges[textLength], *ptr = textRanges;
         /// for (NSUInteger i = 0; i < textLength; i++) {
@@ -104,7 +104,7 @@ class TwitterTextParser {
         var textRanges: [NSRange] = Array(repeating: rangeNotFound, count: textLength)
 
         /// [self _tt_lengthOfText:text range:NSMakeRange(0, text.length) countingBlock:^NSInteger(NSInteger index, NSString *blockText, TwitterTextEntity *entity, NSString *substring) {
-        _ = self.length(of: text, range: NSMakeRange(0, text.count)) { index, blockText, entity, substring -> Int in
+        _ = self.length(of: text, range: NSMakeRange(0, text.utf16.count)) { index, blockText, entity, substring -> Int in
             /// // entity.range.length can be > 1 for emoji, decomposed characters, etc.
             ///     for (NSInteger i = 0; i < entity.range.length; i++) {
             for i in 0..<entity.range.length {
@@ -238,7 +238,7 @@ class TwitterTextParser {
                 displayEndIndex = NSMaxRange(range) - 1
             }
             ///     if (range.location + range.length <= blockText.length) {
-            if range.location + range.length <= blockText.count {
+            if range.location + range.length <= blockText.utf16.count {
                 ///         NSTextCheckingResult *invalidResult = [[TwitterText invalidCharacterRegexp] firstMatchInString:blockText options:0 range:range];
                 let invalidResult = TwitterText.invalidCharacterRegexp.firstMatch(in: blockText, options: .init(rawValue: 0), range: range)
                 ///         if (invalidResult) {
@@ -288,7 +288,7 @@ class TwitterTextParser {
 
         /// // handle trailing text
         /// weightedLength += [self _tt_lengthOfText:normalizedText range:NSMakeRange(textIndex, normalizedTextLength - textIndex) countingBlock:textUnitCountingBlock];
-        weightedLength += self.length(of: normalizedText, range: NSMakeRange(textIndex, normalizedTextLength - textLength), countingBlock: textUnitCountingBlock)
+        weightedLength += self.length(of: normalizedText, range: NSMakeRange(textIndex, normalizedTextLength - textIndex), countingBlock: textUnitCountingBlock)
 
         /// NSAssert(!NSEqualRanges(normalizedRanges[displayStartIndex], rangeNotFound), @"displayStartIndex should map to existing index in original string");
         assert(!NSEqualRanges(normalizedRanges[displayStartIndex], rangeNotFound), "displayStartIndex should map to existing index in original string")
@@ -320,9 +320,9 @@ class TwitterTextParser {
         /// NSInteger scaledWeightedLength = weightedLength / _configuration.scale;
         let scaledWeightedLength = weightedLength / configuration.scale
         /// NSInteger permillage = (NSInteger)(kPermillageScaleFactor * (scaledWeightedLength / (float)[self maxWeightedTweetLength]));
-        let permillage = TwitterText.kPermillageScaleFactor * (scaledWeightedLength / self.maxWeightedTweetLength())
+        let permillage = TwitterText.kPermillageScaleFactor * scaledWeightedLength / self.maxWeightedTweetLength()
         /// return [[TwitterTextParseResults alloc] initWithWeightedLength:scaledWeightedLength permillage:permillage valid:isValid displayRange:displayRange validRange:validRange];
-        return TwitterTextParseResults(weightedLength: weightedLength, permillage: permillage, valid: isValid, displayRange: displayRange, validRange: validRange)
+        return TwitterTextParseResults(weightedLength: scaledWeightedLength, permillage: permillage, valid: isValid, displayRange: displayRange, validRange: validRange)
     }
 
     /// - (NSInteger)maxWeightedTweetLength;
@@ -334,7 +334,7 @@ class TwitterTextParser {
     // MARK: - Private methods
 
     /// - (NSInteger)_tt_lengthOfText:(NSString *)text range:(NSRange)range countingBlock:(nonnull TextUnitCounterBlock)countingBlock
-    private func length(of text: String, range: NSRange, countingBlock: (Int, String, TwitterTextEntity, String) -> Int) -> Int {
+    private func length(of text: String, range: NSRange,countingBlock: @escaping (Int, String, TwitterTextEntity, String) -> Int) -> Int {
         ///     __block NSInteger length = 0;
         var length = 0
         ///
@@ -359,7 +359,7 @@ class TwitterTextParser {
             ///
         }
         ///     if (range.location + range.length <= text.length) {
-        if range.location + range.length <= text.count {
+        if range.location + range.length <= text.utf16.count {
         ///         // TODO: drop-iOS-10: when dropping support for iOS 10, remove the #if, #endif and everything in between
         ///         #if __IPHONE_11_0 > __IPHONE_OS_VERSION_MIN_REQUIRED
         ///         #if 0
@@ -424,6 +424,11 @@ class TwitterTextParser {
         ///         NSAssert(NO, @"range (%@) outside bounds of text.length (%lu) for text \"%@\"", NSStringFromRange(range), (unsigned long)text.length, text);
         ///         length = text.length;
         ///     }
+            let textString = text as NSString
+            textString.enumerateSubstrings(in: range, options: .byComposedCharacterSequences) { (substring, substringRange, enclosingRange, stop) in
+                let type = (self.configuration.emojiParsingEnabled && emojiRanges.contains(substringRange)) ? TwitterTextEntityType.TwitterTextEntityTweetEmojiChar : TwitterTextEntityType.TwitterTextEntityTweetChar
+                length = countingBlock(length, textString as String, TwitterTextEntity.init(withType: type, range: substringRange), substring!)
+            }
         } else {
             assert(false, "range (\(NSStringFromRange(range))) outside bounds of text.count (\(text.count)) for text \"\(text)\"")
             length = text.count
@@ -437,7 +442,7 @@ class TwitterTextParser {
     /// - (NSInteger)_tt_lengthOfWeightedChar:(NSString *)text
     private func length(ofWeightedChar text: String) -> Int {
         ///     NSInteger length = text.length;
-        var length = text.count
+        let length = text.utf16.count
         ///     if (length == 0) {
         ///         return 0;
         ///     }
