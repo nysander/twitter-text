@@ -8,11 +8,11 @@ import UnicodeURL
 
 /// @interface TwitterText : NSObject
 public class TwitterText {
-    static let kMaxURLLength = 4096;
-    static let kMaxTCOSlugLength = 40;
-    static let kMaxTweetLengthLegacy = 140;
-    static let kTransformedURLLength = 23;
-    static let kPermillageScaleFactor = 1000;
+    static let kMaxURLLength = 4096
+    static let kMaxTCOSlugLength = 40
+    static let kMaxTweetLengthLegacy = 140
+    static let kTransformedURLLength = 23
+    static let kPermillageScaleFactor = 1000
 
     /// The backend adds http:// for normal links and https to *.twitter.com URLs
     /// (it also rewrites http to https for URLs matching *.twitter.com).
@@ -101,7 +101,7 @@ public class TwitterText {
         /// NSMutableArray<TwitterTextEntity *> *results = [NSMutableArray<TwitterTextEntity *> array];
         var results: [TwitterTextEntity] = []
         /// NSUInteger len = text.length;
-        let len = text.count
+        let len = text.utf16.count
 
         /// NSUInteger position = 0;
         var position = 0
@@ -147,14 +147,14 @@ public class TwitterText {
             let domainRange = urlResult.range(at: TWUValidURLGroup.TWUValidURLGroupDomain.rawValue)
 
         ///     NSString *protocol = (protocolRange.location != NSNotFound) ? [text substringWithRange:protocolRange] : nil;
-            let protocolStr = protocolRange.location != NSNotFound ? NSString(string: text).substring(with: protocolRange) : nil
+            let protocolStr = protocolRange.location != NSNotFound ? text.substring(with: Range(protocolRange, in: text)!) : nil
         ///     if (protocol.length == 0) {
             if let protocolStr = protocolStr, protocolStr.count == 0 {
         ///         NSString *preceding = (precedingRange.location != NSNotFound) ? [text substringWithRange:precedingRange] : nil;
-                let preceding = precedingRange.location != NSNotFound ? NSString(string: text).substring(with: precedingRange) : nil
+                let preceding = precedingRange.location != NSNotFound ? text.substring(with: Range(precedingRange, in: text)!) : nil
         ///         NSRange suffixRange = [preceding rangeOfCharacterFromSet:[self invalidURLWithoutProtocolPrecedingCharSet] options:NSBackwardsSearch | NSAnchoredSearch];
 
-                let suffixRange = NSRange((preceding?.rangeOfCharacter(from: self.invalidURLWithoutProtocolPrecedingCharSet))!, in: preceding!)
+                let suffixRange = NSRange((preceding?.rangeOfCharacter(from: self.invalidURLWithoutProtocolPrecedingCharSet, options: [.backwards, .anchored]))!, in: preceding!)
         ///         if (suffixRange.location != NSNotFound) {
         ///             continue;
         ///         }
@@ -211,7 +211,7 @@ public class TwitterText {
         ///     }
             }
         ///     if ([self isValidHostAndLength:url.length protocol:protocol host:host]) {
-            if isValidHostAndLength(urlLength: url!.count, urlProtocol: protocolStr, host: host) {
+            if isValidHostAndLength(urlLength: url!.utf16.count, urlProtocol: protocolStr, host: host) {
         ///         TwitterTextEntity *entity = [TwitterTextEntity entityWithType:TwitterTextEntityURL range:NSMakeRange(start, end - start)];
                 let entity = TwitterTextEntity(withType: .TwitterTextEntityURL, range: NSMakeRange(start, end - start))
                 ///         [results addObject:entity];
@@ -261,7 +261,7 @@ public class TwitterText {
         /// NSMutableArray<TwitterTextEntity *> *results = [NSMutableArray<TwitterTextEntity *> array];
         var results: [TwitterTextEntity] = []
         /// NSUInteger len = text.length;
-        let len = text.count
+        let len = text.utf16.count
         /// NSUInteger position = 0;
         var position = 0
 
@@ -306,7 +306,7 @@ public class TwitterText {
             if matchOk {
                 let afterStart = NSMaxRange(hashtagRange)
                 if afterStart < len {
-                    let endMatchRange = self.endHashtagRegexp.rangeOfFirstMatch(in: text, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(afterStart, len - afterStart))
+                    let endMatchRange = self.endHashtagRegexp.rangeOfFirstMatch(in: text, options: [], range: NSMakeRange(afterStart, len - afterStart))
                     if endMatchRange.location != NSNotFound {
                         matchOk = false
                     }
@@ -365,7 +365,7 @@ public class TwitterText {
         /// NSMutableArray<TwitterTextEntity *> *results = [NSMutableArray<TwitterTextEntity *> array];
         var results: [TwitterTextEntity] = []
         /// NSUInteger len = text.length;
-        let len = text.count
+        let len = text.utf16.count
         /// NSUInteger position = 0;
         var position = 0
 
@@ -458,7 +458,7 @@ public class TwitterText {
         /// NSMutableArray<TwitterTextEntity *> *results = [NSMutableArray<TwitterTextEntity *> array];
         var results: [TwitterTextEntity] = []
         /// NSUInteger len = text.length;
-        let len = text.count
+        let len = text.utf16.count
         /// NSUInteger position = 0;
         var position = 0
 
@@ -469,7 +469,7 @@ public class TwitterText {
             ///     if (!matchResult || matchResult.numberOfRanges < 5) {
             ///         break;
             ///     }
-            guard let result = matchResult, result.numberOfRanges < 5 else {
+            guard let result = matchResult, result.numberOfRanges >= 5 else {
                 break
             }
 
@@ -528,14 +528,14 @@ public class TwitterText {
             return nil
         }
         /// NSUInteger len = text.length;
-        let len = text.count
+        let len = text.utf16.count
 
         /// NSTextCheckingResult *matchResult = [[self validReplyRegexp] firstMatchInString:text options:(NSMatchingWithoutAnchoringBounds | NSMatchingAnchored) range:NSMakeRange(0, len)];
-        let matchResult = self.validReplyRegexp.firstMatch(in: text, options: .withoutAnchoringBounds, range: NSMakeRange(0, len))
+        let matchResult = self.validReplyRegexp.firstMatch(in: text, options: [.withoutAnchoringBounds, .anchored], range: NSMakeRange(0, len))
         /// if (!matchResult || matchResult.numberOfRanges < 2) {
         ///     return nil;
         /// }
-        guard let result =  matchResult, result.numberOfRanges < 2 else {
+        guard let result =  matchResult, result.numberOfRanges >= 2 else {
             return nil
         }
 
@@ -557,7 +557,6 @@ public class TwitterText {
         return TwitterTextEntity(withType: .TwitterTextEntityScreenName, range: replyRange)
     }
 
-
     /// + (NSCharacterSet *)validHashtagBoundaryCharacterSet;
     public static func validHashtagBoundaryCharacterSet() -> CharacterSet {
         /// static NSCharacterSet *charset;
@@ -577,7 +576,6 @@ public class TwitterText {
         /// return charset;
         return charset
     }
-
 
     /// + (NSInteger)tweetLength:(NSString *)text;
     public static func tweetLength(text: String) -> Int {
@@ -650,16 +648,10 @@ public class TwitterText {
                         if CFStringIsSurrogateHighCharacter(d) {
                             ///                     charCount--;
                             charCount -= 1
-                            ///                     i++;
-                            ///                 }
                         }
-                        ///             }
                     }
-                    ///         }
                 }
-                ///     }
             }
-            /// }
         }
 
         /// return (NSInteger)charCount;
@@ -675,7 +667,6 @@ public class TwitterText {
         /// return [self tweetLength:text transformedURLLength:httpsURLLength];
         return self.tweetLength(text: text, transformedURLLength: httpsURLLength)
     }
-
 
     /// + (NSInteger)remainingCharacterCount:(NSString *)text;
     public static func remainingCharacterCount(text: String) -> Int {
@@ -695,7 +686,6 @@ public class TwitterText {
         /// return kMaxTweetLengthLegacy - [self tweetLength:text httpURLLength:httpURLLength httpsURLLength:httpsURLLength];
         return kMaxTweetLengthLegacy - self.tweetLength(text: text, httpURLLength: httpURLLength, httpsURLLength: httpsUrlLength)
     }
-
 
     /// + (void)eagerlyLoadRegexps;
     public static func eagerlyLoadRegexps() {
@@ -939,7 +929,7 @@ public class TwitterText {
             /// NSInteger originalHostLength = [host length];
             ///
             /// NSURL *url = [NSURL URLWithUnicodeString:host error:&error];
-            guard var host = host, let url = URL(string: host) else {
+            guard var host = host, let url = URL(unicodeString: host) else {
                 return false
             }
             let originalHostLength = host.count

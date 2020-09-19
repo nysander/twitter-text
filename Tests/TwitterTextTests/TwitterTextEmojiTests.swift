@@ -28,7 +28,6 @@ extension NSRegularExpression {
 import XCTest
 
 final class TwitterTextEmojiTests: XCTestCase {
-    
     func testEmojiUnicode10() {
         guard let regex = TwitterTextEmojiRegex else {
             XCTFail()

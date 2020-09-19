@@ -5,7 +5,6 @@
 
 import Foundation
 
-
 public class TwitterTextParseResults {
     /// The adjust tweet length based on char weights.
     ///
@@ -34,10 +33,10 @@ public class TwitterTextParseResults {
 
     /// - (instancetype)initWithWeightedLength:(NSInteger)length permillage:(NSInteger)permillage valid:(BOOL)valid displayRange:(NSRange)displayRange validRange:(NSRange)validRange;
     public init(weightedLength length: Int,
-         permillage: Int,
-         valid: Bool,
-         displayRange: NSRange,
-         validRange: NSRange) {
+                permillage: Int,
+                valid: Bool,
+                displayRange: NSRange,
+                validRange: NSRange) {
         self.weightedLength = length
         self.permillage = permillage
         self.isValid = valid

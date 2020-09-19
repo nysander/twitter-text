@@ -76,6 +76,7 @@ enum TwitterTextRegexp {
     /// #define TWUUnicodeFSI               @"\\u2068"
     static let TWUUnicodeFSI                = "\\u2068"
     /// #define TWUUnicodePDI               @"\\u2069"
+    static let TWUUnicodePDI                = "\\u2069"
 
     /// #define TWUUnicodeDirectionalCharacters \
     ///     TWUUnicodeALM \
@@ -92,7 +93,7 @@ enum TwitterTextRegexp {
     ///     TWUUnicodePDI
     static let TWUUnicodeDirectionalCharacters = "\(TWUUnicodeALM)\(TWUUnicodeLRM)"
         + "\(TWUUnicodeLRE)\(TWUUnicodeRLE)\(TWUUnicodePDF)\(TWUUnicodeLRO)"
-        + "\(TWUUnicodeRLO)\(TWUUnicodeLRI)\(TWUUnicodeRLI)\(TWUUnicodeFSI)"
+        + "\(TWUUnicodeRLO)\(TWUUnicodeLRI)\(TWUUnicodeRLI)\(TWUUnicodeFSI)\(TWUUnicodePDI)"
 
     /// #define TWUInvalidCharacters        @"\\uFFFE\\uFEFF\\uFFFF"
     static let TWUInvalidCharacters         = "\\uFFFE\\uFEFF\\uFFFF"

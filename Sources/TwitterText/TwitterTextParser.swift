@@ -334,7 +334,7 @@ class TwitterTextParser {
     // MARK: - Private methods
 
     /// - (NSInteger)_tt_lengthOfText:(NSString *)text range:(NSRange)range countingBlock:(nonnull TextUnitCounterBlock)countingBlock
-    private func length(of text: String, range: NSRange,countingBlock: @escaping (Int, String, TwitterTextEntity, String) -> Int) -> Int {
+    private func length(of text: String, range: NSRange, countingBlock: @escaping (Int, String, TwitterTextEntity, String) -> Int) -> Int {
         ///     __block NSInteger length = 0;
         var length = 0
         ///

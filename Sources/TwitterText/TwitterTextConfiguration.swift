@@ -33,7 +33,7 @@ class TwitterTextConfiguration {
         let scale: Int
         let defaultWeight: Int
         let transformedURLLength: Int
-        let emojiParsingEnabled: Bool
+        let emojiParsingEnabled: Bool?
         let ranges: [[String: Int]]
     }
 
@@ -58,7 +58,7 @@ class TwitterTextConfiguration {
         ///     _transformedURLLength = [jsonDictionary[@"transformedURLLength"] integerValue];
             self.transformedURLLength = config.transformedURLLength
         ///     _emojiParsingEnabled = [jsonDictionary[@"emojiParsingEnabled"] boolValue];
-            self.emojiParsingEnabled = config.emojiParsingEnabled
+            self.emojiParsingEnabled = config.emojiParsingEnabled ?? false
         ///     NSArray *jsonRanges = jsonDictionary[@"ranges"];
 //        let jsonRanges = jsonDictionary["ranges"]
         ///     NSMutableArray *ranges = [NSMutableArray arrayWithCapacity:jsonRanges.count];
@@ -93,24 +93,22 @@ class TwitterTextConfiguration {
         }
     }
 
-    /// + (instancetype)configurationFromJSONResource:(NSString *)jsonResource;
     public static func configuration(fromJSONResource jsonResource: String) -> TwitterTextConfiguration? {
-        /// NSError *error = nil;
-
-        /// NSString *sourceFile = [[NSBundle bundleForClass:self] pathForResource:jsonResource ofType:@"json"];
-        /// NSString *jsonString = [NSString stringWithContentsOfFile:sourceFile encoding:NSUTF8StringEncoding error:&error];
         let url = URL(fileURLWithPath: #file).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("config/\(jsonResource).json")
-            guard let jsonData = try? Data(contentsOf: url) else {
+        guard let jsonData = try? Data(contentsOf: url) else {
             return nil
         }
 
-        /// return !error ? [self configurationFromJSONString:jsonString] : nil;
         return self.configuration(from: jsonData)
     }
 
-    /// + (instancetype)configurationFromJSONString:(NSString *)jsonString
+    public static func configuration(from jsonString: String) -> TwitterTextConfiguration? {
+        let jsonData = Data(jsonString.utf8)
+
+        return TwitterTextConfiguration(jsonData: jsonData)
+    }
+
     public static func configuration(from jsonData: Data) -> TwitterTextConfiguration? {
-        /// return [[TwitterTextConfiguration alloc] initWithJSONString:jsonString];
         return TwitterTextConfiguration(jsonData: jsonData)
     }
 }
