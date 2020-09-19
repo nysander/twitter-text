@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+jobs:
+  macos:
+    runs-on: macOS-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Build and Test
+        run: swift test
+  linux:
+      runs-on: ubuntu-latest
+
+      strategy:
+        matrix:
+          swift: ["5.2"]
+
+      container:
+        image: swift:${{ matrix.swift }}
+
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v1
+        - name: Build
+          run: swift build
+        - name: Test
+          run: swift test --enable-test-discovery
