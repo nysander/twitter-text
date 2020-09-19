@@ -16,8 +16,8 @@ extension NSRegularExpression {
 
         var results: [String] = []
         for match in matches {
-            if let rRange = Range(range, in: string), NSMaxRange(match.range) <= length {
-                results.append(string.substring(with: rRange))
+            if let rRange = Range(match.range, in: string), NSMaxRange(match.range) <= length {
+                results.append(String(string[rRange]))
             }
         }
 
@@ -28,41 +28,41 @@ extension NSRegularExpression {
 import XCTest
 
 final class TwitterTextEmojiTests: XCTestCase {
-    /// - (void)testEmojiUnicode10
+    
     func testEmojiUnicode10() {
-    /// NSArray<NSString *> *matches = [TwitterTextEmojiRegex() matchesInString:@"Unicode 10.0; grinning face with one large and one small eye: 🤪; woman with headscarf: 🧕; (fitzpatrick) woman with headscarf + medium-dark skin tone: 🧕🏾; flag (England): 🏴󠁧󠁢󠁥󠁮󠁧󠁿"];
-        let matches = TwitterTextEmojiRegex().matches(in: "Unicode 10.0; grinning face with one large and one small eye: 🤪; woman with headscarf: 🧕; (fitzpatrick) woman with headscarf + medium-dark skin tone: 🧕🏾; flag (England): 🏴󠁧󠁢󠁥󠁮󠁧󠁿")
+        guard let regex = TwitterTextEmojiRegex else {
+            XCTFail()
+            return
+        }
 
-    /// NSArray<NSString *> *expected = [NSArray arrayWithObjects:@"🤪", @"🧕", @"🧕🏾", @"🏴󠁧󠁢󠁥󠁮󠁧󠁿", nil];
+        let matches = regex.matches(in: "Unicode 10.0; grinning face with one large and one small eye: 🤪; woman with headscarf: 🧕; (fitzpatrick) woman with headscarf + medium-dark skin tone: 🧕🏾; flag (England): 🏴󠁧󠁢󠁥󠁮󠁧󠁿")
         let expected = ["🤪", "🧕", "🧕🏾", "🏴󠁧󠁢󠁥󠁮󠁧󠁿", nil]
-    /// for (NSUInteger i = 0; i < matches.count; i++) {
-    ///XCTAssertTrue([matches[i] isEqualToString:expected[i]]);
-        for index in 0..<matches.count {
-            XCTAssertEqual(matches[index], expected[index])
+
+        matches.enumerated().forEach { (index, match) in
+            XCTAssertEqual(match, expected[index])
         }
     }
 
-/*
-    - (void)testEmojiUnicode9
-    {
-    NSArray<NSString *> *matches = [TwitterTextEmojiRegex() matchesInString:@"Unicode 9.0; face with cowboy hat: 🤠; woman dancing: 💃, woman dancing + medium-dark skin tone: 💃🏾"];
-    NSArray<NSString *> *expected = [NSArray arrayWithObjects:@"🤠", @"💃", @"💃🏾", nil];
+    func testEmojiUnicode9() {
+        guard let regex = TwitterTextEmojiRegex else {
+            XCTFail()
+            return
+        }
 
-    for (NSUInteger i = 0; i < matches.count; i++) {
-    XCTAssertTrue([matches[i] isEqualToString:expected[i]]);
+        let matches = regex.matches(in: "Unicode 9.0; face with cowboy hat: 🤠; woman dancing: 💃, woman dancing + medium-dark skin tone: 💃🏾")
+        let expected = ["🤠", "💃", "💃🏾", nil]
+
+        matches.enumerated().forEach { (index, match) in
+            XCTAssertEqual(match, expected[index])
+        }
     }
+
+    func testIsEmoji() {
+        XCTAssertTrue("🤦".isEmoji)
+        XCTAssertTrue("🏴󠁧󠁢󠁥󠁮󠁧󠁿".isEmoji)
+        XCTAssertTrue("👨‍👨‍👧‍👧".isEmoji)
+        XCTAssertTrue("0️⃣".isEmoji)
+        XCTAssertFalse("A".isEmoji)
+        XCTAssertFalse("Á".isEmoji)
     }
-
-
-    - (void)testIsEmoji
-    {
-    XCTAssertTrue([@"🤦" tt_isEmoji]);
-    XCTAssertTrue([@"🏴󠁧󠁢󠁥󠁮󠁧󠁿" tt_isEmoji]);
-    XCTAssertTrue([@"👨‍👨‍👧‍👧" tt_isEmoji]);
-    XCTAssertTrue([@"0️⃣" tt_isEmoji]);
-
-    XCTAssertFalse([@"A" tt_isEmoji]);
-    XCTAssertFalse([@"Á" tt_isEmoji]);
-    }
-*/
 }
