@@ -27,43 +27,44 @@ class TwitterTextConfiguration {
     /// @property (nonatomic, readonly) NSArray<TwitterTextWeightedRange *> *ranges;
     let ranges: [TwitterTextWeightedRange]
 
-    init?(jsonString: String) {
+    struct Configuration: Decodable {
+        let version: Int
+        let maxWeightedTweetLength: Int
+        let scale: Int
+        let defaultWeight: Int
+        let transformedURLLength: Int
+        let emojiParsingEnabled: Bool
+        let ranges: [[String: Int]]
+    }
+
+    init?(jsonData: Data) {
         /// self = [super init];
         /// if (self) {
         ///     NSError *jsonError = nil;
         do {
         ///     NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
-            let jsonData = try JSONEncoder().encode(jsonString)
-        ///     NSDictionary *jsonDictionary = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&jsonError];
-            guard let jsonDictionary = try JSONSerialization.jsonObject(with: jsonData, options: .mutableContainers) as? Dictionary<String, Any>,
-                  let version = jsonDictionary["version"] as? Int,
-                  let maxWeightedTweetLength = jsonDictionary["maxWeightedTweetLength"] as? Int,
-                  let scale = jsonDictionary["scale"] as? Int,
-                  let defaultWeight = jsonDictionary["defaultWeight"] as? Int,
-                  let transformedURLLength = jsonDictionary["transformedURLLength"] as? Int,
-                  let emojiParsingEnabled = jsonDictionary["emojiParsingEnabled"] as? Bool,
-                  let jsonRanges = jsonDictionary["ranges"] as? [[String:Int]] else {
-                return nil
-            }
 
+        ///     NSDictionary *jsonDictionary = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&jsonError];
+
+            let config = try JSONDecoder().decode(Configuration.self, from: jsonData)
         ///     _version = [jsonDictionary[@"version"] integerValue];
-            self.version = version
+            self.version = config.version
         ///     _maxWeightedTweetLength = [jsonDictionary[@"maxWeightedTweetLength"] integerValue];
-            self.maxWeightedTweetLength = maxWeightedTweetLength
+            self.maxWeightedTweetLength = config.maxWeightedTweetLength
         ///     _scale = [jsonDictionary[@"scale"] integerValue];
-            self.scale = scale
+            self.scale = config.scale
         ///     _defaultWeight = [jsonDictionary[@"defaultWeight"] integerValue];
-            self.defaultWeight = defaultWeight
+            self.defaultWeight = config.defaultWeight
         ///     _transformedURLLength = [jsonDictionary[@"transformedURLLength"] integerValue];
-            self.transformedURLLength = transformedURLLength
+            self.transformedURLLength = config.transformedURLLength
         ///     _emojiParsingEnabled = [jsonDictionary[@"emojiParsingEnabled"] boolValue];
-            self.emojiParsingEnabled = emojiParsingEnabled
+            self.emojiParsingEnabled = config.emojiParsingEnabled
         ///     NSArray *jsonRanges = jsonDictionary[@"ranges"];
 //        let jsonRanges = jsonDictionary["ranges"]
         ///     NSMutableArray *ranges = [NSMutableArray arrayWithCapacity:jsonRanges.count];
         var ranges: [TwitterTextWeightedRange] = []
         ///     for (NSDictionary *rangeDict in jsonRanges) {
-        for rangeDict in jsonRanges {
+            for rangeDict in config.ranges {
         ///         NSRange range;
         ///         range.location = [rangeDict[@"start"] integerValue];
         ///         range.length = [rangeDict[@"end"] integerValue] - range.location;
@@ -78,7 +79,6 @@ class TwitterTextConfiguration {
             var range = NSMakeRange(NSNotFound, NSNotFound)
             range.location = start
             range.length = end - range.location
-//            let charWeight = rangeDict["weight"] as Int
             let charWeightObject = TwitterTextWeightedRange(range: range, weight: charWeight)
             ranges.append(charWeightObject)
         ///     }
@@ -99,18 +99,18 @@ class TwitterTextConfiguration {
 
         /// NSString *sourceFile = [[NSBundle bundleForClass:self] pathForResource:jsonResource ofType:@"json"];
         /// NSString *jsonString = [NSString stringWithContentsOfFile:sourceFile encoding:NSUTF8StringEncoding error:&error];
-        guard let sourceFile = Bundle().path(forResource: jsonResource, ofType: "json"),
-              let url = URL(string: sourceFile),
-              let jsonString = try? String(contentsOf: url, encoding: .utf8) else {
+        let url = URL(fileURLWithPath: #file).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("config/\(jsonResource).json")
+            guard let jsonData = try? Data(contentsOf: url) else {
             return nil
         }
+
         /// return !error ? [self configurationFromJSONString:jsonString] : nil;
-        return self.configuration(fromJSONString: jsonString)
+        return self.configuration(from: jsonData)
     }
 
     /// + (instancetype)configurationFromJSONString:(NSString *)jsonString
-    public static func configuration(fromJSONString jsonString: String) -> TwitterTextConfiguration? {
+    public static func configuration(from jsonData: Data) -> TwitterTextConfiguration? {
         /// return [[TwitterTextConfiguration alloc] initWithJSONString:jsonString];
-        return TwitterTextConfiguration(jsonString: jsonString)
+        return TwitterTextConfiguration(jsonData: jsonData)
     }
 }

@@ -21,7 +21,7 @@ class TwitterTextParser {
     /// });
     /// return sDefaultParser;
     /// }
-    static var defaultParser: TwitterTextParser?
+    static var defaultParser = TwitterTextParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!)
 //    {
 //
 //        let configuration = TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!
@@ -96,17 +96,15 @@ class TwitterTextParser {
         /// // Build an map of ranges, assuming the original character count does not change after normalization
         /// const NSUInteger textLength = text.length;
         let textLength = text.count
-        // FIXME !!!
+
         /// NSRange textRanges[textLength], *ptr = textRanges;
-        var textRanges: [NSRange] = []
         /// for (NSUInteger i = 0; i < textLength; i++) {
         ///     textRanges[i] = rangeNotFound;
         /// }
-        for i in 0..<textLength {
-            textRanges[i] = rangeNotFound
-        }
+        var textRanges: [NSRange] = Array(repeating: rangeNotFound, count: textLength)
+
         /// [self _tt_lengthOfText:text range:NSMakeRange(0, text.length) countingBlock:^NSInteger(NSInteger index, NSString *blockText, TwitterTextEntity *entity, NSString *substring) {
-        let block = self.length(of: text, range: NSMakeRange(0, text.count)) { index, blockText, entity, subscring -> Int in
+        _ = self.length(of: text, range: NSMakeRange(0, text.count)) { index, blockText, entity, substring -> Int in
             /// // entity.range.length can be > 1 for emoji, decomposed characters, etc.
             ///     for (NSInteger i = 0; i < entity.range.length; i++) {
             for i in 0..<entity.range.length {
@@ -128,19 +126,15 @@ class TwitterTextParser {
         }
 
         /// NSRange normalizedRanges[normalizedTextLength], *normalizedRangesPtr = normalizedRanges;
-        let normalizedRanges: [NSRange] = Array.init(repeating: NSMakeRange(NSNotFound, NSNotFound), count: normalizedTextLength)
-        let normalizedRangesPtr: NSRangePointer = NSRangePointer(mutating: normalizedRanges)
         /// for (NSUInteger i = 0; i < normalizedTextLength; i++) {
         ///     normalizedRangesPtr[i] = rangeNotFound;
         /// }
-        for i in 0..<normalizedTextLength {
-            normalizedRangesPtr[i] = rangeNotFound
-        }
+        var normalizedRanges: [NSRange] = Array.init(repeating: rangeNotFound, count: normalizedTextLength)
 
         /// __block NSInteger offset = 0;
         var offset = 0
         /// [self _tt_lengthOfText:normalizedText range:NSMakeRange(0, normalizedTextLength) countingBlock:^NSInteger(NSInteger composedCharIndex, NSString *blockText, TwitterTextEntity *entity, NSString *substring) {
-        let countingBlock = self.length(of: normalizedText, range: NSMakeRange(0, normalizedTextLength)) { composedCharIndex, blockText, entity, subscring -> Int in
+        _ = self.length(of: normalizedText, range: NSMakeRange(0, normalizedTextLength)) { composedCharIndex, blockText, entity, subscring -> Int in
             /// // map index of each composed char back to its pre-normalized index.
             ///     if (composedCharIndex+offset < textLength) {
             if composedCharIndex + offset < textLength {
@@ -150,7 +144,7 @@ class TwitterTextParser {
                 ///             normalizedRangesPtr[composedCharIndex+i] = originalRange;
                 ///         }
                 for i in 0..<entity.range.length {
-                    normalizedRangesPtr[composedCharIndex + i] = originalRange
+                    normalizedRanges[composedCharIndex + i] = originalRange
                 }
                 ///         if (originalRange.length > entity.range.length) {
                 ///             offset += (originalRange.length - entity.range.length);
@@ -289,7 +283,6 @@ class TwitterTextParser {
 
             ///     textIndex = urlEntity.range.location + urlEntity.range.length;
             textIndex = urlEntity.range.location + urlEntity.range.length
-            /// }
         }
 
 

@@ -12,7 +12,7 @@ extension NSRegularExpression {
     func matches(in string: String) -> [String] {
         let length = string.count
         let range = NSMakeRange(0, length)
-        let matches = self.matches(in: string, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: range)
+        let matches = self.matches(in: string, options: [], range: range)
 
         var results: [String] = []
         for match in matches {
