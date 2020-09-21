@@ -588,7 +588,6 @@ final class TwitterTextTests: XCTestCase {
         }
     }
 
-// FIXME: failing test
     func testValidate() {
         let filename = conformanceRootDirectory.appendingPathComponent("validate.json")
         guard let jsonData = try? String(contentsOf: filename, encoding: .utf8).data(using: .utf8),
@@ -599,14 +598,12 @@ final class TwitterTextTests: XCTestCase {
 
         TwitterTextParser.setDefaultParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationClassic)!)
 
-        /// NSDictionary *tests = [rootDic objectForKey:@"tests"];
-        /// NSArray *lengths = [tests objectForKey:@"lengths"];
-// FIXME: lengths has provided wrong dict key, cannot find anywhere "lengths" key in validate.json file
-        guard let tests = validation["tests"] as? [String: Any],
-              let lengths = tests["UnicodeDirectionalMarkerCounterTest"] as? [[String: Any]] else {
+        guard let tests = validation["tests"] as? [String: Any] else {
             XCTFail()
             return
         }
+
+        let lengths = tests["lengths"] as? [[String: Any]] ?? []
 
         for testCase in lengths {
             guard var text = testCase["text"] as? String else {
@@ -623,7 +620,6 @@ final class TwitterTextTests: XCTestCase {
             XCTAssertEqual(len, expected, "Length should be the same")
         }
     }
-
 
     func _testWeightedTweetsCountingWithTestSuite(testSuite: String) {
         let filename = conformanceRootDirectory.appendingPathComponent("validate.json")
