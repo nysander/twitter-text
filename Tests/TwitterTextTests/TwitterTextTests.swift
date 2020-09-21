@@ -37,14 +37,15 @@ final class TwitterTextTests: XCTestCase {
         XCTAssertFalse(set.contains("\u{00D6}"))
         XCTAssertTrue(set.contains("\u{00D7}"))
 
-        // FIXME: Fix assertions
         /// NSString *validLongCharacterString = @"\U0001FFFF";
         let validLongCharacterString = "\u{0001FFFF}"
         /// XCTAssertTrue([set longCharacterIsMember:CFStringGetLongCharacterForSurrogatePair([validLongCharacterString     characterAtIndex:0], [validLongCharacterString characterAtIndex:1])]);
+        XCTFail("Fix above commented assertion")
 
         /// NSString *invalidLongCharacterString = @"\U00020000";
         let invalidLongCharacterString = "\u{00020000}"
         /// XCTAssertFalse([set longCharacterIsMember:CFStringGetLongCharacterForSurrogatePair([invalidLongCharacterString  characterAtIndex:0], [invalidLongCharacterString characterAtIndex:1])]);
+        XCTFail("Fix above commented assertion")
     }
 
     func testLongDomain() {
@@ -80,7 +81,6 @@ final class TwitterTextTests: XCTestCase {
         XCTAssertEqual(entities.count, 0)
     }
 
-    // TODO: this test method should be split into smaller chunks
     func testExtract() {
         let filename = conformanceRootDirectory.appendingPathComponent("extract.json")
         guard let jsonData = try? String(contentsOf: filename, encoding: .utf8).data(using: .utf8),
@@ -123,7 +123,12 @@ final class TwitterTextTests: XCTestCase {
                     actualRange.location += 1
                     actualRange.length -= 1
 
-                    let actualText = text.substring(with: Range(actualRange, in: text)!)
+                    guard let range = Range(actualRange, in: text) else {
+                        XCTFail()
+                        break
+                    }
+
+                    let actualText = String(text[range])
 
                     XCTAssertEqual(expectedText, actualText, "\(testCase)")
                 }
@@ -165,7 +170,13 @@ final class TwitterTextTests: XCTestCase {
                     var r = actualRange
                     r.location += 1
                     r.length -= 1
-                    let actualText = text.substring(with: Range(r, in: text)!)
+
+                    guard let range = Range(r, in: text) else {
+                        XCTFail()
+                        break
+                    }
+
+                    let actualText = String(text[range])
 
                     XCTAssertEqual(expectedText, actualText, "\(testCase)")
                     XCTAssertTrue(NSEqualRanges(expectedRange, actualRange), "\(NSStringFromRange(expectedRange)) != \(NSStringFromRange(actualRange)), \(testCase)")
@@ -212,7 +223,13 @@ final class TwitterTextTests: XCTestCase {
                     var r = actualRange
                     r.location += 1
                     r.length -= 1
-                    let actualText = text.substring(with: Range(r, in: text)!)
+
+                    guard let range = Range(r, in: text) else {
+                        XCTFail()
+                        break
+                    }
+
+                    let actualText = String(text[range])
 
                     XCTAssertEqual(expectedText, actualText, "\(testCase)")
                     XCTAssertTrue(NSEqualRanges(expectedRange, actualRange), "\(NSStringFromRange(expectedRange)) != \(NSStringFromRange(actualRange))\n\(testCase)")
@@ -234,12 +251,12 @@ final class TwitterTextTests: XCTestCase {
 
             if result != nil || expected != nil {
                 var actual: String? = nil
-                if let range = result?.range {
-                    actual = text.substring(with: Range(range, in: text)!)
+                if let resultRange = result?.range, let range = Range(resultRange, in: text) {
+                    actual = String(text[range])
                 }
 
                 if expected == nil {
-                    XCTAssertNil(actual, "\(actual)\n\(testCase)")
+                    XCTAssertNil(actual, "\(String(describing: actual))\n\(testCase)")
                 } else {
                     XCTAssertEqual(expected, actual, "\(testCase)")
                 }
@@ -248,346 +265,327 @@ final class TwitterTextTests: XCTestCase {
 
 
         // MARK: URLs
-        /// for (NSDictionary *testCase in urls) {
-        ///     NSString *text = [testCase objectForKey:@"text"];
-        ///     NSArray *expected = [testCase objectForKey:@"expected"];
         for testCase in urls {
-            // FIXME: Failing test cases
             guard let text = testCase["text"] as? String,
                   let expected = testCase["expected"] as? [String] else {
                 XCTFail()
                 break
             }
-        ///     NSArray *results = [TwitterText URLsInText:text];
+
             let results = TwitterText.URLs(inText: text)
 
-        ///     if (results.count == expected.count) {
             if results.count == expected.count {
-        ///         NSUInteger count = results.count;
-        ///         for (NSUInteger i = 0; i < count; i++) {
                 for index in 0..<results.count {
-        ///             NSString *expectedText = [expected objectAtIndex:i];
                     let expectedText = expected[index]
-///
-        ///             TwitterTextEntity *entity = [results objectAtIndex:i];
                     let entity = results[index]
-        ///             NSRange r = entity.range;
-                    let r = entity.range
-        ///             NSString *actualText = [text substringWithRange:r];
-                    let actualText = text.substring(with: Range(r, in: text)!)
-///
-        ///             XCTAssertEqualObjects(expectedText, actualText, @"%@", testCase);
-                    XCTAssertEqual(expectedText, actualText, "\(testCase)")
-        ///         }
-                }
-        ///     } else {
-            } else {
-        ///         NSMutableArray *resultTexts = [NSMutableArray array];
-                var resultTexts: [String] = []
-        ///         for (TwitterTextEntity *entity in results) {
-                for entity in results {
-        ///             [resultTexts addObject:[text substringWithRange:entity.range]];
-                    resultTexts.append(text.substring(with: Range(entity.range, in: text)!))
-        ///         }
-                }
-        ///         XCTFail(@"Matching count is different: %lu != %lu\n%@\n%@", (unsigned long)expected.count, (unsigned long)results.count, testCase, resultTexts);
-                XCTFail("Matching count is different: \(expected.count) != \(results.count)\n\(testCase)\n\(resultTexts)")
 
-        ///     }
+                    guard let range = Range(entity.range, in: text) else {
+                        XCTFail()
+                        break
+                    }
+                    let actualText = String(text[range])
+
+                    XCTAssertEqual(expectedText, actualText, "\(testCase)")
+                }
+            } else {
+                var resultTexts: [String] = []
+                for entity in results {
+                    guard let range = Range(entity.range, in: text) else {
+                        XCTFail()
+                        break
+                    }
+                    resultTexts.append(String(text[range]))
+                }
+                XCTFail("Matching count is different: \(expected.count) != \(results.count)\n\(testCase)\n\(resultTexts)")
             }
-        /// }
         }
 
         // MARK: URLs with indices
-        /// for (NSDictionary *testCase in urlsWithIndices) {
-        ///     NSString *text = [testCase objectForKey:@"text"];
-        ///     NSArray *expected = [testCase objectForKey:@"expected"];
         for testCase in urlsWithIndices {
-            // FIXME: Failing test cases
             guard let text = testCase["text"] as? String,
                   let expected = testCase["expected"] as? [[String: Any]] else {
                 XCTFail()
                 break
             }
 
-        ///     NSArray *results = [TwitterText URLsInText:text];
             let results = TwitterText.URLs(inText: text)
 
-        ///     if (results.count == expected.count) {
             if results.count == expected.count {
-        ///         NSUInteger count = results.count;
-        ///         for (NSUInteger i = 0; i < count; i++) {
                 for index in 0..<results.count {
-        ///             NSDictionary *expectedDic = [expected objectAtIndex:i];
-        ///             NSString *expectedUrl = [expectedDic objectForKey:@"url"];
-        ///             NSArray *expectedIndices = [expectedDic objectForKey:@"indices"];
                     let expectedDict = expected[index]
-                    guard var expectedUrl = expectedDict["url"] as? String,
+
+                    guard let expectedUrl = expectedDict["url"] as? String,
                           let expectedIndices = expectedDict["indices"] as? [Int] else {
                         XCTFail()
                         return
                     }
-        ///             NSUInteger expectedStart = [[expectedIndices objectAtIndex:0] unsignedIntegerValue];
+
                     let expectedStart = expectedIndices[0]
-        ///             NSUInteger expectedEnd = [[expectedIndices objectAtIndex:1] unsignedIntegerValue];
                     let expectedEnd = expectedIndices[1]
-        ///             if (expectedEnd < expectedStart) {
                     if expectedEnd < expectedStart {
-        ///                 XCTFail(@"Expected start is greater than expected end: %lu, %lu", (unsigned long)expectedStart, (unsigned long)expectedEnd);
                         XCTFail("Expected start '\(expectedStart)' is greater than expected end '\(expectedEnd)'")
-        ///             }
                     }
-        ///             NSRange expectedRange = NSMakeRange(expectedStart, expectedEnd - expectedStart);
+
                     let expectedRange = NSMakeRange(expectedStart, expectedEnd - expectedStart)
-///
-        ///             TwitterTextEntity *entity = [results objectAtIndex:i];
+
                     let entity = results[index]
-        ///             NSRange actualRange = entity.range;
                     let actualRange = entity.range
-        ///             NSString *actualText = [text substringWithRange:actualRange];
-                    let actualText = text.substring(with: Range(actualRange, in: text)!)
-///
-        ///             XCTAssertEqualObjects(expectedUrl, actualText, @"%@", testCase);
+                    guard let range = Range(actualRange, in: text) else {
+                        XCTFail()
+                        break
+                    }
+                    let actualText = String(text[range])
+
                     XCTAssertEqual(expectedUrl, actualText, "\(testCase)")
-        ///             XCTAssertTrue(NSEqualRanges(expectedRange, actualRange), @"%@ != %@\n%@", NSStringFromRange(expectedRange), NSStringFromRange(actualRange), testCase);
-                    XCTAssertTrue(NSEqualRanges(expectedRange, actualRange), "\(NSStringFromRange(expectedRange)) != \(NSStringFromRange(actualRange))\n\(testCase)")
-        ///         }
+                    XCTAssertTrue(NSEqualRanges(expectedRange, actualRange),
+                                  "\(NSStringFromRange(expectedRange)) != \(NSStringFromRange(actualRange))\n\(testCase)")
                 }
-        ///     } else {
             } else {
-        ///         NSMutableArray *resultTexts = [NSMutableArray array];
                 var resultTexts: [String] = []
-        ///         for (TwitterTextEntity *entity in results) {
                 for entity in results {
-        ///             [resultTexts addObject:[text substringWithRange:entity.range]];
-                    resultTexts.append(text.substring(with: Range(entity.range, in: text)!))
-        ///         }
+                    guard let range = Range(entity.range, in: text) else {
+                        XCTFail()
+                        break
+                    }
+                    resultTexts.append(String(text[range]))
                 }
-        ///         XCTFail(@"Matching count is different: %lu != %lu\n%@\n%@", (unsigned long)expected.count, (unsigned long)results.count, testCase, resultTexts);
+
                 XCTFail("Matching count is different: \(expected.count) != \(results.count)\n\(testCase)\n\(resultTexts)")
-        ///     }
             }
-        /// }
         }
 
         // MARK: Hashtags
-        /// for (NSDictionary *testCase in hashtags) {
-        ///     NSString *text = [testCase objectForKey:@"text"];
-        ///     NSArray *expected = [testCase objectForKey:@"expected"];
         for testCase in hashtags {
             guard let text = testCase["text"] as? String,
                   let expected = testCase["expected"] as? [String] else {
                 XCTFail()
                 break
             }
-        ///     NSArray *results = [TwitterText hashtagsInText:text checkingURLOverlap:YES];
+
             let results = TwitterText.hashtags(inText: text, checkingURLOverlap: true)
-        ///     if (results.count == expected.count) {
+
             if results.count == expected.count {
-        ///         NSUInteger count = results.count;
-        ///         for (NSUInteger i = 0; i < count; i++) {
                 for index in 0..<results.count {
-        ///             NSString *expectedText = [expected objectAtIndex:i];
                     let expectedText = expected[index]
-///
-        ///             TwitterTextEntity *entity = [results objectAtIndex:i];
                     let entity = results[index]
-        ///             NSRange r = entity.range;
+
                     var r = entity.range
-        ///             r.location++;
                     r.location += 1
-        ///             r.length--;
                     r.length -= 1
-        ///             NSString *actualText = [text substringWithRange:r];
-                    let actualText = text.substring(with: Range(r, in:text)!)
-///
-        ///             XCTAssertEqualObjects(expectedText, actualText, @"%@", testCase);
+                    guard let range = Range(r, in: text) else {
+                        XCTFail()
+                        break
+                    }
+                    let actualText = String(text[range])
+
                     XCTAssertEqual(expectedText, actualText, "\(testCase)")
-        ///         }
                 }
-        ///     } else {
             } else {
-        ///         NSMutableArray *resultTexts = [NSMutableArray array];
                 var resultTexts: [String] = []
-        ///         for (TwitterTextEntity *entity in results) {
                 for entity in results {
-        ///             [resultTexts addObject:[text substringWithRange:entity.range]];
-                    resultTexts.append(text.substring(with: Range(entity.range, in: text)!))
-        ///         }
+                    guard let range = Range(entity.range, in: text) else {
+                        XCTFail()
+                        break
+                    }
+                    resultTexts.append(String(text[range]))
                 }
-        ///         XCTFail(@"Matching count is different: %lu != %lu\n%@\n%@", (unsigned long)expected.count, (unsigned long)results.count, testCase, resultTexts);
-                    XCTFail("Matching count is different: \(expected.count) != \(results.count)\n\(testCase)\n\(resultTexts)")
-        ///     }
+
+                XCTFail("Matching count is different: \(expected.count) != \(results.count)\n\(testCase)\n\(resultTexts)")
             }
-        /// }
         }
 
         // MARK: Hashtags from Astral
-        /// for (NSDictionary *testCase in hashtagsFromAstral) {
-        ///     NSString *text = [testCase objectForKey:@"text"];
-        ///     NSArray *expected = [testCase objectForKey:@"expected"];
         for testCase in hashtagsFromAstral {
             guard let text = testCase["text"] as? String,
                   let expected = testCase["expected"] as? [String] else {
                 XCTFail()
                 break
             }
-        ///     NSArray *results = [TwitterText hashtagsInText:text checkingURLOverlap:YES];
             let results = TwitterText.hashtags(inText: text, checkingURLOverlap: true)
-        ///     if (results.count == expected.count) {
+
             if results.count == expected.count {
-        ///         NSUInteger count = results.count;
-        ///         for (NSUInteger i = 0; i < count; i++) {
                 for index in 0..<results.count {
-        ///             NSString *expectedText = [expected objectAtIndex:i];
                     let expectedText = expected[index]
-///
-        ///             TwitterTextEntity *entity = [results objectAtIndex:i];
                     let entity = results[index]
-        ///             NSRange r = entity.range;
+
                     var r = entity.range
-        ///             r.location++;
                     r.location += 1
-        ///             r.length--;
                     r.length -= 1
-        ///             NSString *actualText = [text substringWithRange:r];
-                    let actualText = text.substring(with: Range(r, in: text)!)
-///
-        ///             XCTAssertEqualObjects(expectedText, actualText, @"%@", testCase);
+                    guard let range = Range(r, in: text) else {
+                        XCTFail()
+                        break
+                    }
+                    let actualText = String(text[range])
+
                     XCTAssertEqual(expectedText, actualText, "\(testCase)")
-        ///         }
                 }
-        ///     } else {
             } else {
-        ///         NSMutableArray *resultTexts = [NSMutableArray array];
                 var resultTexts: [String] = []
-        ///         for (TwitterTextEntity *entity in results) {
                 for entity in results {
-        ///             [resultTexts addObject:[text substringWithRange:entity.range]];
-                    resultTexts.append(text.substring(with: Range(entity.range, in: text)!))
-        ///         }
-                }
-        ///         XCTFail(@"Matching count is different: %lu != %lu\n%@\n%@", (unsigned long)expected.count, (unsigned long)results.count, testCase, resultTexts);
-                    XCTFail("Matching count is different: \(expected.count) != \(results.count)\n\(testCase)\n\(resultTexts)")
-        ///     }
-            }
-        /// }
-        }
-
-    /*
-        //
-        // Hashtags with indices
-        //
-
-        for (NSDictionary *testCase in hashtagsWithIndices) {
-            NSString *text = [testCase objectForKey:@"text"];
-            NSArray *expected = [testCase objectForKey:@"expected"];
-
-            NSArray *results = [TwitterText hashtagsInText:text checkingURLOverlap:YES];
-            if (results.count == expected.count) {
-                NSUInteger count = results.count;
-                for (NSUInteger i = 0; i < count; i++) {
-                    NSDictionary *expectedDic = [expected objectAtIndex:i];
-                    NSString *expectedHashtag = [expectedDic objectForKey:@"hashtag"];
-                    NSArray *expectedIndices = [expectedDic objectForKey:@"indices"];
-                    NSUInteger expectedStart = [[expectedIndices objectAtIndex:0] unsignedIntegerValue];
-                    NSUInteger expectedEnd = [[expectedIndices objectAtIndex:1] unsignedIntegerValue];
-                    if (expectedEnd < expectedStart) {
-                        XCTFail(@"Expected start is greater than expected end: %lu, %lu", (unsigned long)expectedStart, (unsigned long)expectedEnd);
+                    guard let range = Range(entity.range, in: text) else {
+                        XCTFail()
+                        break
                     }
-                    NSRange expectedRange = NSMakeRange(expectedStart, expectedEnd - expectedStart);
-
-                    TwitterTextEntity *entity = [results objectAtIndex:i];
-                    NSRange actualRange = entity.range;
-                    NSRange r = actualRange;
-                    r.location++;
-                    r.length--;
-                    NSString *actualText = [text substringWithRange:r];
-
-                    XCTAssertEqualObjects(expectedHashtag, actualText, @"%@", testCase);
-                    XCTAssertTrue(NSEqualRanges(expectedRange, actualRange), @"%@ != %@\n%@", NSStringFromRange(expectedRange), NSStringFromRange(actualRange), testCase);
+                    resultTexts.append(String(text[range]))
                 }
-            } else {
-                NSMutableArray *resultTexts = [NSMutableArray array];
-                for (TwitterTextEntity *entity in results) {
-                    [resultTexts addObject:[text substringWithRange:entity.range]];
-                }
-                XCTFail(@"Matching count is different: %lu != %lu\n%@\n%@", (unsigned long)expected.count, (unsigned long)results.count, testCase, resultTexts);
+
+                XCTFail("Matching count is different: \(expected.count) != \(results.count)\n\(testCase)\n\(resultTexts)")
             }
         }
-     */
-    /*
-        //
-        // Symbols
-        //
-        for (NSDictionary *testCase in symbols) {
-            NSString *text = [testCase objectForKey:@"text"];
-            NSArray *expected = [testCase objectForKey:@"expected"];
 
-            NSArray *results = [TwitterText symbolsInText:text checkingURLOverlap:YES];
-            if (results.count == expected.count) {
-                NSUInteger count = results.count;
-                for (NSUInteger i = 0; i < count; i++) {
-                    NSString *expectedText = [expected objectAtIndex:i];
-
-                    TwitterTextEntity *entity = [results objectAtIndex:i];
-                    NSRange r = entity.range;
-                    r.location++;
-                    r.length--;
-                    NSString *actualText = [text substringWithRange:r];
-
-                    XCTAssertEqualObjects(expectedText, actualText, @"%@", testCase);
-                }
-            } else {
-                NSMutableArray *resultTexts = [NSMutableArray array];
-                for (TwitterTextEntity *entity in results) {
-                    [resultTexts addObject:[text substringWithRange:entity.range]];
-                }
-                XCTFail(@"Matching count is different: %lu != %lu\n%@\n%@", (unsigned long)expected.count, (unsigned long)results.count, testCase, resultTexts);
+        // MARK: Hashtags with indices
+        for testCase in hashtagsWithIndices {
+            guard let text = testCase["text"] as? String,
+                  let expected = testCase["expected"] as? [[String: Any]] else {
+                XCTFail()
+                break
             }
-        }
- */
-/*
-        //
-        // Symbols with indices
-        //
-        for (NSDictionary *testCase in symbolsWithIndices) {
-            NSString *text = [testCase objectForKey:@"text"];
-            NSArray *expected = [testCase objectForKey:@"expected"];
 
-            NSArray *results = [TwitterText symbolsInText:text checkingURLOverlap:YES];
-            if (results.count == expected.count) {
-                NSUInteger count = results.count;
-                for (NSUInteger i = 0; i < count; i++) {
-                    NSDictionary *expectedDic = [expected objectAtIndex:i];
-                    NSString *expectedSymbol = [expectedDic objectForKey:@"cashtag"];
-                    NSArray *expectedIndices = [expectedDic objectForKey:@"indices"];
-                    NSUInteger expectedStart = [[expectedIndices objectAtIndex:0] unsignedIntegerValue];
-                    NSUInteger expectedEnd = [[expectedIndices objectAtIndex:1] unsignedIntegerValue];
-                    if (expectedEnd < expectedStart) {
-                        XCTFail(@"Expected start is greater than expected end: %lu, %lu", (unsigned long)expectedStart, (unsigned long)expectedEnd);
+            let results = TwitterText.hashtags(inText: text, checkingURLOverlap: true)
+
+            if results.count == expected.count {
+                for index in 0..<results.count {
+                    let expectedDict = expected[index]
+
+                    guard let expectedHashtag = expectedDict["hashtag"] as? String,
+                          let expectedIndices = expectedDict["indices"] as? [Int] else {
+                        XCTFail()
+                        break
                     }
-                    NSRange expectedRange = NSMakeRange(expectedStart, expectedEnd - expectedStart);
 
-                    TwitterTextEntity *entity = [results objectAtIndex:i];
-                    NSRange actualRange = entity.range;
-                    NSRange r = actualRange;
-                    r.location++;
-                    r.length--;
-                    NSString *actualText = [text substringWithRange:r];
+                    let expectedStart = expectedIndices[0]
+                    let expectedEnd = expectedIndices[1]
 
-                    XCTAssertEqualObjects(expectedSymbol, actualText, @"%@", testCase);
-                    XCTAssertTrue(NSEqualRanges(expectedRange, actualRange), @"%@ != %@\n%@", NSStringFromRange(expectedRange), NSStringFromRange(actualRange), testCase);
+                    if expectedEnd < expectedStart {
+                        XCTFail("Expected start (\(expectedStart)) is greater than expected end (\(expectedEnd))")
+                    }
+
+                    let expectedRange = NSMakeRange(expectedStart, expectedEnd - expectedStart)
+                    let entity = results[index]
+                    let actualRange = entity.range
+
+                    var r = actualRange
+                    r.location += 1
+                    r.length -= 1
+                    guard let range = Range(r, in: text) else {
+                        XCTFail()
+                        break
+                    }
+                    let actualText = String(text[range])
+
+                    XCTAssertEqual(expectedHashtag, actualText, "\(testCase)")
+                    XCTAssertTrue(NSEqualRanges(expectedRange, actualRange), "\(NSStringFromRange(expectedRange)) != \(NSStringFromRange(actualRange)), \(testCase)")
                 }
             } else {
-                NSMutableArray *resultTexts = [NSMutableArray array];
-                for (TwitterTextEntity *entity in results) {
-                    [resultTexts addObject:[text substringWithRange:entity.range]];
+                var resultTexts: [String] = []
+                for entity in results {
+                    guard let range = Range(entity.range, in: text) else {
+                        XCTFail()
+                        break
+                    }
+                    resultTexts.append(String(text[range]))
                 }
-                XCTFail(@"Matching count is different: %lu != %lu\n%@\n%@", (unsigned long)expected.count, (unsigned long)results.count, testCase, resultTexts);
+
+                XCTFail("Matching count is different: \(expected.count) != \(results.count)\n\(testCase)\n\(resultTexts)")
             }
         }
-     */
+
+        // MARK: Symbols
+        for testCase in symbols {
+            guard let text = testCase["text"] as? String,
+                  let expected = testCase["expected"] as? [String] else {
+                XCTFail()
+                break
+            }
+
+            let results = TwitterText.symbols(inText: text, checkingURLOverlap: true)
+
+            if results.count == expected.count {
+                for index in 0..<results.count {
+                    let expectedText = expected[index]
+                    let entity = results[index]
+
+                    var r = entity.range
+                    r.location += 1
+                    r.length -= 1
+                    guard let range = Range(r, in: text) else {
+                        XCTFail()
+                        break
+                    }
+                    let actualText = String(text[range])
+
+                    XCTAssertEqual(expectedText, actualText, "\(testCase)")
+                }
+            } else {
+                var resultTexts: [String] = []
+                for entity in results {
+                    guard let range = Range(entity.range, in: text) else {
+                        XCTFail()
+                        break
+                    }
+                    resultTexts.append(String(text[range]))
+                }
+
+                XCTFail("Matching count is different: \(expected.count) != \(results.count)\n\(testCase)\n\(resultTexts)")
+            }
+        }
+
+        // MARK: Symbols with indices
+        for testCase in symbolsWithIndices {
+            guard let text = testCase["text"] as? String,
+                  let expected = testCase["expected"] as? [[String: Any]] else {
+                XCTFail()
+                break
+            }
+
+            let results = TwitterText.symbols(inText: text, checkingURLOverlap: true)
+
+            if results.count == expected.count {
+                for index in 0..<results.count {
+                    let expectedDict = expected[index]
+
+                    guard let expectedHashtag = expectedDict["cashtag"] as? String,
+                          let expectedIndices = expectedDict["indices"] as? [Int] else {
+                        XCTFail()
+                        break
+                    }
+
+                    let expectedStart = expectedIndices[0]
+                    let expectedEnd = expectedIndices[1]
+
+                    if expectedEnd < expectedStart {
+                        XCTFail("Expected start (\(expectedStart)) is greater than expected end (\(expectedEnd))")
+                    }
+
+                    let expectedRange = NSMakeRange(expectedStart, expectedEnd - expectedStart)
+                    let entity = results[index]
+                    let actualRange = entity.range
+
+                    var r = actualRange
+                    r.location += 1
+                    r.length -= 1
+                    guard let range = Range(r, in: text) else {
+                        XCTFail()
+                        break
+                    }
+                    let actualText = String(text[range])
+
+                    XCTAssertEqual(expectedHashtag, actualText, "\(testCase)")
+                    XCTAssertTrue(NSEqualRanges(expectedRange, actualRange), "\(NSStringFromRange(expectedRange)) != \(NSStringFromRange(actualRange)), \(testCase)")
+                }
+            } else {
+                var resultTexts: [String] = []
+                for entity in results {
+                    guard let range = Range(entity.range, in: text) else {
+                        XCTFail()
+                        break
+                    }
+                    resultTexts.append(String(text[range]))
+                }
+
+                XCTFail("Matching count is different: \(expected.count) != \(results.count)\n\(testCase)\n\(resultTexts)")
+            }
+        }
     }
 
 // FIXME: failing test
@@ -699,7 +697,6 @@ final class TwitterTextTests: XCTestCase {
         self._testWeightedTweetsCountingWithTestSuite(testSuite: "WeightedTweetsWithDiscountedUnicode9EmojiCounterTest")
     }
 
-    // TODO: Finish this test
     func testEmojiWeightedTweetLengthCountingWithDiscountedUnicode10Emoji() {
         /// // TODO: drop-iOS-10: when dropping support for iOS 10, remove the #if, #endif and everything in between
         /// #if __IPHONE_11_0 > __IPHONE_OS_VERSION_MIN_REQUIRED
@@ -710,6 +707,13 @@ final class TwitterTextTests: XCTestCase {
         ///     return;
         /// }
         /// #endif // #if __IPHONE_11_0 > __IPHONE_OS_VERSION_MIN_REQUIRED
+
+        XCTFail("check above conditions #if ... #endif")
+        if #available(iOS 11, *) {
+        } else {
+            print("Info: in iOS \(ProcessInfo.processInfo.operatingSystemVersionString) - String().enumerateSubstrings(in:options:body:) does not enumerate ranges correctly for Unicode 10; therefore, this test is being bypassed")
+            return
+        }
 
         TwitterTextParser.setDefaultParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!)
         self._testWeightedTweetsCountingWithTestSuite(testSuite: "WeightedTweetsWithDiscountedUnicode10EmojiCounterTest")
@@ -818,15 +822,22 @@ final class TwitterTextTests: XCTestCase {
                 for index in 0..<results.count {
                     let expectedText = expected[index]
                     let entity = results[index]
-                    let r = entity.range
-                    let actualText = text.substring(with: Range(r, in: text)!)
+                    guard let range = Range(entity.range, in: text) else {
+                        XCTFail()
+                        break
+                    }
+                    let actualText = String(text[range])
 
                     XCTAssertEqual(expectedText, actualText, "\(testCase)")
                 }
             } else {
                 var resultTexts: [String] = []
                 for entity in results {
-                    resultTexts.append(text.substring(with: Range(entity.range, in: text)!))
+                    guard let range = Range(entity.range, in: text) else {
+                        XCTFail()
+                        break
+                    }
+                    resultTexts.append(String(text[range]))
                 }
                 XCTFail("Matching count is different: \(expected.count) != \(results.count)\n\(testCase)\n\(resultTexts)")
             }
@@ -845,15 +856,22 @@ final class TwitterTextTests: XCTestCase {
                 for index in 0..<results.count {
                     let expectedText = expected[index]
                     let entity = results[index]
-                    let r = entity.range
-                    let actualText = text.substring(with: Range(r, in: text)!)
+                    guard let range = Range(entity.range, in: text) else {
+                        XCTFail()
+                        break
+                    }
+                    let actualText = String(text[range])
 
                     XCTAssertEqual(expectedText, actualText, "\(testCase)")
                 }
             } else {
                 var resultTexts: [String] = []
                 for entity in results {
-                    resultTexts.append(text.substring(with: Range(entity.range, in: text)!))
+                    guard let range = Range(entity.range, in: text) else {
+                        XCTFail()
+                        break
+                    }
+                    resultTexts.append(String(text[range]))
                 }
                 XCTFail("Matching count is different: \(expected.count) != \(results.count)\n\(testCase)\n\(resultTexts)")
             }

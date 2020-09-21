@@ -373,7 +373,7 @@ public class TwitterText {
             ///     if (!matchResult || matchResult.numberOfRanges < 2) {
             ///         break;
             ///     }
-            guard let result = matchResult, result.numberOfRanges < 2 else {
+            guard let result = matchResult, result.numberOfRanges >= 2 else {
                 break
             }
 
