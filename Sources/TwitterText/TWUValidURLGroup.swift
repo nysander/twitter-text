@@ -5,16 +5,6 @@
 
 import Foundation
 
-/// typedef NS_ENUM(NSInteger, TWUValidURLGroup) {
-///     TWUValidURLGroupAll = 1,
-///     TWUValidURLGroupPreceding,
-///     TWUValidURLGroupURL,
-///     TWUValidURLGroupProtocol,
-///     TWUValidURLGroupDomain,
-///     TWUValidURLGroupPort,
-///     TWUValidURLGroupPath,
-///     TWUValidURLGroupQueryString
-/// };
 enum TWUValidURLGroup: Int {
     case TWUValidURLGroupAll = 1
     case TWUValidURLGroupPreceding

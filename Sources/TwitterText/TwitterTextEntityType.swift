@@ -5,15 +5,6 @@
 
 import Foundation
 
-/// typedef NS_ENUM(NSUInteger, TwitterTextEntityType) {
-///     TwitterTextEntityURL,
-///     TwitterTextEntityScreenName,
-///     TwitterTextEntityHashtag,
-///     TwitterTextEntityListName,
-///     TwitterTextEntitySymbol,
-///     TwitterTextEntityTweetChar,
-///     TwitterTextEntityTweetEmojiChar
-/// };
 public enum TwitterTextEntityType: Int {
     case TwitterTextEntityURL
     case TwitterTextEntityScreenName
