@@ -89,17 +89,6 @@ final class TwitterTextTests: XCTestCase {
             return
         }
 
-        /// NSArray *mentions = [tests objectForKey:@"mentions"];
-        /// NSArray *mentionsWithIndices = [tests objectForKey:@"mentions_with_indices"];
-        /// NSArray *mentionsOrListsWithIndices = [tests objectForKey:@"mentions_or_lists_with_indices"];
-        /// NSArray *replies = [tests objectForKey:@"replies"];
-        /// NSArray *urls = [tests objectForKey:@"urls"];
-        /// NSArray *urlsWithIndices = [tests objectForKey:@"urls_with_indices"];
-        /// NSArray *hashtags = [tests objectForKey:@"hashtags"];
-        /// NSArray *hashtagsFromAstral = [tests objectForKey:@"hashtags_from_astral"];
-        /// NSArray *hashtagsWithIndices = [tests objectForKey:@"hashtags_with_indices"];
-        /// NSArray *symbols = [tests objectForKey:@"cashtags"];
-        /// NSArray *symbolsWithIndices = [tests objectForKey:@"cashtags_with_indices"];
         guard let tests = validation["tests"] as? [String: Any],
               let mentions = tests["mentions"] as? [[String: Any]],
               let mentionsWithIndices = tests["mentions_with_indices"] as? [[String: Any]],
@@ -638,19 +627,7 @@ final class TwitterTextTests: XCTestCase {
     }
 
 
-    /// - (void)_testWeightedTweetsCountingWithTestSuite:(NSString *)testSuite
     func _testWeightedTweetsCountingWithTestSuite(testSuite: String) {
-        /// NSString *fileName = [[[self class] conformanceRootDirectory] stringByAppendingPathComponent:@"validate.json"];
-        /// NSData *data = [NSData dataWithContentsOfFile:fileName];
-        /// if (!data) {
-        ///     XCTFail(@"No test data: %@", fileName);
-        ///     return;
-        /// }
-        /// NSDictionary *rootDic = [NSJSONSerialization JSONObjectWithData:data options:0 error:NULL];
-        /// if (!rootDic) {
-        ///     XCTFail(@"Invalid test data: %@", fileName);
-        ///     return;
-        /// }
         let filename = conformanceRootDirectory.appendingPathComponent("validate.json")
         guard let jsonData = try? String(contentsOf: filename, encoding: .utf8).data(using: .utf8),
               let validation = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] else {
@@ -658,28 +635,13 @@ final class TwitterTextTests: XCTestCase {
             return
         }
 
-        /// NSDictionary *tests = [rootDic objectForKey:@"tests"];
-        /// NSArray *lengths = [tests objectForKey:testSuite];
-
         guard let tests = validation["tests"] as? [String: Any],
               let lengths = tests[testSuite] as? [[String: Any]] else {
             XCTFail()
             return
         }
 
-        /// for (NSDictionary *testCase in lengths) {
         for testCase in lengths {
-            ///     NSString *text = [testCase objectForKey:@"text"];
-            ///     text = [self stringByParsingUnicodeEscapes:text];
-            ///     NSDictionary *expected = [testCase objectForKey:@"expected"];
-            ///     NSString *testDescription = testCase[@"description"];
-            ///     NSInteger weightedLength = [expected[@"weightedLength"] integerValue];
-            ///     NSInteger permillage = [expected[@"permillage"] integerValue];
-            ///     BOOL isValid = [expected[@"valid"] boolValue];
-            ///     NSUInteger displayRangeStart = [expected[@"displayRangeStart"] integerValue];
-            ///     NSUInteger displayRangeEnd = [expected[@"displayRangeEnd"] integerValue];
-            ///     NSUInteger validRangeStart = [expected[@"validRangeStart"] integerValue];
-            ///     NSUInteger validRangeEnd = [expected[@"validRangeEnd"] integerValue];
             guard var text = testCase["text"] as? String,
                   let expected = testCase["expected"] as? [String: Any],
                   let testDescription = testCase["description"] as? String,
@@ -693,67 +655,51 @@ final class TwitterTextTests: XCTestCase {
                 XCTFail()
                 break
             }
+
             text = stringByParsingUnicodeEscapes(string: text)
-        ///     TwitterTextParseResults *results = [[TwitterTextParser defaultParser] parseTweet:text];
             let results = TwitterTextParser.defaultParser.parseTweet(text: text)
-///
-        ///     XCTAssertEqual(results.weightedLength, weightedLength, @"Length should be the same in \"%@\"", testDescription);
+
             XCTAssertEqual(results.weightedLength,
                            weightedLength,
                            "Length should be the same in \(testDescription)")
-        ///     XCTAssertEqual(results.permillage, permillage, @"Permillage should be the same in \"%@\"", testDescription);
             XCTAssertEqual(results.permillage,
                            permillage,
                            "Permillage should be the same in \(testDescription)")
-        ///     XCTAssertEqual(results.isValid, isValid, @"Valid should be the samein \"%@\"", testDescription);
+
             XCTAssertEqual(results.isValid,
                            isValid,
                            "Valid should be the same in \(testDescription)")
-        ///     XCTAssertEqual(results.displayTextRange.location, displayRangeStart, @"Display text range start should be the same in \"%@\"", testDescription);
             XCTAssertEqual(results.displayTextRange.location,
                            displayRangeStart,
                            "Display text range start should be the same in \(testDescription)")
-        ///     XCTAssertEqual(results.displayTextRange.length, displayRangeEnd - displayRangeStart + 1, @"Display text range length should be the same in \"%@\"", testDescription);
             XCTAssertEqual(results.displayTextRange.length,
                            displayRangeEnd - displayRangeStart + 1,
                            "Display text range length should be the same in \(testDescription)")
-        ///     XCTAssertEqual(results.validDisplayTextRange.location, validRangeStart, @"Valid text range start should be the same in \"%@\"", testDescription);
             XCTAssertEqual(results.validDisplayTextRange.location,
                            validRangeStart,
                            "Valid text range start should be the same in \(testDescription)")
-        ///     XCTAssertEqual(results.validDisplayTextRange.length, validRangeEnd - validRangeStart + 1, @"Valid text range length should be the same in \"%@\"", testDescription);
             XCTAssertEqual(results.validDisplayTextRange.length,
                            validRangeEnd - validRangeStart + 1,
                            "Valid text range length should be the same in \(testDescription)")
-        /// }
         }
     }
 
-    /// - (void)testUnicodePointTweetLengthCounting
     func testUnicodePointTweetLengthCounting() {
-        /// [TwitterTextParser setDefaultParserWithConfiguration:[TwitterTextConfiguration configurationFromJSONResource:kTwitterTextParserConfigurationV2]];
         TwitterTextParser.setDefaultParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV2)!)
-        /// [self _testWeightedTweetsCountingWithTestSuite:@"WeightedTweetsCounterTest"];
         self._testWeightedTweetsCountingWithTestSuite(testSuite: "WeightedTweetsCounterTest")
     }
 
-    /// - (void)testEmojiWeightedTweetLengthCounting
     func testEmojiWeightedTweetLengthCounting() {
-        /// [TwitterTextParser setDefaultParserWithConfiguration:[TwitterTextConfiguration configurationFromJSONResource:kTwitterTextParserConfigurationV3]];
         TwitterTextParser.setDefaultParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!)
-        /// [self _testWeightedTweetsCountingWithTestSuite:@"WeightedTweetsWithDiscountedEmojiCounterTest"];
         self._testWeightedTweetsCountingWithTestSuite(testSuite: "WeightedTweetsWithDiscountedEmojiCounterTest")
     }
 
-    /// - (void)testEmojiWeightedTweetLengthCountingWithDiscountedUnicode9Emoji
     func testEmojiWeightedTweetLengthCountingWithDiscountedUnicode9Emoji() {
-        /// [TwitterTextParser setDefaultParserWithConfiguration:[TwitterTextConfiguration configurationFromJSONResource:kTwitterTextParserConfigurationV3]];
         TwitterTextParser.setDefaultParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!)
-        /// [self _testWeightedTweetsCountingWithTestSuite:@"WeightedTweetsWithDiscountedUnicode9EmojiCounterTest"];
         self._testWeightedTweetsCountingWithTestSuite(testSuite: "WeightedTweetsWithDiscountedUnicode9EmojiCounterTest")
     }
 
-    /// - (void)testEmojiWeightedTweetLengthCountingWithDiscountedUnicode10Emoji
+    // TODO: Finish this test
     func testEmojiWeightedTweetLengthCountingWithDiscountedUnicode10Emoji() {
         /// // TODO: drop-iOS-10: when dropping support for iOS 10, remove the #if, #endif and everything in between
         /// #if __IPHONE_11_0 > __IPHONE_OS_VERSION_MIN_REQUIRED
@@ -764,10 +710,8 @@ final class TwitterTextTests: XCTestCase {
         ///     return;
         /// }
         /// #endif // #if __IPHONE_11_0 > __IPHONE_OS_VERSION_MIN_REQUIRED
-        /// [TwitterTextParser setDefaultParserWithConfiguration:[TwitterTextConfiguration configurationFromJSONResource:kTwitterTextParserConfigurationV3]];
 
         TwitterTextParser.setDefaultParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!)
-        /// [self _testWeightedTweetsCountingWithTestSuite:@"WeightedTweetsWithDiscountedUnicode10EmojiCounterTest"];
         self._testWeightedTweetsCountingWithTestSuite(testSuite: "WeightedTweetsWithDiscountedUnicode10EmojiCounterTest")
     }
 
@@ -842,84 +786,79 @@ final class TwitterTextTests: XCTestCase {
         }
     }
 
-    // TODO: split into two methods, extract test setup part to different method (similar for many other tests also) ?
-    /*
-- (void)testTlds
-{
-    NSString *fileName = [[[self class] conformanceRootDirectory] stringByAppendingPathComponent:@"tlds.json"];
-    NSData *data = [NSData dataWithContentsOfFile:fileName];
-    if (!data) {
-        XCTFail(@"No test data: %@", fileName);
-        return;
-    }
-    NSDictionary *rootDic = [NSJSONSerialization JSONObjectWithData:data options:0 error:NULL];
-    if (!rootDic) {
-        XCTFail(@"Invalid test data: %@", fileName);
-        return;
-    }
+    func testTlds() {
+        let filename = conformanceRootDirectory.appendingPathComponent("tlds.json")
+        guard let jsonData = try? String(contentsOf: filename, encoding: .utf8).data(using: .utf8),
+              let validation = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] else {
+            XCTFail("Invalid test data: \(filename)")
+            return
+        }
 
-    NSDictionary *tests = [rootDic objectForKey:@"tests"];
+        guard let tests = validation["tests"] as? [String: Any] else {
+            XCTFail()
+            return
+        }
 
-    NSArray *country = [tests objectForKey:@"country"];
-    NSArray *generic = [tests objectForKey:@"generic"];
+        guard let country = tests["country"] as? [[String: Any]],
+              let generic = tests["generic"] as? [[String: Any]] else {
+            XCTFail()
+            return
+        }
 
-    //
-    // URLs with ccTLD
-    //
-    for (NSDictionary *testCase in country) {
-        NSString *text = [testCase objectForKey:@"text"];
-        NSArray *expected = [testCase objectForKey:@"expected"];
-
-        NSArray *results = [TwitterText URLsInText:text];
-        if (results.count == expected.count) {
-            NSUInteger count = results.count;
-            for (NSUInteger i = 0; i < count; i++) {
-                NSString *expectedText = [expected objectAtIndex:i];
-
-                TwitterTextEntity *entity = [results objectAtIndex:i];
-                NSRange r = entity.range;
-                NSString *actualText = [text substringWithRange:r];
-
-                XCTAssertEqualObjects(expectedText, actualText, @"%@", testCase);
+        // MARK: URLs with ccTLD
+        for testCase in country {
+            guard let text = testCase["text"] as? String,
+                  let expected = testCase["expected"] as? [String] else {
+                XCTFail()
+                break
             }
-        } else {
-            NSMutableArray *resultTexts = [NSMutableArray array];
-            for (TwitterTextEntity *entity in results) {
-                [resultTexts addObject:[text substringWithRange:entity.range]];
+
+            let results = TwitterText.URLs(inText: text)
+            if results.count == expected.count {
+                for index in 0..<results.count {
+                    let expectedText = expected[index]
+                    let entity = results[index]
+                    let r = entity.range
+                    let actualText = text.substring(with: Range(r, in: text)!)
+
+                    XCTAssertEqual(expectedText, actualText, "\(testCase)")
+                }
+            } else {
+                var resultTexts: [String] = []
+                for entity in results {
+                    resultTexts.append(text.substring(with: Range(entity.range, in: text)!))
+                }
+                XCTFail("Matching count is different: \(expected.count) != \(results.count)\n\(testCase)\n\(resultTexts)")
             }
-            XCTFail(@"Matching count is different: %lu != %lu\n%@\n%@", (unsigned long)expected.count, (unsigned long)results.count, testCase, resultTexts);
+        }
+
+        // MARK: URLs with gTLD
+        for testCase in generic {
+            guard let text = testCase["text"] as? String,
+                  let expected = testCase["expected"] as? [String] else {
+                XCTFail()
+                break
+            }
+
+            let results = TwitterText.URLs(inText: text)
+            if results.count == expected.count {
+                for index in 0..<results.count {
+                    let expectedText = expected[index]
+                    let entity = results[index]
+                    let r = entity.range
+                    let actualText = text.substring(with: Range(r, in: text)!)
+
+                    XCTAssertEqual(expectedText, actualText, "\(testCase)")
+                }
+            } else {
+                var resultTexts: [String] = []
+                for entity in results {
+                    resultTexts.append(text.substring(with: Range(entity.range, in: text)!))
+                }
+                XCTFail("Matching count is different: \(expected.count) != \(results.count)\n\(testCase)\n\(resultTexts)")
+            }
         }
     }
-
-    //
-    // URLs with gTLD
-    //
-    for (NSDictionary *testCase in generic) {
-        NSString *text = [testCase objectForKey:@"text"];
-        NSArray *expected = [testCase objectForKey:@"expected"];
-
-        NSArray *results = [TwitterText URLsInText:text];
-        if (results.count == expected.count) {
-            NSUInteger count = results.count;
-            for (NSUInteger i = 0; i < count; i++) {
-                NSString *expectedText = [expected objectAtIndex:i];
-
-                TwitterTextEntity *entity = [results objectAtIndex:i];
-                NSRange r = entity.range;
-                NSString *actualText = [text substringWithRange:r];
-
-                XCTAssertEqualObjects(expectedText, actualText, @"%@", testCase);
-            }
-        } else {
-            NSMutableArray *resultTexts = [NSMutableArray array];
-            for (TwitterTextEntity *entity in results) {
-                [resultTexts addObject:[text substringWithRange:entity.range]];
-            }
-            XCTFail(@"Matching count is different: %lu != %lu\n%@\n%@", (unsigned long)expected.count, (unsigned long)results.count, testCase, resultTexts);
-        }
-    }
-}
-*/
 
     func testTwitterTextParserConfiguration() {
         let configurationString = "{\"version\": 1, \"maxWeightedTweetLength\": 280, \"scale\": 2, \"defaultWeight\": 1, \"transformedURLLength\": 23, \"ranges\": [{\"start\": 4352, \"end\": 4353, \"weight\": 2}]}"
