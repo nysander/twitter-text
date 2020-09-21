@@ -123,7 +123,7 @@ public class TwitterText {
         ///     if (!urlResult) {
         ///         break;
         ///     }
-            guard let urlResult = self.validURLRegexp.firstMatch(in: text, options: .withoutAnchoringBounds, range: NSMakeRange(position, len - position)) else {
+            guard let urlResult = self.validURLRegexp.firstMatch(in: text, options: [.withoutAnchoringBounds] , range: NSMakeRange(position, len - position)) else {
                 break
             }
 
@@ -149,21 +149,18 @@ public class TwitterText {
         ///     NSString *protocol = (protocolRange.location != NSNotFound) ? [text substringWithRange:protocolRange] : nil;
             let protocolStr = protocolRange.location != NSNotFound ? text.substring(with: Range(protocolRange, in: text)!) : nil
         ///     if (protocol.length == 0) {
-            if let protocolStr = protocolStr, protocolStr.count == 0 {
+            if protocolStr == nil || protocolStr?.count == 0 {
         ///         NSString *preceding = (precedingRange.location != NSNotFound) ? [text substringWithRange:precedingRange] : nil;
                 let preceding = precedingRange.location != NSNotFound ? text.substring(with: Range(precedingRange, in: text)!) : nil
         ///         NSRange suffixRange = [preceding rangeOfCharacterFromSet:[self invalidURLWithoutProtocolPrecedingCharSet] options:NSBackwardsSearch | NSAnchoredSearch];
-
-                let suffixRange = NSRange((preceding?.rangeOfCharacter(from: self.invalidURLWithoutProtocolPrecedingCharSet, options: [.backwards, .anchored]))!, in: preceding!)
-        ///         if (suffixRange.location != NSNotFound) {
-        ///             continue;
-        ///         }
-                if suffixRange.location != NSNotFound {
-                    continue
+                if let set = preceding?.rangeOfCharacter(from: self.invalidURLWithoutProtocolPrecedingCharSet, options: [.backwards, .anchored]) {
+                    let suffixRange = NSRange(set, in: preceding!)
+                    if suffixRange.location != NSNotFound {
+                        continue
+                    }
                 }
-        ///     }
             }
-            let r = Range(urlResult.range, in: text)
+            let r = Range(urlRange, in: text)
         ///     NSString *url = (urlRange.location != NSNotFound) ? [text substringWithRange:urlRange] : nil;
             var url = urlRange.location != NSNotFound ? text.substring(with: r!) : nil
         ///     NSString *host = (domainRange.location != NSNotFound) ? [text substringWithRange:domainRange] : nil;
@@ -177,7 +174,7 @@ public class TwitterText {
         ///     NSTextCheckingResult *tcoResult = url ? [[self validTCOURLRegexp] firstMatchInString:url options:0 range:NSMakeRange(0, url.length)] : nil;
             let tcoResult: NSTextCheckingResult?
             if let url = url {
-                tcoResult = self.validTCOURLRegexp.firstMatch(in: url, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, url.count))
+                tcoResult = self.validTCOURLRegexp.firstMatch(in: url, options: [], range: NSMakeRange(0, url.utf16.count))
             } else {
                 tcoResult = nil
             }
@@ -186,7 +183,7 @@ public class TwitterText {
         ///         NSRange tcoRange = [tcoResult rangeAtIndex:0];
                 let tcoRange = tcoResult.range(at: 0)
         ///         NSRange tcoUrlSlugRange = [tcoResult rangeAtIndex:1];
-                let tcoUrlSlugRange = tcoResult.range(at: 0)
+                let tcoUrlSlugRange = tcoResult.range(at: 1)
         ///         if (tcoRange.location == NSNotFound || tcoUrlSlugRange.location == NSNotFound) {
         ///             continue;
         ///         }
@@ -202,11 +199,11 @@ public class TwitterText {
         ///             url = [url substringWithRange:tcoRange];
         ///             end = start + url.length;
         ///         }
-                if tcoUrlSlug.count > TwitterText.kMaxTCOSlugLength {
+                if tcoUrlSlug.utf16.count > TwitterText.kMaxTCOSlugLength {
                     continue
                 } else {
                     url = url?.substring(with: Range(tcoRange, in: url!)!)
-                    end = start + url!.count
+                    end = start + url!.utf16.count
                 }
         ///     }
             }
@@ -268,11 +265,11 @@ public class TwitterText {
         /// while (1) {
         while true {
             /// NSTextCheckingResult *matchResult = [[self validHashtagRegexp] firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(position, len - position)];
-            let matchResult = self.validHashtagRegexp.firstMatch(in: text, options: .withoutAnchoringBounds, range: NSMakeRange(position, len - position))
+            let matchResult = self.validHashtagRegexp.firstMatch(in: text, options: [.withoutAnchoringBounds], range: NSMakeRange(position, len - position))
             /// if (!matchResult || matchResult.numberOfRanges < 2) {
             ///     break;
             /// }
-            guard let result = matchResult, result.numberOfRanges < 2 else {
+            guard let result = matchResult, result.numberOfRanges > 1 else {
                 break
             }
 
@@ -916,80 +913,50 @@ public class TwitterText {
 
     /// + (BOOL)isValidHostAndLength:(NSUInteger)urlLength protocol:(NSString *)protocol host:(NSString *)host
     private static func isValidHostAndLength(urlLength: Int, urlProtocol: String?, host: String?) -> Bool {
-    /// {
-    /// if (!host) {
-    /// return NO;
-    /// }
-        if host == nil {
-            return false
-        }
+        guard var host = host else { return false }
         var urlLength = urlLength
-        /// NSError *error;
-        do {
-            /// NSInteger originalHostLength = [host length];
-            ///
-            /// NSURL *url = [NSURL URLWithUnicodeString:host error:&error];
-            guard var host = host, let url = URL(unicodeString: host) else {
-                return false
-            }
-            let originalHostLength = host.count
-
-// TODO
-            /// if (error) {
-            ///     if (error.code == IFUnicodeURLConvertErrorInvalidDNSLength) {
-            ///         // If the error is specifically IFUnicodeURLConvertErrorInvalidDNSLength,
-            ///         // just return a false result. NSURL will happily create a URL for a host
-            ///         // with labels > 63 characters (radar 35802213).
-            ///         return NO;
-            ///     } else {
-            ///         // Attempt to create a NSURL object. We may have received an error from
-            ///         // URLWithUnicodeString above because the input is not valid for punycode
-            ///         // conversion (example: non-LDH characters are invalid and will trigger
-            ///         // an error with code == IFUnicodeURLConvertErrorSTD3NonLDH but may be
-            ///         // allowed normally per RFC 1035.
-            ///         url = [NSURL URLWithString:host];
-            ///     }
-            /// }
-            ///
-            /// if (!url) {
-            ///     return NO;
-            /// }
-            if url == nil {
-                return false
-            }
-            ///
-            ///
-            /// // Should be encoded if necessary.
-            /// host = url.absoluteString;
-            host = url.absoluteString
-            ///
-            /// NSInteger updatedHostLength = [host length];
-            let updatedHostLength = host.count
-            /// if (updatedHostLength == 0) {
-            ///     return NO;
-            /// } else if (updatedHostLength > originalHostLength) {
-            ///     urlLength += (updatedHostLength - originalHostLength);
-            /// }
-            if updatedHostLength == 0 {
-                return false
-            } else {
-                urlLength += updatedHostLength - originalHostLength
-            }
-            ///
-            /// // Because the backend always adds https:// if we're missing a protocol, add this length
-            /// // back in when checking vs. our maximum allowed length of a URL, if necessary.
-            /// NSInteger urlLengthWithProtocol = urlLength;
-            /// if (!protocol) {
-            ///     urlLengthWithProtocol += kURLProtocolLength;
-            /// }
-            var urlLengthWithProtocol = urlLength
-            if urlProtocol == nil {
-                urlLengthWithProtocol += TwitterText.kURLProtocolLength
-            }
-            /// return urlLengthWithProtocol <= kMaxURLLength;
-            return urlLengthWithProtocol <= kMaxURLLength
-        } catch let error {
-            print(error)
+        var hostUrl: URL? = URL(unicodeString: host)
+        if hostUrl == nil {
+            hostUrl = URL.init(string: host)
         }
+
+        guard let url = hostUrl else { return false }
+
+        // TODO: Make sure this is correct
+//        NSURL *url = [NSURL URLWithUnicodeString:host error:&error];
+//        if (error) {
+//            if (error.code == IFUnicodeURLConvertErrorInvalidDNSLength) {
+//                // If the error is specifically IFUnicodeURLConvertErrorInvalidDNSLength,
+//                // just return a false result. NSURL will happily create a URL for a host
+//                // with labels > 63 characters (radar 35802213).
+//                return NO;
+//            } else {
+//                // Attempt to create a NSURL object. We may have received an error from
+//                // URLWithUnicodeString above because the input is not valid for punycode
+//                // conversion (example: non-LDH characters are invalid and will trigger
+//                // an error with code == IFUnicodeURLConvertErrorSTD3NonLDH but may be
+//                // allowed normally per RFC 1035.
+//                url = [NSURL URLWithString:host];
+//            }
+//        }
+
+        let originalHostLength = host.count
+
+        host = url.absoluteString
+        let updatedHostLength = host.utf16.count
+        if updatedHostLength == 0 {
+            return false
+        } else if updatedHostLength > originalHostLength {
+            urlLength += (updatedHostLength - originalHostLength)
+        }
+
+        // Because the backend always adds https:// if we're missing a protocol, add this length
+        // back in when checking vs. our maximum allowed length of a URL, if necessary.
+        var urlLengthWithProtocol = urlLength
+        if urlProtocol == nil {
+            urlLengthWithProtocol += TwitterText.kURLProtocolLength
+        }
+        return urlLengthWithProtocol <= kMaxURLLength
+
     }
 }
