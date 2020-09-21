@@ -637,72 +637,124 @@ final class TwitterTextTests: XCTestCase {
         }
     }
 
-/*
-- (void)_testWeightedTweetsCountingWithTestSuite:(NSString *)testSuite
-{
-    NSString *fileName = [[[self class] conformanceRootDirectory] stringByAppendingPathComponent:@"validate.json"];
-    NSData *data = [NSData dataWithContentsOfFile:fileName];
-    if (!data) {
-        XCTFail(@"No test data: %@", fileName);
-        return;
+
+    /// - (void)_testWeightedTweetsCountingWithTestSuite:(NSString *)testSuite
+    func _testWeightedTweetsCountingWithTestSuite(testSuite: String) {
+        /// NSString *fileName = [[[self class] conformanceRootDirectory] stringByAppendingPathComponent:@"validate.json"];
+        /// NSData *data = [NSData dataWithContentsOfFile:fileName];
+        /// if (!data) {
+        ///     XCTFail(@"No test data: %@", fileName);
+        ///     return;
+        /// }
+        /// NSDictionary *rootDic = [NSJSONSerialization JSONObjectWithData:data options:0 error:NULL];
+        /// if (!rootDic) {
+        ///     XCTFail(@"Invalid test data: %@", fileName);
+        ///     return;
+        /// }
+        let filename = conformanceRootDirectory.appendingPathComponent("validate.json")
+        guard let jsonData = try? String(contentsOf: filename, encoding: .utf8).data(using: .utf8),
+              let validation = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] else {
+            XCTFail("Invalid test data: \(filename)")
+            return
+        }
+
+        /// NSDictionary *tests = [rootDic objectForKey:@"tests"];
+        /// NSArray *lengths = [tests objectForKey:testSuite];
+
+        guard let tests = validation["tests"] as? [String: Any],
+              let lengths = tests[testSuite] as? [[String: Any]] else {
+            XCTFail()
+            return
+        }
+
+        /// for (NSDictionary *testCase in lengths) {
+        for testCase in lengths {
+            ///     NSString *text = [testCase objectForKey:@"text"];
+            ///     text = [self stringByParsingUnicodeEscapes:text];
+            ///     NSDictionary *expected = [testCase objectForKey:@"expected"];
+            ///     NSString *testDescription = testCase[@"description"];
+            ///     NSInteger weightedLength = [expected[@"weightedLength"] integerValue];
+            ///     NSInteger permillage = [expected[@"permillage"] integerValue];
+            ///     BOOL isValid = [expected[@"valid"] boolValue];
+            ///     NSUInteger displayRangeStart = [expected[@"displayRangeStart"] integerValue];
+            ///     NSUInteger displayRangeEnd = [expected[@"displayRangeEnd"] integerValue];
+            ///     NSUInteger validRangeStart = [expected[@"validRangeStart"] integerValue];
+            ///     NSUInteger validRangeEnd = [expected[@"validRangeEnd"] integerValue];
+            guard var text = testCase["text"] as? String,
+                  let expected = testCase["expected"] as? [String: Any],
+                  let testDescription = testCase["description"] as? String,
+                  let weightedLength = expected["weightedLength"] as? Int,
+                  let permillage = expected["permillage"] as? Int,
+                  let isValid = expected["valid"] as? Bool,
+                  let displayRangeStart = expected["displayRangeStart"] as? Int,
+                  let displayRangeEnd = expected["displayRangeEnd"] as? Int,
+                  let validRangeStart = expected["validRangeStart"] as? Int,
+                  let validRangeEnd = expected["validRangeEnd"] as? Int else {
+                XCTFail()
+                break
+            }
+            text = stringByParsingUnicodeEscapes(string: text)
+        ///     TwitterTextParseResults *results = [[TwitterTextParser defaultParser] parseTweet:text];
+            let results = TwitterTextParser.defaultParser.parseTweet(text: text)
+///
+        ///     XCTAssertEqual(results.weightedLength, weightedLength, @"Length should be the same in \"%@\"", testDescription);
+            XCTAssertEqual(results.weightedLength,
+                           weightedLength,
+                           "Length should be the same in \(testDescription)")
+        ///     XCTAssertEqual(results.permillage, permillage, @"Permillage should be the same in \"%@\"", testDescription);
+            XCTAssertEqual(results.permillage,
+                           permillage,
+                           "Permillage should be the same in \(testDescription)")
+        ///     XCTAssertEqual(results.isValid, isValid, @"Valid should be the samein \"%@\"", testDescription);
+            XCTAssertEqual(results.isValid,
+                           isValid,
+                           "Valid should be the same in \(testDescription)")
+        ///     XCTAssertEqual(results.displayTextRange.location, displayRangeStart, @"Display text range start should be the same in \"%@\"", testDescription);
+            XCTAssertEqual(results.displayTextRange.location,
+                           displayRangeStart,
+                           "Display text range start should be the same in \(testDescription)")
+        ///     XCTAssertEqual(results.displayTextRange.length, displayRangeEnd - displayRangeStart + 1, @"Display text range length should be the same in \"%@\"", testDescription);
+            XCTAssertEqual(results.displayTextRange.length,
+                           displayRangeEnd - displayRangeStart + 1,
+                           "Display text range length should be the same in \(testDescription)")
+        ///     XCTAssertEqual(results.validDisplayTextRange.location, validRangeStart, @"Valid text range start should be the same in \"%@\"", testDescription);
+            XCTAssertEqual(results.validDisplayTextRange.location,
+                           validRangeStart,
+                           "Valid text range start should be the same in \(testDescription)")
+        ///     XCTAssertEqual(results.validDisplayTextRange.length, validRangeEnd - validRangeStart + 1, @"Valid text range length should be the same in \"%@\"", testDescription);
+            XCTAssertEqual(results.validDisplayTextRange.length,
+                           validRangeEnd - validRangeStart + 1,
+                           "Valid text range length should be the same in \(testDescription)")
+        /// }
+        }
     }
-    NSDictionary *rootDic = [NSJSONSerialization JSONObjectWithData:data options:0 error:NULL];
-    if (!rootDic) {
-        XCTFail(@"Invalid test data: %@", fileName);
-        return;
-    }
 
-    NSDictionary *tests = [rootDic objectForKey:@"tests"];
-    NSArray *lengths = [tests objectForKey:testSuite];
-
-    for (NSDictionary *testCase in lengths) {
-        NSString *text = [testCase objectForKey:@"text"];
-        text = [self stringByParsingUnicodeEscapes:text];
-        NSDictionary *expected = [testCase objectForKey:@"expected"];
-        TwitterTextParseResults *results = [[TwitterTextParser defaultParser] parseTweet:text];
-
-        NSString *testDescription = testCase[@"description"];
-        NSInteger weightedLength = [expected[@"weightedLength"] integerValue];
-        NSInteger permillage = [expected[@"permillage"] integerValue];
-        BOOL isValid = [expected[@"valid"] boolValue];
-        NSUInteger displayRangeStart = [expected[@"displayRangeStart"] integerValue];
-        NSUInteger displayRangeEnd = [expected[@"displayRangeEnd"] integerValue];
-        NSUInteger validRangeStart = [expected[@"validRangeStart"] integerValue];
-        NSUInteger validRangeEnd = [expected[@"validRangeEnd"] integerValue];
-
-        XCTAssertEqual(results.weightedLength, weightedLength, @"Length should be the same in \"%@\"", testDescription);
-        XCTAssertEqual(results.permillage, permillage, @"Permillage should be the same in \"%@\"", testDescription);
-        XCTAssertEqual(results.isValid, isValid, @"Valid should be the samein \"%@\"", testDescription);
-        XCTAssertEqual(results.displayTextRange.location, displayRangeStart, @"Display text range start should be the same in \"%@\"", testDescription);
-        XCTAssertEqual(results.displayTextRange.length, displayRangeEnd - displayRangeStart + 1, @"Display text range length should be the same in \"%@\"", testDescription);
-        XCTAssertEqual(results.validDisplayTextRange.location, validRangeStart, @"Valid text range start should be the same in \"%@\"", testDescription);
-        XCTAssertEqual(results.validDisplayTextRange.length, validRangeEnd - validRangeStart + 1, @"Valid text range length should be the same in \"%@\"", testDescription);
-    }
-}
-*/
     /// - (void)testUnicodePointTweetLengthCounting
-    func XtestUnicodePointTweetLengthCounting() {
+    func testUnicodePointTweetLengthCounting() {
         /// [TwitterTextParser setDefaultParserWithConfiguration:[TwitterTextConfiguration configurationFromJSONResource:kTwitterTextParserConfigurationV2]];
-        TwitterTextParser.setDefaultParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!)
+        TwitterTextParser.setDefaultParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV2)!)
         /// [self _testWeightedTweetsCountingWithTestSuite:@"WeightedTweetsCounterTest"];
+        self._testWeightedTweetsCountingWithTestSuite(testSuite: "WeightedTweetsCounterTest")
     }
 
     /// - (void)testEmojiWeightedTweetLengthCounting
-    func XtestEmojiWeightedTweetLengthCounting() {
+    func testEmojiWeightedTweetLengthCounting() {
         /// [TwitterTextParser setDefaultParserWithConfiguration:[TwitterTextConfiguration configurationFromJSONResource:kTwitterTextParserConfigurationV3]];
         TwitterTextParser.setDefaultParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!)
         /// [self _testWeightedTweetsCountingWithTestSuite:@"WeightedTweetsWithDiscountedEmojiCounterTest"];
+        self._testWeightedTweetsCountingWithTestSuite(testSuite: "WeightedTweetsWithDiscountedEmojiCounterTest")
     }
 
     /// - (void)testEmojiWeightedTweetLengthCountingWithDiscountedUnicode9Emoji
-    func XtestEmojiWeightedTweetLengthCountingWithDiscountedUnicode9Emoji() {
+    func testEmojiWeightedTweetLengthCountingWithDiscountedUnicode9Emoji() {
         /// [TwitterTextParser setDefaultParserWithConfiguration:[TwitterTextConfiguration configurationFromJSONResource:kTwitterTextParserConfigurationV3]];
         TwitterTextParser.setDefaultParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!)
         /// [self _testWeightedTweetsCountingWithTestSuite:@"WeightedTweetsWithDiscountedUnicode9EmojiCounterTest"];
+        self._testWeightedTweetsCountingWithTestSuite(testSuite: "WeightedTweetsWithDiscountedUnicode9EmojiCounterTest")
     }
 
     /// - (void)testEmojiWeightedTweetLengthCountingWithDiscountedUnicode10Emoji
-    func XtestEmojiWeightedTweetLengthCountingWithDiscountedUnicode10Emoji() {
+    func testEmojiWeightedTweetLengthCountingWithDiscountedUnicode10Emoji() {
         /// // TODO: drop-iOS-10: when dropping support for iOS 10, remove the #if, #endif and everything in between
         /// #if __IPHONE_11_0 > __IPHONE_OS_VERSION_MIN_REQUIRED
         /// if (@available(iOS 11, *)) {
@@ -716,6 +768,7 @@ final class TwitterTextTests: XCTestCase {
 
         TwitterTextParser.setDefaultParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!)
         /// [self _testWeightedTweetsCountingWithTestSuite:@"WeightedTweetsWithDiscountedUnicode10EmojiCounterTest"];
+        self._testWeightedTweetsCountingWithTestSuite(testSuite: "WeightedTweetsWithDiscountedUnicode10EmojiCounterTest")
     }
 
     func testZeroWidthJoinerAndNonJoiner() {
@@ -760,11 +813,21 @@ final class TwitterTextTests: XCTestCase {
 
             let results = TwitterTextParser.defaultParser.parseTweet(text: text)
 
-            XCTAssertEqual(results.weightedLength, expected["weightedLength"] as? Int, "Length should be the same")
-            XCTAssertEqual(results.permillage, expected["permillage"] as? Int, "Permillage should be the same")
-            XCTAssertEqual(results.isValid, expected["valid"] as? Bool, "Valid should be the same")
-            XCTAssertEqual(results.displayTextRange.location, expected["displayRangeStart"] as? Int, "Display text range start should be the same")
-            XCTAssertEqual(results.validDisplayTextRange.location, expected["validRangeStart"] as? Int, "Valid text range start should be the same")
+            XCTAssertEqual(results.weightedLength,
+                           expected["weightedLength"] as? Int,
+                           "Length should be the same")
+            XCTAssertEqual(results.permillage,
+                           expected["permillage"] as? Int,
+                           "Permillage should be the same")
+            XCTAssertEqual(results.isValid,
+                           expected["valid"] as? Bool,
+                           "Valid should be the same")
+            XCTAssertEqual(results.displayTextRange.location,
+                           expected["displayRangeStart"] as? Int,
+                           "Display text range start should be the same")
+            XCTAssertEqual(results.validDisplayTextRange.location,
+                           expected["validRangeStart"] as? Int,
+                           "Valid text range start should be the same")
 
             guard let expectedDisplayRangeStart = expected["displayRangeStart"] as? Int,
                   let expectedDisplayRangeEnd = expected["displayRangeEnd"] as? Int,
@@ -905,12 +968,15 @@ final class TwitterTextTests: XCTestCase {
 
         var regex: NSRegularExpression? = nil
         if regex == nil {
-            regex = try? NSRegularExpression.init(pattern: "\\\\U([0-9a-fA-F]{8}|[0-9a-fA-F]{4})", options: NSRegularExpression.Options(rawValue: 0))
+            regex = try? NSRegularExpression.init(pattern: "\\\\U([0-9a-fA-F]{8}|[0-9a-fA-F]{4})",
+                                                  options: [])
         }
 
         var index = 0
         while index < string.count {
-            guard let result = regex?.firstMatch(in: string, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(index, string.count - index)) else {
+            guard let result = regex?.firstMatch(in: string,
+                                                 options: [],
+                                                 range: NSMakeRange(index, string.count - index)) else {
                 break
             }
 
@@ -923,7 +989,8 @@ final class TwitterTextTests: XCTestCase {
                 let value = strtol(NSString(string: hexString).utf8String, nil, 16)
 
                 if value < 0x10000 {
-                    string = string.replacingCharacters(in: Range(patternRange, in: string)!, with: String(unichar(value)))
+                    string = string.replacingCharacters(in: Range(patternRange, in: string)!,
+                                                        with: String(unichar(value)))
                 } else {
                     var surrogates: [unichar] = Array.init(repeating: unichar(), count: 2)
 
@@ -931,7 +998,8 @@ final class TwitterTextTests: XCTestCase {
                         guard let range = Range(patternRange, in: string) else {
                             break
                         }
-                        string = string.replacingCharacters(in: range, with: String(NSString(characters: surrogates, length: 2)))
+                        string = string.replacingCharacters(in: range,
+                                                            with: String(NSString(characters: surrogates, length: 2)))
                         resultLength = 2
                     }
                 }
@@ -944,6 +1012,9 @@ final class TwitterTextTests: XCTestCase {
     }
 
     var conformanceRootDirectory: URL {
-        return URL(fileURLWithPath: #file).deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("json-conformance")
+        return URL(fileURLWithPath: #file)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .appendingPathComponent("json-conformance")
     }
 }
