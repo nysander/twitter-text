@@ -5,7 +5,7 @@
 
 import Foundation
 
-class TwitterTextConfiguration {
+public class TwitterTextConfiguration {
     let version: Int
     let maxWeightedTweetLength: Int
     let scale: Int

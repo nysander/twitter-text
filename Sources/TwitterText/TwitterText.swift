@@ -6,7 +6,6 @@
 import Foundation
 import UnicodeURL
 
-/// @interface TwitterText : NSObject
 public class TwitterText {
     static let kMaxURLLength = 4096
     static let kMaxTCOSlugLength = 40

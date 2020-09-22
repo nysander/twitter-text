@@ -43,7 +43,7 @@ or via Xcode:
 
 search for `https://github.com/nysander/twitter-text.git` repository 
 
-![Xcode setup](https://github.com/nysander/twitter-text/tree/main/docs/Xcode-setup.png)
+![Xcode setup](https://github.com/nysander/twitter-text/tree/main/resources/Xcode-setup.png)
 
 ## Conformance tests
 
@@ -108,12 +108,12 @@ Have a bug? Please create an issue here on GitHub!
 
 ## Authors
 
-* Paweł Madej - [Twitter @PawelMadejCK](https://twitter.com/PawelMadejCK) - [GitHub](https://github.com/nysander)
-* Rizwan Mohamed Ibrahim - [Twitter @rizzu26](https://twitter.com/rizzu26) - [GitHub](https://github.com/rizwankce)
+* Paweł Madej - [Twitter](https://twitter.com/PawelMadejCK) - [GitHub](https://github.com/nysander)
+* Rizwan Mohamed Ibrahim - [Twitter](https://twitter.com/rizzu26) - [GitHub](https://github.com/rizwankce)
 
-## Source
+## Source of inspiration
 
-This library was directly based upon its Objective-C implementation which can be found in [twitter/twitter-text](https://github.com/twitter/twitter-text) repository and which was written by [Satoshi Nakagawa](https://github.com/psychs), [David LaMacchia](https://github.com/dlamacchia) and [Keh-Li Sheng](https://github.com/kehli)
+This library was directly based upon its Objective-C implementation which can be found in [twitter/twitter-text](https://github.com/twitter/twitter-text) repository, written by [Satoshi Nakagawa](https://github.com/psychs), [David LaMacchia](https://github.com/dlamacchia) and [Keh-Li Sheng](https://github.com/kehli).
 
 Version 3.1.0 was used as reference. All test case JSON files used in this library are directly copied from said repository to keep consistency and being sure that results are the same. 
 

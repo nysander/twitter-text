@@ -5,7 +5,7 @@
 
 import Foundation
 
-class TwitterTextParser {
+public class TwitterTextParser {
     static let kTwitterTextParserConfigurationClassic = "v1"
     static let kTwitterTextParserConfigurationV2 = "v2"
     static let kTwitterTextParserConfigurationV3 = "v3"
@@ -21,7 +21,7 @@ class TwitterTextParser {
     /// });
     /// return sDefaultParser;
     /// }
-    static var defaultParser = TwitterTextParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!)
+    public static var defaultParser = TwitterTextParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!)
 //    {
 //
 //        let configuration = TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!
@@ -34,7 +34,7 @@ class TwitterTextParser {
     ///         sDefaultParser = [[TwitterTextParser alloc] initWithConfiguration:configuration];
     ///     }
     /// });
-    static func setDefaultParser(with configuration: TwitterTextConfiguration) {
+    public static func setDefaultParser(with configuration: TwitterTextConfiguration) {
         defaultParser = TwitterTextParser(with: configuration)
     }
 
@@ -53,7 +53,7 @@ class TwitterTextParser {
     }
 
     /// - (instancetype)initWithConfiguration:(TwitterTextConfiguration *)configuration;
-    init(with configuration: TwitterTextConfiguration) {
+    public init(with configuration: TwitterTextConfiguration) {
         /// if (self = [super init]) {
         ///     _configuration = configuration;
         /// }
@@ -62,7 +62,7 @@ class TwitterTextParser {
     }
 
     /// - (TwitterTextParseResults *)parseTweet:(NSString *)text;
-    func parseTweet(text: String) -> TwitterTextParseResults {
+    public func parseTweet(text: String) -> TwitterTextParseResults {
         /// // Use Unicode Normalization Form Canonical Composition
         /// NSString *normalizedText;
         var normalizedText: String = ""
@@ -326,7 +326,7 @@ class TwitterTextParser {
     }
 
     /// - (NSInteger)maxWeightedTweetLength;
-    func maxWeightedTweetLength() -> Int {
+    public func maxWeightedTweetLength() -> Int {
         /// return _configuration.maxWeightedTweetLength;
         return configuration.maxWeightedTweetLength
     }
