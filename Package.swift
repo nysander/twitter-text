@@ -10,15 +10,15 @@ import PackageDescription
 let package = Package(
     name: "twitter-text",
     products: [
-        .library(name: "TwitterText", targets: ["TwitterText"]),
+        .library(name: "TwitterText", targets: ["TwitterText"])
     ],
 
     dependencies: [
-        .package(url: "https://github.com/nysander/UnicodeURL.git", from: "0.0.1")
+        .package(url: "https://github.com/nysander/UnicodeURL.git", from: "0.1.0")
     ],
 
     targets: [
         .target(name: "TwitterText", dependencies: ["UnicodeURL"]),
-        .testTarget(name: "TwitterTextTests", dependencies: ["TwitterText"]),
+        .testTarget(name: "TwitterTextTests", dependencies: ["TwitterText"])
     ]
 )

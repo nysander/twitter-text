@@ -5,217 +5,109 @@
 
 import Foundation
 
-enum TwitterTextRegexp {
-    /// #define TWUControlCharacters        @"\\u0009-\\u000D"
+let TwitterTextEmojiRegex: NSRegularExpression? = {
+    try? NSRegularExpression.init(pattern: Regexp.emojiPattern, options: NSRegularExpression.Options(rawValue: 0))
+}()
+
+enum Regexp {
     static let TWUControlCharacters         = "\\u0009-\\u000D"
-    /// #define TWUSpace                    @"\\u0020"
     static let TWUSpace                     = "\\u0020"
-    /// #define TWUControl85                @"\\u0085"
     static let TWUControl85                 = "\\u0085"
-    /// #define TWUNoBreakSpace             @"\\u00A0"
     static let TWUNoBreakSpace              = "\\u00A0"
-    /// #define TWUOghamBreakSpace          @"\\u1680"
     static let TWUOghamBreakSpace           = "\\u1680"
-    /// #define TWUMongolianVowelSeparator  @"\\u180E"
     static let TWUMongolianVowelSeparator   = "\\u180E"
-    /// #define TWUWhiteSpaces              @"\\u2000-\\u200A"
     static let TWUWhiteSpaces               = "\\u2000-\\u200A"
-    /// #define TWULineSeparator            @"\\u2028"
     static let TWULineSeparator             = "\\u2028"
-    /// #define TWUParagraphSeparator       @"\\u2029"
     static let TWUParagraphSeparator        = "\\u2029"
-    /// #define TWUNarrowNoBreakSpace       @"\\u202F"
     static let TWUNarrowNoBreakSpace        = "\\u202F"
-    /// #define TWUMediumMathematicalSpace  @"\\u205F"
     static let TWUMediumMathematicalSpace   = "\\u205F"
-    /// #define TWUIdeographicSpace         @"\\u3000"
     static let TWUIdeographicSpace          = "\\u3000"
 
-    /// #define TWUUnicodeSpaces \
-    ///     TWUControlCharacters \
-    ///     TWUSpace \
-    ///     TWUControl85 \
-    ///     TWUNoBreakSpace \
-    ///     TWUOghamBreakSpace \
-    ///     TWUMongolianVowelSeparator \
-    ///     TWUWhiteSpaces \
-    ///     TWULineSeparator \
-    ///     TWUParagraphSeparator \
-    ///     TWUNarrowNoBreakSpace \
-    ///     TWUMediumMathematicalSpace \
-    ///     TWUIdeographicSpace
     static let TWUUnicodeSpaces = "\(TWUControlCharacters)\(TWUSpace)\(TWUControl85)"
         + "\(TWUNoBreakSpace)\(TWUOghamBreakSpace)\(TWUMongolianVowelSeparator)"
         + "\(TWUWhiteSpaces)\(TWULineSeparator)\(TWUParagraphSeparator)"
         + "\(TWUNarrowNoBreakSpace)\(TWUMediumMathematicalSpace)\(TWUIdeographicSpace)"
 
-    /// #define TWUUnicodeALM               @"\\u061C"
-    static let TWUUnicodeALM                = "\\u061C"
-    /// #define TWUUnicodeLRM               @"\\u200E"
-    static let TWUUnicodeLRM                = "\\u200E"
-    /// #define TWUUnicodeRLM               @"\\u200F"
-    static let TWUUnicodeRLM                = "\\u200F"
-    /// #define TWUUnicodeLRE               @"\\u202A"
-    static let TWUUnicodeLRE                = "\\u202A"
-    /// #define TWUUnicodeRLE               @"\\u202B"
-    static let TWUUnicodeRLE                = "\\u202B"
-    /// #define TWUUnicodePDF               @"\\u202C"
-    static let TWUUnicodePDF                = "\\u202C"
-    /// #define TWUUnicodeLRO               @"\\u202D"
-    static let TWUUnicodeLRO                = "\\u202D"
-    /// #define TWUUnicodeRLO               @"\\u202E"
-    static let TWUUnicodeRLO                = "\\u202E"
-    /// #define TWUUnicodeLRI               @"\\u2066"
-    static let TWUUnicodeLRI                = "\\u2066"
-    /// #define TWUUnicodeRLI               @"\\u2067"
-    static let TWUUnicodeRLI                = "\\u2067"
-    /// #define TWUUnicodeFSI               @"\\u2068"
-    static let TWUUnicodeFSI                = "\\u2068"
-    /// #define TWUUnicodePDI               @"\\u2069"
+    static let TWUUnicodeALM = "\\u061C"
+    static let TWUUnicodeLRM = "\\u200E"
+    static let TWUUnicodeRLM = "\\u200F"
+    static let TWUUnicodeLRE = "\\u202A"
+    static let TWUUnicodeRLE = "\\u202B"
+    static let TWUUnicodePDF = "\\u202C"
+    static let TWUUnicodeLRO = "\\u202D"
+    static let TWUUnicodeRLO = "\\u202E"
+    static let TWUUnicodeLRI = "\\u2066"
+    static let TWUUnicodeRLI = "\\u2067"
+    static let TWUUnicodeFSI = "\\u2068"
+    static let TWUUnicodePDI = "\\u2069"
 
-    /// #define TWUUnicodeDirectionalCharacters \
-    ///     TWUUnicodeALM \
-    ///     TWUUnicodeLRM \
-    ///     TWUUnicodeRLM \
-    ///     TWUUnicodeLRE \
-    ///     TWUUnicodeRLE \
-    ///     TWUUnicodePDF \
-    ///     TWUUnicodeLRO \
-    ///     TWUUnicodeRLO \
-    ///     TWUUnicodeLRI \
-    ///     TWUUnicodeRLI \
-    ///     TWUUnicodeFSI \
-    ///     TWUUnicodePDI
     static let TWUUnicodeDirectionalCharacters = "\(TWUUnicodeALM)\(TWUUnicodeLRM)"
         + "\(TWUUnicodeLRE)\(TWUUnicodeRLE)\(TWUUnicodePDF)\(TWUUnicodeLRO)"
-        + "\(TWUUnicodeRLO)\(TWUUnicodeLRI)\(TWUUnicodeRLI)\(TWUUnicodeFSI)"
+        + "\(TWUUnicodeRLO)\(TWUUnicodeLRI)\(TWUUnicodeRLI)\(TWUUnicodeFSI)\(TWUUnicodePDI)"
 
-    /// #define TWUInvalidCharacters        @"\\uFFFE\\uFEFF\\uFFFF"
-    static let TWUInvalidCharacters         = "\\uFFFE\\uFEFF\\uFFFF"
-    /// #define TWUInvalidCharactersPattern @"[" TWUInvalidCharacters @"]"
+    static let TWUInvalidCharacters        = "\\uFFFE\\uFEFF\\uFFFF"
     static let TWUInvalidCharactersPattern = "[\(TWUInvalidCharacters)]"
 
-    /// #define TWULatinAccents \
-    ///     @"\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u00FF\\u0100-\\u024F\\u0253-\\u0254\\u0256-\\u0257\\u0259\\u025b\\u0263\\u0268\\u026F\\u0272\\u0289\\u02BB\\u1E00-\\u1EFF"
     static let TWULatinAccents = "\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u00FF\\u0100-\\u024F\\u0253-\\u0254\\u0256-\\u0257\\u0259\\u025b\\u0263\\u0268\\u026F\\u0272\\u0289\\u02BB\\u1E00-\\u1EFF"
 
     // MARK: - Hashtag
 
-    /// #define TWUPunctuationChars                             @"-_!\"#$%&'\\(\\)*+,./:;<=>?@\\[\\]^`\\{|}~"
-    static let TWUPunctuationChars                             = "-_!\"#$%&'\\(\\)*+,./:;<=>?@\\[\\]^`\\{|}~"
-    /// #define TWUPunctuationCharsWithoutHyphen                @"_!\"#$%&'\\(\\)*+,./:;<=>?@\\[\\]^`\\{|}~"
-    static let TWUPunctuationCharsWithoutHyphen                = "_!\"#$%&'\\(\\)*+,./:;<=>?@\\[\\]^`\\{|}~"
-    /// #define TWUPunctuationCharsWithoutHyphenAndUnderscore   @"!\"#$%&'\\(\\)*+,./:;<=>?@\\[\\]^`\\{|}~"
-    static let TWUPunctuationCharsWithoutHyphenAndUnderscore   = "!\"#$%&'\\(\\)*+,./:;<=>?@\\[\\]^`\\{|}~"
+    static let TWUPunctuationChars              = "-_!\"#$%&'\\(\\)*+,./:;<=>?@\\[\\]^`\\{|}~"
+    static let TWUPunctuationCharsWithoutHyphen = "_!\"#$%&'\\(\\)*+,./:;<=>?@\\[\\]^`\\{|}~"
+    static let TWUPunctuationCharsWithoutHyphenAndUnderscore = "!\"#$%&'\\(\\)*+,./:;<=>?@\\[\\]^`\\{|}~"
 
-    /// #define TWHashtagAlpha                          @"[\\p{L}\\p{M}]"
-    static let TWHashtagAlpha                           = "[\\p{L}\\p{M}]"
-    /// #define TWHashtagSpecialChars                   @"_\\u200c\\u200d\\ua67e\\u05be\\u05f3\\u05f4\\uff5e\\u301c\\u309b\\u309c\\u30a0\\u30fb\\u3003\\u0f0b\\u0f0c\\u00b7"
-    static let TWHashtagSpecialChars                    = "_\\u200c\\u200d\\ua67e\\u05be\\u05f3\\u05f4\\uff5e\\u301c\\u309b\\u309c\\u30a0\\u30fb\\u3003\\u0f0b\\u0f0c\\u00b7"
-    /// #define TWUHashtagAlphanumeric                  @"[\\p{L}\\p{M}\\p{Nd}" TWHashtagSpecialChars @"]"
-    static let TWUHashtagAlphanumeric                   = "[\\p{L}\\p{M}\\p{Nd}\(TWHashtagSpecialChars)]"
-    /// #define TWUHashtagBoundaryInvalidChars          @"&\\p{L}\\p{M}\\p{Nd}" TWHashtagSpecialChars
-    static let TWUHashtagBoundaryInvalidChars           = "&\\p{L}\\p{M}\\p{Nd}\(TWHashtagSpecialChars)"
-
-    /// #define TWUHashtagBoundary \
-    ///     @"^|\\ufe0e|\\ufe0f|$|[^" \
-    ///     TWUHashtagBoundaryInvalidChars \
-    ///     @"]"
+    static let TWHashtagAlpha         = "[\\p{L}\\p{M}]"
+    static let TWHashtagSpecialChars  = "_\\u200c\\u200d\\ua67e\\u05be\\u05f3\\u05f4\\uff5e\\u301c\\u309b\\u309c\\u30a0\\u30fb\\u3003\\u0f0b\\u0f0c\\u00b7"
+    static let TWUHashtagAlphanumeric = "[\\p{L}\\p{M}\\p{Nd}\(TWHashtagSpecialChars)]"
+    static let TWUHashtagBoundaryInvalidChars = "&\\p{L}\\p{M}\\p{Nd}\(TWHashtagSpecialChars)"
     static let TWUHashtagBoundary = "^|\\ufe0e|\\ufe0f|$|[^\(TWUHashtagBoundaryInvalidChars)]"
 
-    /// #define TWUValidHashtag \
-    /// @"(?:" TWUHashtagBoundary @")([#＃](?!\ufe0f|\u20e3)" TWUHashtagAlphanumeric @"*" TWHashtagAlpha TWUHashtagAlphanumeric @"*)"
     static let TWUValidHashtag = "(?:\(TWUHashtagBoundary))([#＃](?!\\ufe0f|\\u20e3)\(TWUHashtagAlphanumeric)*\(TWHashtagAlpha)\(TWUHashtagAlphanumeric)*)"
 
-    /// #define TWUEndHashTagMatch      @"\\A(?:[#＃]|://)"
     static let TWUEndHashTagMatch = "\\A(?:[#＃]|://)"
 
     // MARK: - Symbol (Cashtag)
 
-    /// #define TWUSymbol               @"[a-z]{1,6}(?:[._][a-z]{1,2})?"
     static let TWUSymbol = "[a-z]{1,6}(?:[._][a-z]{1,2})?"
-    /// #define TWUValidSymbol \
-    ///     @"(?:^|[" TWUUnicodeSpaces TWUUnicodeDirectionalCharacters @"])" \
-    ///     @"(\\$" TWUSymbol @")" \
-    ///     @"(?=$|\\s|[" TWUPunctuationChars @"])"
     static let TWUValidSymbol = "(?:^|[\(TWUUnicodeSpaces)\(TWUUnicodeDirectionalCharacters)])"
         + "(\\$\(TWUSymbol))(?=$|\\s|[\(TWUPunctuationChars)])"
 
     // MARK: - Mention and list name
 
-    /// #define TWUValidMentionPrecedingChars   @"(?:[^a-z0-9_!#$%&*@＠]|^|(?:^|[^a-z0-9_+~.-])RT:?)"
     static let TWUValidMentionPrecedingChars = "(?:[^a-z0-9_!#$%&*@＠]|^|(?:^|[^a-z0-9_+~.-])RT:?)"
-    /// #define TWUAtSigns                      @"[@＠]"
     static let TWUAtSigns = "[@＠]"
-    /// #define TWUValidUsername                @"\\A" TWUAtSigns @"[a-z0-9_]{1,20}\\z"
-    static let TWUValidUsername                = "\\A\(TWUAtSigns)[a-z0-9_]{1,20}\\z"
-    /// #define TWUValidList                    @"\\A" TWUAtSigns @"[a-z0-9_]{1,20}/[a-z][a-z0-9_\\-]{0,24}\\z"
-    static let TWUValidList                    = "\\A\(TWUAtSigns)[a-z0-9_]{1,20}/[a-z][a-z0-9_\\-]{0,24}\\z"
+    static let TWUValidUsername = "\\A\(TWUAtSigns)[a-z0-9_]{1,20}\\z"
+    static let TWUValidList = "\\A\(TWUAtSigns)[a-z0-9_]{1,20}/[a-z][a-z0-9_\\-]{0,24}\\z"
 
-    /// #define TWUValidMentionOrList \
-    ///     @"(" TWUValidMentionPrecedingChars @")" \
-    ///     @"(" TWUAtSigns @")" \
-    ///     @"([a-z0-9_]{1,20})" \
-    ///     @"(/[a-z][a-z0-9_\\-]{0,24})?"
     static let TWUValidMentionOrList = "(\(TWUValidMentionPrecedingChars))"
         + "(\(TWUAtSigns))([a-z0-9_]{1,20})(/[a-z][a-z0-9_\\-]{0,24})?"
 
-    /// #define TWUValidReply                   @"\\A(?:[" TWUUnicodeSpaces TWUUnicodeDirectionalCharacters @"])*"  TWUAtSigns @"([a-z0-9_]{1,20})"
     static let TWUValidReply = "\\A(?:[\(TWUUnicodeSpaces)"
         + "\(TWUUnicodeDirectionalCharacters)])*\(TWUAtSigns)([a-z0-9_]{1,20})"
-    /// #define TWUEndMentionMatch              @"\\A(?:" TWUAtSigns @"|[" TWULatinAccents @"]|://)"
+    
     static let TWUEndMentionMatch = "\\A(?:\(TWUAtSigns)|[\(TWULatinAccents)]|://)"
 
     // MARK: - URL
 
-    /// #define TWUValidURLPrecedingChars       @"(?:[^a-z0-9@＠$#＃" TWUInvalidCharacters @"]|[" TWUUnicodeDirectionalCharacters "]|^)"
     static let TWUValidURLPrecedingChars = "(?:[^a-z0-9@＠$#＃\(TWUInvalidCharacters)]|[\(TWUUnicodeDirectionalCharacters)]|^)"
 
     /// These patterns extract domains that are ascii+latin only. We separately check
     /// for unencoded domains with unicode characters elsewhere.
-    /// 
-    /// #define TWUValidURLCharacters           @"[a-z0-9" TWULatinAccents @"]"
     static let TWUValidURLCharacters = "[a-z0-9\(TWULatinAccents)]"
-    /// #define TWUValidURLSubdomain            @"(?>(?:" TWUValidURLCharacters @"[" TWUValidURLCharacters @"\\-_]{0,255})?" TWUValidURLCharacters @"\\.)"
     static let TWUValidURLSubdomain = "(?>(?:\(TWUValidURLCharacters)"
         + "[\(TWUValidURLCharacters)\\-_]{0,255})?\(TWUValidURLCharacters)\\.)"
-    /// #define TWUValidURLDomain               @"(?:(?:" TWUValidURLCharacters @"[" TWUValidURLCharacters @"\\-]{0,255})?" TWUValidURLCharacters @"\\.)"
+
     static let TWUValidURLDomain = "(?:(?:\(TWUValidURLCharacters)"
         + "[\(TWUValidURLCharacters)\\-]{0,255})?\(TWUValidURLCharacters)\\.)"
 
     /// Used to extract domains that contain unencoded unicode.
-    ///
-    /// #define TWUValidURLUnicodeCharacters \
-    /// @"[^" \
-    /// TWUPunctuationChars \
-    /// @"\\s\\p{Z}\\p{InGeneralPunctuation}" \
-    /// @"]"
     static let TWUValidURLUnicodeCharacters = "[^\(TWUPunctuationChars)\\s\\p{Z}\\p{InGeneralPunctuation}]"
 
-    /// #define TWUValidURLUnicodeDomain        @"(?:(?:" TWUValidURLUnicodeCharacters @"[" TWUValidURLUnicodeCharacters @"\\-]{0,255})?" TWUValidURLUnicodeCharacters @"\\.)"
     static let TWUValidURLUnicodeDomain = "(?:(?:\(TWUValidURLUnicodeCharacters)"
         + "[\(TWUValidURLUnicodeCharacters)\\-]{0,255})?\(TWUValidURLUnicodeCharacters)\\.)"
 
-    /// #define TWUValidPunycode                @"(?:xn--[-0-9a-z]+)"
     static let TWUValidPunycode = "(?:xn--[-0-9a-z]+)"
 
-    /// #define TWUValidDomain \
-    /// @"(?:" \
-    /// TWUValidURLSubdomain @"*" TWUValidURLDomain \
-    /// @"(?:" TWUValidGTLD @"|" TWUValidCCTLD @"|" TWUValidPunycode @")" \
-    /// @")" \
-    /// @"|(?:(?<=https?://)" \
-    /// @"(?:" \
-    /// @"(?:" TWUValidURLDomain TWUValidCCTLD @")" \
-    /// @"|(?:" \
-    /// TWUValidURLUnicodeDomain @"{0,255}" TWUValidURLUnicodeDomain \
-    /// @"(?:" TWUValidGTLD @"|" TWUValidCCTLD @")" \
-    /// @")" \
-    /// @")" \
-    /// @")" \
-    /// @"|(?:" \
-    /// TWUValidURLDomain TWUValidCCTLD @"(?=/)" \
-    /// @")"
     static let TWUValidDomain = "(?:\(TWUValidURLSubdomain)*\(TWUValidURLDomain)"
         + "(?:\(TWUValidGTLD)|\(TWUValidCCTLD)|\(TWUValidPunycode))"
         + ")|(?:(?<=https?://)(?:(?:\(TWUValidURLDomain)\(TWUValidCCTLD))"
@@ -223,63 +115,22 @@ enum TwitterTextRegexp {
         + "(?:\(TWUValidGTLD)|\(TWUValidCCTLD)))))|(?:"
         + "\(TWUValidURLDomain)\(TWUValidCCTLD)(?=/))"
 
-
-    /// #define TWUValidPortNumber              @"[0-9]++"
     static let TWUValidPortNumber = "[0-9]++"
-    /// #define TWUValidGeneralURLPathChars     @"[a-z\\p{Cyrillic}0-9!\\*';:=+,.$/%#\\[\\]\\-\\u2013_~&|@" TWULatinAccents @"]"
     static let TWUValidGeneralURLPathChars = "[a-z\\p{Cyrillic}0-9!\\*';:=+,.$/%#\\[\\]\\-\\u2013_~&|@\(TWULatinAccents)]"
 
-    /// #define TWUValidURLBalancedParens               \
-    /// @"\\(" \
-    /// @"(?:" \
-    /// TWUValidGeneralURLPathChars @"+" \
-    /// @"|" \
-    /// @"(?:" \
-    /// TWUValidGeneralURLPathChars @"*" \
-    /// @"\\(" \
-    /// TWUValidGeneralURLPathChars @"+" \
-    /// @"\\)" \
-    /// TWUValidGeneralURLPathChars @"*" \
-    /// @")" \
-    /// @")" \
-    /// @"\\)"
     static let TWUValidURLBalancedParens = "\\((?:\(TWUValidGeneralURLPathChars)+"
         + "|(?:\(TWUValidGeneralURLPathChars)*\\(\(TWUValidGeneralURLPathChars)+"
         + "\\)\(TWUValidGeneralURLPathChars)*))\\)"
 
-    /// #define TWUValidURLPathEndingChars      @"[a-z\\p{Cyrillic}0-9=_#/+\\-" TWULatinAccents @"]|(?:" TWUValidURLBalancedParens @")"
     static let TWUValidURLPathEndingChars = "[a-z\\p{Cyrillic}0-9=_#/+\\-\(TWULatinAccents)]|(?:\(TWUValidURLBalancedParens))"
 
-    /// #define TWUValidPath @"(?:" \
-    /// @"(?:" \
-    /// TWUValidGeneralURLPathChars @"*" \
-    /// @"(?:" TWUValidURLBalancedParens TWUValidGeneralURLPathChars @"*)*" \
-    /// TWUValidURLPathEndingChars \
-    /// @")|(?:@" TWUValidGeneralURLPathChars @"+/)" \
-    /// @")"
     static let TWUValidPath = "(?:(?:\(TWUValidGeneralURLPathChars)*"
         + "(?:\(TWUValidURLBalancedParens)\(TWUValidGeneralURLPathChars)*)*"
         + "\(TWUValidURLPathEndingChars))|(?:@\(TWUValidGeneralURLPathChars)+/))"
 
-    /// #define TWUValidURLQueryChars           @"[a-z0-9!?*'\\(\\);:&=+$/%#\\[\\]\\-_\\.,~|@]"
     static let TWUValidURLQueryChars = "[a-z0-9!?*'\\(\\);:&=+$/%#\\[\\]\\-_\\.,~|@]"
-    /// #define TWUValidURLQueryEndingChars     @"[a-z0-9\\-_&=#/]"
     static let TWUValidURLQueryEndingChars = "[a-z0-9\\-_&=#/]"
 
-    /// #define TWUValidURLPatternString \
-    /// @"(" \
-    /// @"(" TWUValidURLPrecedingChars @")" \
-    /// @"(" \
-    /// @"(https?://)?" \
-    /// @"(" TWUValidDomain @")" \
-    /// @"(?::(" TWUValidPortNumber @"))?" \
-    /// @"(/" \
-    /// TWUValidPath @"*+" \
-    /// @")?" \
-    /// @"(\\?" TWUValidURLQueryChars @"*" \
-    /// TWUValidURLQueryEndingChars @")?" \
-    /// @")" \
-    /// @")"
     static let TWUValidURLPatternString = "((\(TWUValidURLPrecedingChars))"
         + "((https?://)?(\(TWUValidDomain))(?::(\(TWUValidPortNumber)))?"
         + "(/\(TWUValidPath)*+)?(\\?\(TWUValidURLQueryChars)*"
@@ -386,19 +237,11 @@ enum TwitterTextRegexp {
     + "bl|bj|bi|bh|bg|bf|be|bd|bb|ba|az|ax|aw|au|at|as|ar|aq|ao|an|am|al|ai|ag|af|ae|ad|ac"
     + ")(?=[^a-z0-9@+-]|$))"
 
-    /// #define TWUValidTCOURL                  @"^https?://t\\.co/([a-z0-9]+)"
     static let TWUValidTCOURL = "^https?://t\\.co/([a-z0-9]+)"
 
-    /// #define TWUValidURLPath \
-    /// @"(?:" \
-    /// @"(?:" \
-    /// TWUValidGeneralURLPathChars @"*" \
-    /// @"(?:" TWUValidURLBalancedParens TWUValidGeneralURLPathChars @"*)*" TWUValidURLPathEndingChars \
-    /// @")" \
-    /// @"|" \
-    /// @"(?:" TWUValidGeneralURLPathChars @"+/)" \
-    /// @")"
     static let TWUValidURLPath = "(?:(?:\(TWUValidGeneralURLPathChars)*"
         + "(?:\(TWUValidURLBalancedParens)\(TWUValidGeneralURLPathChars)*)*\(TWUValidURLPathEndingChars)"
         + ")|(?:\(TWUValidGeneralURLPathChars)+/))"
+
+    static let emojiPattern =  "(?:\u{0001f468}\u{0001f3fb}\u{200d}\u{0001f91d}\u{200d}\u{0001f468}[\u{0001f3fc}-\u{0001f3ff}]|\u{0001f468}\u{0001f3fc}\u{200d}\u{0001f91d}\u{200d}\u{0001f468}[\u{0001f3fb}\u{0001f3fd}-\u{0001f3ff}]|\u{0001f468}\u{0001f3fd}\u{200d}\u{0001f91d}\u{200d}\u{0001f468}[\u{0001f3fb}\u{0001f3fc}\u{0001f3fe}\u{0001f3ff}]|\u{0001f468}\u{0001f3fe}\u{200d}\u{0001f91d}\u{200d}\u{0001f468}[\u{0001f3fb}-\u{0001f3fd}\u{0001f3ff}]|\u{0001f468}\u{0001f3ff}\u{200d}\u{0001f91d}\u{200d}\u{0001f468}[\u{0001f3fb}-\u{0001f3fe}]|\u{0001f469}\u{0001f3fb}\u{200d}\u{0001f91d}\u{200d}\u{0001f468}[\u{0001f3fc}-\u{0001f3ff}]|\u{0001f469}\u{0001f3fb}\u{200d}\u{0001f91d}\u{200d}\u{0001f469}[\u{0001f3fc}-\u{0001f3ff}]|\u{0001f469}\u{0001f3fc}\u{200d}\u{0001f91d}\u{200d}\u{0001f468}[\u{0001f3fb}\u{0001f3fd}-\u{0001f3ff}]|\u{0001f469}\u{0001f3fc}\u{200d}\u{0001f91d}\u{200d}\u{0001f469}[\u{0001f3fb}\u{0001f3fd}-\u{0001f3ff}]|\u{0001f469}\u{0001f3fd}\u{200d}\u{0001f91d}\u{200d}\u{0001f468}[\u{0001f3fb}\u{0001f3fc}\u{0001f3fe}\u{0001f3ff}]|\u{0001f469}\u{0001f3fd}\u{200d}\u{0001f91d}\u{200d}\u{0001f469}[\u{0001f3fb}\u{0001f3fc}\u{0001f3fe}\u{0001f3ff}]|\u{0001f469}\u{0001f3fe}\u{200d}\u{0001f91d}\u{200d}\u{0001f468}[\u{0001f3fb}-\u{0001f3fd}\u{0001f3ff}]|\u{0001f469}\u{0001f3fe}\u{200d}\u{0001f91d}\u{200d}\u{0001f469}[\u{0001f3fb}-\u{0001f3fd}\u{0001f3ff}]|\u{0001f469}\u{0001f3ff}\u{200d}\u{0001f91d}\u{200d}\u{0001f468}[\u{0001f3fb}-\u{0001f3fe}]|\u{0001f469}\u{0001f3ff}\u{200d}\u{0001f91d}\u{200d}\u{0001f469}[\u{0001f3fb}-\u{0001f3fe}]|\u{0001f9d1}\u{0001f3fb}\u{200d}\u{0001f91d}\u{200d}\u{0001f9d1}[\u{0001f3fb}-\u{0001f3ff}]|\u{0001f9d1}\u{0001f3fc}\u{200d}\u{0001f91d}\u{200d}\u{0001f9d1}[\u{0001f3fb}-\u{0001f3ff}]|\u{0001f9d1}\u{0001f3fd}\u{200d}\u{0001f91d}\u{200d}\u{0001f9d1}[\u{0001f3fb}-\u{0001f3ff}]|\u{0001f9d1}\u{0001f3fe}\u{200d}\u{0001f91d}\u{200d}\u{0001f9d1}[\u{0001f3fb}-\u{0001f3ff}]|\u{0001f9d1}\u{0001f3ff}\u{200d}\u{0001f91d}\u{200d}\u{0001f9d1}[\u{0001f3fb}-\u{0001f3ff}]|\u{0001f9d1}\u{200d}\u{0001f91d}\u{200d}\u{0001f9d1}|\u{0001f46b}[\u{0001f3fb}-\u{0001f3ff}]|\u{0001f46c}[\u{0001f3fb}-\u{0001f3ff}]|\u{0001f46d}[\u{0001f3fb}-\u{0001f3ff}]|[\u{0001f46b}-\u{0001f46d}])|[\u{0001f468}\u{0001f469}\u{0001f9d1}][\u{0001f3fb}-\u{0001f3ff}]?\u{200d}(?:\u{2695}\u{fe0f}|\u{2696}\u{fe0f}|\u{2708}\u{fe0f}|[\u{0001f33e}\u{0001f373}\u{0001f393}\u{0001f3a4}\u{0001f3a8}\u{0001f3eb}\u{0001f3ed}\u{0001f4bb}\u{0001f4bc}\u{0001f527}\u{0001f52c}\u{0001f680}\u{0001f692}\u{0001f9af}-\u{0001f9b3}\u{0001f9bc}\u{0001f9bd}])|[\u{26f9}\u{0001f3cb}\u{0001f3cc}\u{0001f574}\u{0001f575}]([\u{fe0f}\u{0001f3fb}-\u{0001f3ff}]\u{200d}[\u{2640}\u{2642}]\u{fe0f})|[\u{0001f3c3}\u{0001f3c4}\u{0001f3ca}\u{0001f46e}\u{0001f471}\u{0001f473}\u{0001f477}\u{0001f481}\u{0001f482}\u{0001f486}\u{0001f487}\u{0001f645}-\u{0001f647}\u{0001f64b}\u{0001f64d}\u{0001f64e}\u{0001f6a3}\u{0001f6b4}-\u{0001f6b6}\u{0001f926}\u{0001f935}\u{0001f937}-\u{0001f939}\u{0001f93d}\u{0001f93e}\u{0001f9b8}\u{0001f9b9}\u{0001f9cd}-\u{0001f9cf}\u{0001f9d6}-\u{0001f9dd}][\u{0001f3fb}-\u{0001f3ff}]?\u{200d}[\u{2640}\u{2642}]\u{fe0f}|(?:\u{0001f468}\u{200d}\u{2764}\u{fe0f}\u{200d}\u{0001f48b}\u{200d}\u{0001f468}|\u{0001f469}\u{200d}\u{2764}\u{fe0f}\u{200d}\u{0001f48b}\u{200d}[\u{0001f468}\u{0001f469}]|\u{0001f468}\u{200d}\u{0001f468}\u{200d}\u{0001f466}\u{200d}\u{0001f466}|\u{0001f468}\u{200d}\u{0001f468}\u{200d}\u{0001f467}\u{200d}[\u{0001f466}\u{0001f467}]|\u{0001f468}\u{200d}\u{0001f469}\u{200d}\u{0001f466}\u{200d}\u{0001f466}|\u{0001f468}\u{200d}\u{0001f469}\u{200d}\u{0001f467}\u{200d}[\u{0001f466}\u{0001f467}]|\u{0001f469}\u{200d}\u{0001f469}\u{200d}\u{0001f466}\u{200d}\u{0001f466}|\u{0001f469}\u{200d}\u{0001f469}\u{200d}\u{0001f467}\u{200d}[\u{0001f466}\u{0001f467}]|\u{0001f468}\u{200d}\u{2764}\u{fe0f}\u{200d}\u{0001f468}|\u{0001f469}\u{200d}\u{2764}\u{fe0f}\u{200d}[\u{0001f468}\u{0001f469}]|\u{0001f3f3}\u{fe0f}\u{200d}\u{26a7}\u{fe0f}|\u{0001f468}\u{200d}\u{0001f466}\u{200d}\u{0001f466}|\u{0001f468}\u{200d}\u{0001f467}\u{200d}[\u{0001f466}\u{0001f467}]|\u{0001f468}\u{200d}\u{0001f468}\u{200d}[\u{0001f466}\u{0001f467}]|\u{0001f468}\u{200d}\u{0001f469}\u{200d}[\u{0001f466}\u{0001f467}]|\u{0001f469}\u{200d}\u{0001f466}\u{200d}\u{0001f466}|\u{0001f469}\u{200d}\u{0001f467}\u{200d}[\u{0001f466}\u{0001f467}]|\u{0001f469}\u{200d}\u{0001f469}\u{200d}[\u{0001f466}\u{0001f467}]|\u{0001f3f3}\u{fe0f}\u{200d}\u{0001f308}|\u{0001f3f4}\u{200d}\u{2620}\u{fe0f}|\u{0001f46f}\u{200d}\u{2640}\u{fe0f}|\u{0001f46f}\u{200d}\u{2642}\u{fe0f}|\u{0001f93c}\u{200d}\u{2640}\u{fe0f}|\u{0001f93c}\u{200d}\u{2642}\u{fe0f}|\u{0001f9de}\u{200d}\u{2640}\u{fe0f}|\u{0001f9de}\u{200d}\u{2642}\u{fe0f}|\u{0001f9df}\u{200d}\u{2640}\u{fe0f}|\u{0001f9df}\u{200d}\u{2642}\u{fe0f}|\u{0001f415}\u{200d}\u{0001f9ba}|\u{0001f441}\u{200d}\u{0001f5e8}|\u{0001f468}\u{200d}[\u{0001f466}\u{0001f467}]|\u{0001f469}\u{200d}[\u{0001f466}\u{0001f467}])|[#*0-9]\u{fe0f}?\u{20e3}|(?:[©®\u{2122}\u{265f}]\u{fe0f})|[\u{203c}\u{2049}\u{2139}\u{2194}-\u{2199}\u{21a9}\u{21aa}\u{231a}\u{231b}\u{2328}\u{23cf}\u{23ed}-\u{23ef}\u{23f1}\u{23f2}\u{23f8}-\u{23fa}\u{24c2}\u{25aa}\u{25ab}\u{25b6}\u{25c0}\u{25fb}-\u{25fe}\u{2600}-\u{2604}\u{260e}\u{2611}\u{2614}\u{2615}\u{2618}\u{2620}\u{2622}\u{2623}\u{2626}\u{262a}\u{262e}\u{262f}\u{2638}-\u{263a}\u{2640}\u{2642}\u{2648}-\u{2653}\u{2660}\u{2663}\u{2665}\u{2666}\u{2668}\u{267b}\u{267f}\u{2692}-\u{2697}\u{2699}\u{269b}\u{269c}\u{26a0}\u{26a1}\u{26a7}\u{26aa}\u{26ab}\u{26b0}\u{26b1}\u{26bd}\u{26be}\u{26c4}\u{26c5}\u{26c8}\u{26cf}\u{26d1}\u{26d3}\u{26d4}\u{26e9}\u{26ea}\u{26f0}-\u{26f5}\u{26f8}\u{26fa}\u{26fd}\u{2702}\u{2708}\u{2709}\u{270f}\u{2712}\u{2714}\u{2716}\u{271d}\u{2721}\u{2733}\u{2734}\u{2744}\u{2747}\u{2757}\u{2763}\u{2764}\u{27a1}\u{2934}\u{2935}\u{2b05}-\u{2b07}\u{2b1b}\u{2b1c}\u{2b50}\u{2b55}\u{3030}\u{303d}\u{3297}\u{3299}\u{0001f004}\u{0001f170}\u{0001f171}\u{0001f17e}\u{0001f17f}\u{0001f202}\u{0001f21a}\u{0001f22f}\u{0001f237}\u{0001f321}\u{0001f324}-\u{0001f32c}\u{0001f336}\u{0001f37d}\u{0001f396}\u{0001f397}\u{0001f399}-\u{0001f39b}\u{0001f39e}\u{0001f39f}\u{0001f3cd}\u{0001f3ce}\u{0001f3d4}-\u{0001f3df}\u{0001f3f3}\u{0001f3f5}\u{0001f3f7}\u{0001f43f}\u{0001f441}\u{0001f4fd}\u{0001f549}\u{0001f54a}\u{0001f56f}\u{0001f570}\u{0001f573}\u{0001f576}-\u{0001f579}\u{0001f587}\u{0001f58a}-\u{0001f58d}\u{0001f5a5}\u{0001f5a8}\u{0001f5b1}\u{0001f5b2}\u{0001f5bc}\u{0001f5c2}-\u{0001f5c4}\u{0001f5d1}-\u{0001f5d3}\u{0001f5dc}-\u{0001f5de}\u{0001f5e1}\u{0001f5e3}\u{0001f5e8}\u{0001f5ef}\u{0001f5f3}\u{0001f5fa}\u{0001f6cb}\u{0001f6cd}-\u{0001f6cf}\u{0001f6e0}-\u{0001f6e5}\u{0001f6e9}\u{0001f6f0}\u{0001f6f3}](?:\u{fe0f}|(?!\u{fe0e}))|(?:[\u{261d}\u{26f7}\u{26f9}\u{270c}\u{270d}\u{0001f3cb}\u{0001f3cc}\u{0001f574}\u{0001f575}\u{0001f590}](?:\u{fe0f}|(?!\u{fe0e}))|[\u{270a}\u{270b}\u{0001f385}\u{0001f3c2}-\u{0001f3c4}\u{0001f3c7}\u{0001f3ca}\u{0001f442}\u{0001f443}\u{0001f446}-\u{0001f450}\u{0001f466}-\u{0001f469}\u{0001f46e}\u{0001f470}-\u{0001f478}\u{0001f47c}\u{0001f481}-\u{0001f483}\u{0001f485}-\u{0001f487}\u{0001f4aa}\u{0001f57a}\u{0001f595}\u{0001f596}\u{0001f645}-\u{0001f647}\u{0001f64b}-\u{0001f64f}\u{0001f6a3}\u{0001f6b4}-\u{0001f6b6}\u{0001f6c0}\u{0001f6cc}\u{0001f90f}\u{0001f918}-\u{0001f91c}\u{0001f91e}\u{0001f91f}\u{0001f926}\u{0001f930}-\u{0001f939}\u{0001f93d}\u{0001f93e}\u{0001f9b5}\u{0001f9b6}\u{0001f9b8}\u{0001f9b9}\u{0001f9bb}\u{0001f9cd}-\u{0001f9cf}\u{0001f9d1}-\u{0001f9dd}])[\u{0001f3fb}-\u{0001f3ff}]?|(?:\u{0001f3f4}\u{000e0067}\u{000e0062}\u{000e0065}\u{000e006e}\u{000e0067}\u{000e007f}|\u{0001f3f4}\u{000e0067}\u{000e0062}\u{000e0073}\u{000e0063}\u{000e0074}\u{000e007f}|\u{0001f3f4}\u{000e0067}\u{000e0062}\u{000e0077}\u{000e006c}\u{000e0073}\u{000e007f}|\u{0001f1e6}[\u{0001f1e8}-\u{0001f1ec}\u{0001f1ee}\u{0001f1f1}\u{0001f1f2}\u{0001f1f4}\u{0001f1f6}-\u{0001f1fa}\u{0001f1fc}\u{0001f1fd}\u{0001f1ff}]|\u{0001f1e7}[\u{0001f1e6}\u{0001f1e7}\u{0001f1e9}-\u{0001f1ef}\u{0001f1f1}-\u{0001f1f4}\u{0001f1f6}-\u{0001f1f9}\u{0001f1fb}\u{0001f1fc}\u{0001f1fe}\u{0001f1ff}]|\u{0001f1e8}[\u{0001f1e6}\u{0001f1e8}\u{0001f1e9}\u{0001f1eb}-\u{0001f1ee}\u{0001f1f0}-\u{0001f1f5}\u{0001f1f7}\u{0001f1fa}-\u{0001f1ff}]|\u{0001f1e9}[\u{0001f1ea}\u{0001f1ec}\u{0001f1ef}\u{0001f1f0}\u{0001f1f2}\u{0001f1f4}\u{0001f1ff}]|\u{0001f1ea}[\u{0001f1e6}\u{0001f1e8}\u{0001f1ea}\u{0001f1ec}\u{0001f1ed}\u{0001f1f7}-\u{0001f1fa}]|\u{0001f1eb}[\u{0001f1ee}-\u{0001f1f0}\u{0001f1f2}\u{0001f1f4}\u{0001f1f7}]|\u{0001f1ec}[\u{0001f1e6}\u{0001f1e7}\u{0001f1e9}-\u{0001f1ee}\u{0001f1f1}-\u{0001f1f3}\u{0001f1f5}-\u{0001f1fa}\u{0001f1fc}\u{0001f1fe}]|\u{0001f1ed}[\u{0001f1f0}\u{0001f1f2}\u{0001f1f3}\u{0001f1f7}\u{0001f1f9}\u{0001f1fa}]|\u{0001f1ee}[\u{0001f1e8}-\u{0001f1ea}\u{0001f1f1}-\u{0001f1f4}\u{0001f1f6}-\u{0001f1f9}]|\u{0001f1ef}[\u{0001f1ea}\u{0001f1f2}\u{0001f1f4}\u{0001f1f5}]|\u{0001f1f0}[\u{0001f1ea}\u{0001f1ec}-\u{0001f1ee}\u{0001f1f2}\u{0001f1f3}\u{0001f1f5}\u{0001f1f7}\u{0001f1fc}\u{0001f1fe}\u{0001f1ff}]|\u{0001f1f1}[\u{0001f1e6}-\u{0001f1e8}\u{0001f1ee}\u{0001f1f0}\u{0001f1f7}-\u{0001f1fb}\u{0001f1fe}]|\u{0001f1f2}[\u{0001f1e6}\u{0001f1e8}-\u{0001f1ed}\u{0001f1f0}-\u{0001f1ff}]|\u{0001f1f3}[\u{0001f1e6}\u{0001f1e8}\u{0001f1ea}-\u{0001f1ec}\u{0001f1ee}\u{0001f1f1}\u{0001f1f4}\u{0001f1f5}\u{0001f1f7}\u{0001f1fa}\u{0001f1ff}]|\u{0001f1f4}\u{0001f1f2}|\u{0001f1f5}[\u{0001f1e6}\u{0001f1ea}-\u{0001f1ed}\u{0001f1f0}-\u{0001f1f3}\u{0001f1f7}-\u{0001f1f9}\u{0001f1fc}\u{0001f1fe}]|\u{0001f1f6}\u{0001f1e6}|\u{0001f1f7}[\u{0001f1ea}\u{0001f1f4}\u{0001f1f8}\u{0001f1fa}\u{0001f1fc}]|\u{0001f1f8}[\u{0001f1e6}-\u{0001f1ea}\u{0001f1ec}-\u{0001f1f4}\u{0001f1f7}-\u{0001f1f9}\u{0001f1fb}\u{0001f1fd}-\u{0001f1ff}]|\u{0001f1f9}[\u{0001f1e6}\u{0001f1e8}\u{0001f1e9}\u{0001f1eb}-\u{0001f1ed}\u{0001f1ef}-\u{0001f1f4}\u{0001f1f7}\u{0001f1f9}\u{0001f1fb}\u{0001f1fc}\u{0001f1ff}]|\u{0001f1fa}[\u{0001f1e6}\u{0001f1ec}\u{0001f1f2}\u{0001f1f3}\u{0001f1f8}\u{0001f1fe}\u{0001f1ff}]|\u{0001f1fb}[\u{0001f1e6}\u{0001f1e8}\u{0001f1ea}\u{0001f1ec}\u{0001f1ee}\u{0001f1f3}\u{0001f1fa}]|\u{0001f1fc}[\u{0001f1eb}\u{0001f1f8}]|\u{0001f1fd}\u{0001f1f0}|\u{0001f1fe}[\u{0001f1ea}\u{0001f1f9}]|\u{0001f1ff}[\u{0001f1e6}\u{0001f1f2}\u{0001f1fc}]|[\u{23e9}-\u{23ec}\u{23f0}\u{23f3}\u{267e}\u{26ce}\u{2705}\u{2728}\u{274c}\u{274e}\u{2753}-\u{2755}\u{2795}-\u{2797}\u{27b0}\u{27bf}\u{e50a}\u{0001f0cf}\u{0001f18e}\u{0001f191}-\u{0001f19a}\u{0001f1e6}-\u{0001f1ff}\u{0001f201}\u{0001f232}-\u{0001f236}\u{0001f238}-\u{0001f23a}\u{0001f250}\u{0001f251}\u{0001f300}-\u{0001f320}\u{0001f32d}-\u{0001f335}\u{0001f337}-\u{0001f37c}\u{0001f37e}-\u{0001f384}\u{0001f386}-\u{0001f393}\u{0001f3a0}-\u{0001f3c1}\u{0001f3c5}\u{0001f3c6}\u{0001f3c8}\u{0001f3c9}\u{0001f3cf}-\u{0001f3d3}\u{0001f3e0}-\u{0001f3f0}\u{0001f3f4}\u{0001f3f8}-\u{0001f43e}\u{0001f440}\u{0001f444}\u{0001f445}\u{0001f451}-\u{0001f465}\u{0001f46a}\u{0001f46f}\u{0001f479}-\u{0001f47b}\u{0001f47d}-\u{0001f480}\u{0001f484}\u{0001f488}-\u{0001f4a9}\u{0001f4ab}-\u{0001f4fc}\u{0001f4ff}-\u{0001f53d}\u{0001f54b}-\u{0001f54e}\u{0001f550}-\u{0001f567}\u{0001f5a4}\u{0001f5fb}-\u{0001f644}\u{0001f648}-\u{0001f64a}\u{0001f680}-\u{0001f6a2}\u{0001f6a4}-\u{0001f6b3}\u{0001f6b7}-\u{0001f6bf}\u{0001f6c1}-\u{0001f6c5}\u{0001f6d0}-\u{0001f6d2}\u{0001f6d5}\u{0001f6eb}\u{0001f6ec}\u{0001f6f4}-\u{0001f6fa}\u{0001f7e0}-\u{0001f7eb}\u{0001f90d}\u{0001f90e}\u{0001f910}-\u{0001f917}\u{0001f91d}\u{0001f920}-\u{0001f925}\u{0001f927}-\u{0001f92f}\u{0001f93a}\u{0001f93c}\u{0001f93f}-\u{0001f945}\u{0001f947}-\u{0001f971}\u{0001f973}-\u{0001f976}\u{0001f97a}-\u{0001f9a2}\u{0001f9a5}-\u{0001f9aa}\u{0001f9ae}-\u{0001f9b4}\u{0001f9b7}\u{0001f9ba}\u{0001f9bc}-\u{0001f9ca}\u{0001f9d0}\u{0001f9de}-\u{0001f9ff}\u{0001fa70}-\u{0001fa73}\u{0001fa78}-\u{0001fa7a}\u{0001fa80}-\u{0001fa82}\u{0001fa90}-\u{0001fa95}])|\u{fe0f}"
 }
