@@ -6,221 +6,108 @@
 import Foundation
 
 let TwitterTextEmojiRegex: NSRegularExpression? = {
-    try? NSRegularExpression.init(pattern: TwitterTextRegexp.emojiPattern, options: NSRegularExpression.Options(rawValue: 0))
+    try? NSRegularExpression.init(pattern: Regexp.emojiPattern, options: NSRegularExpression.Options(rawValue: 0))
 }()
 
-enum TwitterTextRegexp {
-    /// #define TWUControlCharacters        @"\\u0009-\\u000D"
+enum Regexp {
     static let TWUControlCharacters         = "\\u0009-\\u000D"
-    /// #define TWUSpace                    @"\\u0020"
     static let TWUSpace                     = "\\u0020"
-    /// #define TWUControl85                @"\\u0085"
     static let TWUControl85                 = "\\u0085"
-    /// #define TWUNoBreakSpace             @"\\u00A0"
     static let TWUNoBreakSpace              = "\\u00A0"
-    /// #define TWUOghamBreakSpace          @"\\u1680"
     static let TWUOghamBreakSpace           = "\\u1680"
-    /// #define TWUMongolianVowelSeparator  @"\\u180E"
     static let TWUMongolianVowelSeparator   = "\\u180E"
-    /// #define TWUWhiteSpaces              @"\\u2000-\\u200A"
     static let TWUWhiteSpaces               = "\\u2000-\\u200A"
-    /// #define TWULineSeparator            @"\\u2028"
     static let TWULineSeparator             = "\\u2028"
-    /// #define TWUParagraphSeparator       @"\\u2029"
     static let TWUParagraphSeparator        = "\\u2029"
-    /// #define TWUNarrowNoBreakSpace       @"\\u202F"
     static let TWUNarrowNoBreakSpace        = "\\u202F"
-    /// #define TWUMediumMathematicalSpace  @"\\u205F"
     static let TWUMediumMathematicalSpace   = "\\u205F"
-    /// #define TWUIdeographicSpace         @"\\u3000"
     static let TWUIdeographicSpace          = "\\u3000"
 
-    /// #define TWUUnicodeSpaces \
-    ///     TWUControlCharacters \
-    ///     TWUSpace \
-    ///     TWUControl85 \
-    ///     TWUNoBreakSpace \
-    ///     TWUOghamBreakSpace \
-    ///     TWUMongolianVowelSeparator \
-    ///     TWUWhiteSpaces \
-    ///     TWULineSeparator \
-    ///     TWUParagraphSeparator \
-    ///     TWUNarrowNoBreakSpace \
-    ///     TWUMediumMathematicalSpace \
-    ///     TWUIdeographicSpace
     static let TWUUnicodeSpaces = "\(TWUControlCharacters)\(TWUSpace)\(TWUControl85)"
         + "\(TWUNoBreakSpace)\(TWUOghamBreakSpace)\(TWUMongolianVowelSeparator)"
         + "\(TWUWhiteSpaces)\(TWULineSeparator)\(TWUParagraphSeparator)"
         + "\(TWUNarrowNoBreakSpace)\(TWUMediumMathematicalSpace)\(TWUIdeographicSpace)"
 
-    /// #define TWUUnicodeALM               @"\\u061C"
-    static let TWUUnicodeALM                = "\\u061C"
-    /// #define TWUUnicodeLRM               @"\\u200E"
-    static let TWUUnicodeLRM                = "\\u200E"
-    /// #define TWUUnicodeRLM               @"\\u200F"
-    static let TWUUnicodeRLM                = "\\u200F"
-    /// #define TWUUnicodeLRE               @"\\u202A"
-    static let TWUUnicodeLRE                = "\\u202A"
-    /// #define TWUUnicodeRLE               @"\\u202B"
-    static let TWUUnicodeRLE                = "\\u202B"
-    /// #define TWUUnicodePDF               @"\\u202C"
-    static let TWUUnicodePDF                = "\\u202C"
-    /// #define TWUUnicodeLRO               @"\\u202D"
-    static let TWUUnicodeLRO                = "\\u202D"
-    /// #define TWUUnicodeRLO               @"\\u202E"
-    static let TWUUnicodeRLO                = "\\u202E"
-    /// #define TWUUnicodeLRI               @"\\u2066"
-    static let TWUUnicodeLRI                = "\\u2066"
-    /// #define TWUUnicodeRLI               @"\\u2067"
-    static let TWUUnicodeRLI                = "\\u2067"
-    /// #define TWUUnicodeFSI               @"\\u2068"
-    static let TWUUnicodeFSI                = "\\u2068"
-    /// #define TWUUnicodePDI               @"\\u2069"
-    static let TWUUnicodePDI                = "\\u2069"
+    static let TWUUnicodeALM = "\\u061C"
+    static let TWUUnicodeLRM = "\\u200E"
+    static let TWUUnicodeRLM = "\\u200F"
+    static let TWUUnicodeLRE = "\\u202A"
+    static let TWUUnicodeRLE = "\\u202B"
+    static let TWUUnicodePDF = "\\u202C"
+    static let TWUUnicodeLRO = "\\u202D"
+    static let TWUUnicodeRLO = "\\u202E"
+    static let TWUUnicodeLRI = "\\u2066"
+    static let TWUUnicodeRLI = "\\u2067"
+    static let TWUUnicodeFSI = "\\u2068"
+    static let TWUUnicodePDI = "\\u2069"
 
-    /// #define TWUUnicodeDirectionalCharacters \
-    ///     TWUUnicodeALM \
-    ///     TWUUnicodeLRM \
-    ///     TWUUnicodeRLM \
-    ///     TWUUnicodeLRE \
-    ///     TWUUnicodeRLE \
-    ///     TWUUnicodePDF \
-    ///     TWUUnicodeLRO \
-    ///     TWUUnicodeRLO \
-    ///     TWUUnicodeLRI \
-    ///     TWUUnicodeRLI \
-    ///     TWUUnicodeFSI \
-    ///     TWUUnicodePDI
     static let TWUUnicodeDirectionalCharacters = "\(TWUUnicodeALM)\(TWUUnicodeLRM)"
         + "\(TWUUnicodeLRE)\(TWUUnicodeRLE)\(TWUUnicodePDF)\(TWUUnicodeLRO)"
         + "\(TWUUnicodeRLO)\(TWUUnicodeLRI)\(TWUUnicodeRLI)\(TWUUnicodeFSI)\(TWUUnicodePDI)"
 
-    /// #define TWUInvalidCharacters        @"\\uFFFE\\uFEFF\\uFFFF"
-    static let TWUInvalidCharacters         = "\\uFFFE\\uFEFF\\uFFFF"
-    /// #define TWUInvalidCharactersPattern @"[" TWUInvalidCharacters @"]"
+    static let TWUInvalidCharacters        = "\\uFFFE\\uFEFF\\uFFFF"
     static let TWUInvalidCharactersPattern = "[\(TWUInvalidCharacters)]"
 
-    /// #define TWULatinAccents \
-    ///     @"\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u00FF\\u0100-\\u024F\\u0253-\\u0254\\u0256-\\u0257\\u0259\\u025b\\u0263\\u0268\\u026F\\u0272\\u0289\\u02BB\\u1E00-\\u1EFF"
     static let TWULatinAccents = "\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u00FF\\u0100-\\u024F\\u0253-\\u0254\\u0256-\\u0257\\u0259\\u025b\\u0263\\u0268\\u026F\\u0272\\u0289\\u02BB\\u1E00-\\u1EFF"
 
     // MARK: - Hashtag
 
-    /// #define TWUPunctuationChars                             @"-_!\"#$%&'\\(\\)*+,./:;<=>?@\\[\\]^`\\{|}~"
-    static let TWUPunctuationChars                             = "-_!\"#$%&'\\(\\)*+,./:;<=>?@\\[\\]^`\\{|}~"
-    /// #define TWUPunctuationCharsWithoutHyphen                @"_!\"#$%&'\\(\\)*+,./:;<=>?@\\[\\]^`\\{|}~"
-    static let TWUPunctuationCharsWithoutHyphen                = "_!\"#$%&'\\(\\)*+,./:;<=>?@\\[\\]^`\\{|}~"
-    /// #define TWUPunctuationCharsWithoutHyphenAndUnderscore   @"!\"#$%&'\\(\\)*+,./:;<=>?@\\[\\]^`\\{|}~"
-    static let TWUPunctuationCharsWithoutHyphenAndUnderscore   = "!\"#$%&'\\(\\)*+,./:;<=>?@\\[\\]^`\\{|}~"
+    static let TWUPunctuationChars              = "-_!\"#$%&'\\(\\)*+,./:;<=>?@\\[\\]^`\\{|}~"
+    static let TWUPunctuationCharsWithoutHyphen = "_!\"#$%&'\\(\\)*+,./:;<=>?@\\[\\]^`\\{|}~"
+    static let TWUPunctuationCharsWithoutHyphenAndUnderscore = "!\"#$%&'\\(\\)*+,./:;<=>?@\\[\\]^`\\{|}~"
 
-    /// #define TWHashtagAlpha                          @"[\\p{L}\\p{M}]"
-    static let TWHashtagAlpha                           = "[\\p{L}\\p{M}]"
-    /// #define TWHashtagSpecialChars                   @"_\\u200c\\u200d\\ua67e\\u05be\\u05f3\\u05f4\\uff5e\\u301c\\u309b\\u309c\\u30a0\\u30fb\\u3003\\u0f0b\\u0f0c\\u00b7"
-    static let TWHashtagSpecialChars                    = "_\\u200c\\u200d\\ua67e\\u05be\\u05f3\\u05f4\\uff5e\\u301c\\u309b\\u309c\\u30a0\\u30fb\\u3003\\u0f0b\\u0f0c\\u00b7"
-    /// #define TWUHashtagAlphanumeric                  @"[\\p{L}\\p{M}\\p{Nd}" TWHashtagSpecialChars @"]"
-    static let TWUHashtagAlphanumeric                   = "[\\p{L}\\p{M}\\p{Nd}\(TWHashtagSpecialChars)]"
-    /// #define TWUHashtagBoundaryInvalidChars          @"&\\p{L}\\p{M}\\p{Nd}" TWHashtagSpecialChars
-    static let TWUHashtagBoundaryInvalidChars           = "&\\p{L}\\p{M}\\p{Nd}\(TWHashtagSpecialChars)"
-
-    /// #define TWUHashtagBoundary \
-    ///     @"^|\\ufe0e|\\ufe0f|$|[^" \
-    ///     TWUHashtagBoundaryInvalidChars \
-    ///     @"]"
+    static let TWHashtagAlpha         = "[\\p{L}\\p{M}]"
+    static let TWHashtagSpecialChars  = "_\\u200c\\u200d\\ua67e\\u05be\\u05f3\\u05f4\\uff5e\\u301c\\u309b\\u309c\\u30a0\\u30fb\\u3003\\u0f0b\\u0f0c\\u00b7"
+    static let TWUHashtagAlphanumeric = "[\\p{L}\\p{M}\\p{Nd}\(TWHashtagSpecialChars)]"
+    static let TWUHashtagBoundaryInvalidChars = "&\\p{L}\\p{M}\\p{Nd}\(TWHashtagSpecialChars)"
     static let TWUHashtagBoundary = "^|\\ufe0e|\\ufe0f|$|[^\(TWUHashtagBoundaryInvalidChars)]"
 
-    /// #define TWUValidHashtag \
-    /// @"(?:" TWUHashtagBoundary @")([#＃](?!\ufe0f|\u20e3)" TWUHashtagAlphanumeric @"*" TWHashtagAlpha TWUHashtagAlphanumeric @"*)"
     static let TWUValidHashtag = "(?:\(TWUHashtagBoundary))([#＃](?!\\ufe0f|\\u20e3)\(TWUHashtagAlphanumeric)*\(TWHashtagAlpha)\(TWUHashtagAlphanumeric)*)"
 
-    /// #define TWUEndHashTagMatch      @"\\A(?:[#＃]|://)"
     static let TWUEndHashTagMatch = "\\A(?:[#＃]|://)"
 
     // MARK: - Symbol (Cashtag)
 
-    /// #define TWUSymbol               @"[a-z]{1,6}(?:[._][a-z]{1,2})?"
     static let TWUSymbol = "[a-z]{1,6}(?:[._][a-z]{1,2})?"
-    /// #define TWUValidSymbol \
-    ///     @"(?:^|[" TWUUnicodeSpaces TWUUnicodeDirectionalCharacters @"])" \
-    ///     @"(\\$" TWUSymbol @")" \
-    ///     @"(?=$|\\s|[" TWUPunctuationChars @"])"
     static let TWUValidSymbol = "(?:^|[\(TWUUnicodeSpaces)\(TWUUnicodeDirectionalCharacters)])"
         + "(\\$\(TWUSymbol))(?=$|\\s|[\(TWUPunctuationChars)])"
 
     // MARK: - Mention and list name
 
-    /// #define TWUValidMentionPrecedingChars   @"(?:[^a-z0-9_!#$%&*@＠]|^|(?:^|[^a-z0-9_+~.-])RT:?)"
     static let TWUValidMentionPrecedingChars = "(?:[^a-z0-9_!#$%&*@＠]|^|(?:^|[^a-z0-9_+~.-])RT:?)"
-    /// #define TWUAtSigns                      @"[@＠]"
     static let TWUAtSigns = "[@＠]"
-    /// #define TWUValidUsername                @"\\A" TWUAtSigns @"[a-z0-9_]{1,20}\\z"
-    static let TWUValidUsername                = "\\A\(TWUAtSigns)[a-z0-9_]{1,20}\\z"
-    /// #define TWUValidList                    @"\\A" TWUAtSigns @"[a-z0-9_]{1,20}/[a-z][a-z0-9_\\-]{0,24}\\z"
-    static let TWUValidList                    = "\\A\(TWUAtSigns)[a-z0-9_]{1,20}/[a-z][a-z0-9_\\-]{0,24}\\z"
+    static let TWUValidUsername = "\\A\(TWUAtSigns)[a-z0-9_]{1,20}\\z"
+    static let TWUValidList = "\\A\(TWUAtSigns)[a-z0-9_]{1,20}/[a-z][a-z0-9_\\-]{0,24}\\z"
 
-    /// #define TWUValidMentionOrList \
-    ///     @"(" TWUValidMentionPrecedingChars @")" \
-    ///     @"(" TWUAtSigns @")" \
-    ///     @"([a-z0-9_]{1,20})" \
-    ///     @"(/[a-z][a-z0-9_\\-]{0,24})?"
     static let TWUValidMentionOrList = "(\(TWUValidMentionPrecedingChars))"
         + "(\(TWUAtSigns))([a-z0-9_]{1,20})(/[a-z][a-z0-9_\\-]{0,24})?"
 
-    /// #define TWUValidReply                   @"\\A(?:[" TWUUnicodeSpaces TWUUnicodeDirectionalCharacters @"])*"  TWUAtSigns @"([a-z0-9_]{1,20})"
     static let TWUValidReply = "\\A(?:[\(TWUUnicodeSpaces)"
         + "\(TWUUnicodeDirectionalCharacters)])*\(TWUAtSigns)([a-z0-9_]{1,20})"
-    /// #define TWUEndMentionMatch              @"\\A(?:" TWUAtSigns @"|[" TWULatinAccents @"]|://)"
+    
     static let TWUEndMentionMatch = "\\A(?:\(TWUAtSigns)|[\(TWULatinAccents)]|://)"
 
     // MARK: - URL
 
-    /// #define TWUValidURLPrecedingChars       @"(?:[^a-z0-9@＠$#＃" TWUInvalidCharacters @"]|[" TWUUnicodeDirectionalCharacters "]|^)"
     static let TWUValidURLPrecedingChars = "(?:[^a-z0-9@＠$#＃\(TWUInvalidCharacters)]|[\(TWUUnicodeDirectionalCharacters)]|^)"
 
     /// These patterns extract domains that are ascii+latin only. We separately check
     /// for unencoded domains with unicode characters elsewhere.
-    /// 
-    /// #define TWUValidURLCharacters           @"[a-z0-9" TWULatinAccents @"]"
     static let TWUValidURLCharacters = "[a-z0-9\(TWULatinAccents)]"
-    /// #define TWUValidURLSubdomain            @"(?>(?:" TWUValidURLCharacters @"[" TWUValidURLCharacters @"\\-_]{0,255})?" TWUValidURLCharacters @"\\.)"
     static let TWUValidURLSubdomain = "(?>(?:\(TWUValidURLCharacters)"
         + "[\(TWUValidURLCharacters)\\-_]{0,255})?\(TWUValidURLCharacters)\\.)"
-    /// #define TWUValidURLDomain               @"(?:(?:" TWUValidURLCharacters @"[" TWUValidURLCharacters @"\\-]{0,255})?" TWUValidURLCharacters @"\\.)"
+
     static let TWUValidURLDomain = "(?:(?:\(TWUValidURLCharacters)"
         + "[\(TWUValidURLCharacters)\\-]{0,255})?\(TWUValidURLCharacters)\\.)"
 
     /// Used to extract domains that contain unencoded unicode.
-    ///
-    /// #define TWUValidURLUnicodeCharacters \
-    /// @"[^" \
-    /// TWUPunctuationChars \
-    /// @"\\s\\p{Z}\\p{InGeneralPunctuation}" \
-    /// @"]"
     static let TWUValidURLUnicodeCharacters = "[^\(TWUPunctuationChars)\\s\\p{Z}\\p{InGeneralPunctuation}]"
 
-    /// #define TWUValidURLUnicodeDomain        @"(?:(?:" TWUValidURLUnicodeCharacters @"[" TWUValidURLUnicodeCharacters @"\\-]{0,255})?" TWUValidURLUnicodeCharacters @"\\.)"
     static let TWUValidURLUnicodeDomain = "(?:(?:\(TWUValidURLUnicodeCharacters)"
         + "[\(TWUValidURLUnicodeCharacters)\\-]{0,255})?\(TWUValidURLUnicodeCharacters)\\.)"
 
-    /// #define TWUValidPunycode                @"(?:xn--[-0-9a-z]+)"
     static let TWUValidPunycode = "(?:xn--[-0-9a-z]+)"
 
-    /// #define TWUValidDomain \
-    /// @"(?:" \
-    /// TWUValidURLSubdomain @"*" TWUValidURLDomain \
-    /// @"(?:" TWUValidGTLD @"|" TWUValidCCTLD @"|" TWUValidPunycode @")" \
-    /// @")" \
-    /// @"|(?:(?<=https?://)" \
-    /// @"(?:" \
-    /// @"(?:" TWUValidURLDomain TWUValidCCTLD @")" \
-    /// @"|(?:" \
-    /// TWUValidURLUnicodeDomain @"{0,255}" TWUValidURLUnicodeDomain \
-    /// @"(?:" TWUValidGTLD @"|" TWUValidCCTLD @")" \
-    /// @")" \
-    /// @")" \
-    /// @")" \
-    /// @"|(?:" \
-    /// TWUValidURLDomain TWUValidCCTLD @"(?=/)" \
-    /// @")"
     static let TWUValidDomain = "(?:\(TWUValidURLSubdomain)*\(TWUValidURLDomain)"
         + "(?:\(TWUValidGTLD)|\(TWUValidCCTLD)|\(TWUValidPunycode))"
         + ")|(?:(?<=https?://)(?:(?:\(TWUValidURLDomain)\(TWUValidCCTLD))"
@@ -228,63 +115,22 @@ enum TwitterTextRegexp {
         + "(?:\(TWUValidGTLD)|\(TWUValidCCTLD)))))|(?:"
         + "\(TWUValidURLDomain)\(TWUValidCCTLD)(?=/))"
 
-
-    /// #define TWUValidPortNumber              @"[0-9]++"
     static let TWUValidPortNumber = "[0-9]++"
-    /// #define TWUValidGeneralURLPathChars     @"[a-z\\p{Cyrillic}0-9!\\*';:=+,.$/%#\\[\\]\\-\\u2013_~&|@" TWULatinAccents @"]"
     static let TWUValidGeneralURLPathChars = "[a-z\\p{Cyrillic}0-9!\\*';:=+,.$/%#\\[\\]\\-\\u2013_~&|@\(TWULatinAccents)]"
 
-    /// #define TWUValidURLBalancedParens               \
-    /// @"\\(" \
-    /// @"(?:" \
-    /// TWUValidGeneralURLPathChars @"+" \
-    /// @"|" \
-    /// @"(?:" \
-    /// TWUValidGeneralURLPathChars @"*" \
-    /// @"\\(" \
-    /// TWUValidGeneralURLPathChars @"+" \
-    /// @"\\)" \
-    /// TWUValidGeneralURLPathChars @"*" \
-    /// @")" \
-    /// @")" \
-    /// @"\\)"
     static let TWUValidURLBalancedParens = "\\((?:\(TWUValidGeneralURLPathChars)+"
         + "|(?:\(TWUValidGeneralURLPathChars)*\\(\(TWUValidGeneralURLPathChars)+"
         + "\\)\(TWUValidGeneralURLPathChars)*))\\)"
 
-    /// #define TWUValidURLPathEndingChars      @"[a-z\\p{Cyrillic}0-9=_#/+\\-" TWULatinAccents @"]|(?:" TWUValidURLBalancedParens @")"
     static let TWUValidURLPathEndingChars = "[a-z\\p{Cyrillic}0-9=_#/+\\-\(TWULatinAccents)]|(?:\(TWUValidURLBalancedParens))"
 
-    /// #define TWUValidPath @"(?:" \
-    /// @"(?:" \
-    /// TWUValidGeneralURLPathChars @"*" \
-    /// @"(?:" TWUValidURLBalancedParens TWUValidGeneralURLPathChars @"*)*" \
-    /// TWUValidURLPathEndingChars \
-    /// @")|(?:@" TWUValidGeneralURLPathChars @"+/)" \
-    /// @")"
     static let TWUValidPath = "(?:(?:\(TWUValidGeneralURLPathChars)*"
         + "(?:\(TWUValidURLBalancedParens)\(TWUValidGeneralURLPathChars)*)*"
         + "\(TWUValidURLPathEndingChars))|(?:@\(TWUValidGeneralURLPathChars)+/))"
 
-    /// #define TWUValidURLQueryChars           @"[a-z0-9!?*'\\(\\);:&=+$/%#\\[\\]\\-_\\.,~|@]"
     static let TWUValidURLQueryChars = "[a-z0-9!?*'\\(\\);:&=+$/%#\\[\\]\\-_\\.,~|@]"
-    /// #define TWUValidURLQueryEndingChars     @"[a-z0-9\\-_&=#/]"
     static let TWUValidURLQueryEndingChars = "[a-z0-9\\-_&=#/]"
 
-    /// #define TWUValidURLPatternString \
-    /// @"(" \
-    /// @"(" TWUValidURLPrecedingChars @")" \
-    /// @"(" \
-    /// @"(https?://)?" \
-    /// @"(" TWUValidDomain @")" \
-    /// @"(?::(" TWUValidPortNumber @"))?" \
-    /// @"(/" \
-    /// TWUValidPath @"*+" \
-    /// @")?" \
-    /// @"(\\?" TWUValidURLQueryChars @"*" \
-    /// TWUValidURLQueryEndingChars @")?" \
-    /// @")" \
-    /// @")"
     static let TWUValidURLPatternString = "((\(TWUValidURLPrecedingChars))"
         + "((https?://)?(\(TWUValidDomain))(?::(\(TWUValidPortNumber)))?"
         + "(/\(TWUValidPath)*+)?(\\?\(TWUValidURLQueryChars)*"
@@ -391,18 +237,8 @@ enum TwitterTextRegexp {
     + "bl|bj|bi|bh|bg|bf|be|bd|bb|ba|az|ax|aw|au|at|as|ar|aq|ao|an|am|al|ai|ag|af|ae|ad|ac"
     + ")(?=[^a-z0-9@+-]|$))"
 
-    /// #define TWUValidTCOURL                  @"^https?://t\\.co/([a-z0-9]+)"
     static let TWUValidTCOURL = "^https?://t\\.co/([a-z0-9]+)"
 
-    /// #define TWUValidURLPath \
-    /// @"(?:" \
-    /// @"(?:" \
-    /// TWUValidGeneralURLPathChars @"*" \
-    /// @"(?:" TWUValidURLBalancedParens TWUValidGeneralURLPathChars @"*)*" TWUValidURLPathEndingChars \
-    /// @")" \
-    /// @"|" \
-    /// @"(?:" TWUValidGeneralURLPathChars @"+/)" \
-    /// @")"
     static let TWUValidURLPath = "(?:(?:\(TWUValidGeneralURLPathChars)*"
         + "(?:\(TWUValidURLBalancedParens)\(TWUValidGeneralURLPathChars)*)*\(TWUValidURLPathEndingChars)"
         + ")|(?:\(TWUValidGeneralURLPathChars)+/))"

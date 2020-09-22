@@ -596,7 +596,7 @@ final class TwitterTextTests: XCTestCase {
             return
         }
 
-        TwitterTextParser.setDefaultParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationClassic)!)
+        Parser.setDefaultParser(with: Configuration.configuration(fromJSONResource: Parser.configurationClassic)!)
 
         guard let tests = validation["tests"] as? [String: Any] else {
             XCTFail()
@@ -614,7 +614,7 @@ final class TwitterTextTests: XCTestCase {
 
             let expected = testCase["expected"] as? Int
             let len = TwitterText.tweetLength(text: text)
-            let results = TwitterTextParser.defaultParser.parseTweet(text: text)
+            let results = Parser.defaultParser.parseTweet(text: text)
 
             XCTAssertEqual(len, results.weightedLength, "TwitterTextParser with classic configuration is not compatible with TwitterText for string: \(text)")
             XCTAssertEqual(len, expected, "Length should be the same")
@@ -651,7 +651,7 @@ final class TwitterTextTests: XCTestCase {
             }
 
             text = stringByParsingUnicodeEscapes(string: text)
-            let results = TwitterTextParser.defaultParser.parseTweet(text: text)
+            let results = Parser.defaultParser.parseTweet(text: text)
 
             XCTAssertEqual(results.weightedLength,
                            weightedLength,
@@ -679,17 +679,17 @@ final class TwitterTextTests: XCTestCase {
     }
 
     func testUnicodePointTweetLengthCounting() {
-        TwitterTextParser.setDefaultParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV2)!)
+        Parser.setDefaultParser(with: Configuration.configuration(fromJSONResource: Parser.configurationV2)!)
         self._testWeightedTweetsCountingWithTestSuite(testSuite: "WeightedTweetsCounterTest")
     }
 
     func testEmojiWeightedTweetLengthCounting() {
-        TwitterTextParser.setDefaultParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!)
+        Parser.setDefaultParser(with: Configuration.configuration(fromJSONResource: Parser.configurationV3)!)
         self._testWeightedTweetsCountingWithTestSuite(testSuite: "WeightedTweetsWithDiscountedEmojiCounterTest")
     }
 
     func testEmojiWeightedTweetLengthCountingWithDiscountedUnicode9Emoji() {
-        TwitterTextParser.setDefaultParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!)
+        Parser.setDefaultParser(with: Configuration.configuration(fromJSONResource: Parser.configurationV3)!)
         self._testWeightedTweetsCountingWithTestSuite(testSuite: "WeightedTweetsWithDiscountedUnicode9EmojiCounterTest")
     }
 
@@ -711,7 +711,7 @@ final class TwitterTextTests: XCTestCase {
             return
         }
 
-        TwitterTextParser.setDefaultParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!)
+        Parser.setDefaultParser(with: Configuration.configuration(fromJSONResource: Parser.configurationV3)!)
         self._testWeightedTweetsCountingWithTestSuite(testSuite: "WeightedTweetsWithDiscountedUnicode10EmojiCounterTest")
     }
 
@@ -721,8 +721,8 @@ final class TwitterTextTests: XCTestCase {
         var text = "ZWJ: क्ष -> क्\u{200D}ष; ZWNJ: क्ष -> क्\u{200C}ष"
         text = self.stringByParsingUnicodeEscapes(string: text)
 
-        TwitterTextParser.setDefaultParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3)!)
-        let results = TwitterTextParser.defaultParser.parseTweet(text: text)
+        Parser.setDefaultParser(with: Configuration.configuration(fromJSONResource: Parser.configurationV3)!)
+        let results = Parser.defaultParser.parseTweet(text: text)
 
         XCTAssertEqual(results.weightedLength, 35)
         XCTAssertEqual(results.permillage, 125)
@@ -755,7 +755,7 @@ final class TwitterTextTests: XCTestCase {
             }
             text = stringByParsingUnicodeEscapes(string: text)
 
-            let results = TwitterTextParser.defaultParser.parseTweet(text: text)
+            let results = Parser.defaultParser.parseTweet(text: text)
 
             XCTAssertEqual(results.weightedLength,
                            expected["weightedLength"] as? Int,
@@ -876,7 +876,7 @@ final class TwitterTextTests: XCTestCase {
 
     func testTwitterTextParserConfiguration() {
         let configurationString = "{\"version\": 1, \"maxWeightedTweetLength\": 280, \"scale\": 2, \"defaultWeight\": 1, \"transformedURLLength\": 23, \"ranges\": [{\"start\": 4352, \"end\": 4353, \"weight\": 2}]}"
-        guard let configuration = TwitterTextConfiguration.configuration(from: configurationString) else {
+        guard let configuration = Configuration.configuration(from: configurationString) else {
             XCTFail()
             return
         }
@@ -895,10 +895,10 @@ final class TwitterTextTests: XCTestCase {
     }
 
     func testTwitterTextParserConfigurationV2ToV3Transition() {
-        guard let configurationV2 = TwitterTextConfiguration
-                .configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV2),
-              let configurationV3 = TwitterTextConfiguration
-                .configuration(fromJSONResource: TwitterTextParser.kTwitterTextParserConfigurationV3) else {
+        guard let configurationV2 = Configuration
+                .configuration(fromJSONResource: Parser.configurationV2),
+              let configurationV3 = Configuration
+                .configuration(fromJSONResource: Parser.configurationV3) else {
             XCTFail()
             return
         }

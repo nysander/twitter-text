@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class TwitterTextParseResults {
+public class ParseResults {
     /// The adjust tweet length based on char weights.
     public let weightedLength: Int
 
@@ -34,7 +34,8 @@ public class TwitterTextParseResults {
     }
 
     func description() -> String {
-        /// return [NSString stringWithFormat:@"weightedLength: %ld, permillage: %ld, isValid: %d, displayTextRange: %@, validDisplayTextRange: %@", (long)_weightedLength, (long)_permillage, _isValid, NSStringFromRange(_displayTextRange), NSStringFromRange(_validDisplayTextRange)]; // TODO: when no longer supporting 32-bit devices, remove (long) casts
-        return "weightedLength: \(weightedLength), permillage: \(permillage), isValid: \(isValid), displayTextRange: \(displayTextRange), validDisplayTextRange: \(validDisplayTextRange)"
+        return "weightedLength: \(weightedLength), permillage: \(permillage), "
+            + "isValid: \(isValid), displayTextRange: \(displayTextRange), "
+            + "validDisplayTextRange: \(validDisplayTextRange)"
     }
 }

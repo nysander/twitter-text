@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>TwitterText  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+    
+    <script src="js/lunr.min.js" defer></script>
+    <script src="js/typeahead.jquery.js" defer></script>
+    <script src="js/jazzy.search.js" defer></script>
+  </head>
+  <body>
+    <a title="TwitterText  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html">TwitterText 0.0.1 Docs</a> (16% documented)</p>
+        <p class="header-right"><a href="https://github.com/nysander/twitter-text"><img src="img/gh.png"/>View on GitHub</a></p>
+        <p class="header-right"><a href="dash-feed://https%3A%2F%2Fnysander.github.io%2Ftwitter-text%2Fdocsets%2FTwitterText.xml"><img src="img/dash.png"/>Install in Dash</a></p>
+        <p class="header-right">
+          <form role="search" action="search.json">
+            <input type="text" placeholder="Search documentation" data-typeahead>
+          </form>
+        </p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="index.html">TwitterText Reference</a>
+        <img id="carat" src="img/carat.png" />
+        TwitterText  Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Classes/Configuration.html">Configuration</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/Entity.html">Entity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ParseResults.html">ParseResults</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/Parser.html">Parser</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/TwitterText.html">TwitterText</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/WeightedRange.html">WeightedRange</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Enums/EntityType.html">EntityType</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            
+            <h1 align="center">twitter-text</h1>
+
+<p align="center">
+    <a href="LICENSE">
+        <img src="https://img.shields.io/badge/license-MIT-brightgreen.svg" alt="MIT License">
+    </a>
+    <a href="https://swift.org">
+        <img src="https://img.shields.io/badge/swift-5.1-brightgreen.svg" alt="Swift 5.1">
+    </a>
+    <img src="https://img.shields.io/github/workflow/status/nysander/twitter-text/ci" alt="Github Actions">
+</p>
+
+<p align="center">
+<a href="https://swiftpackageindex.com/nysander/twitter-text">
+<img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fnysander%2Ftwitter-text%2Fbadge%3Ftype%3Dswift-versions">
+</a>
+<a href="https://swiftpackageindex.com/nysander/twitter-text">
+<img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fnysander%2Ftwitter-text%2Fbadge%3Ftype%3Dplatforms">
+</a>
+</p>
+
+<p><br></p>
+
+<p>This is the Swift implementation of the twitter-text parsing
+library. The library has methods to parse Tweets and calculate length,
+validity, parse @mentions, #hashtags, URLs, and more.</p>
+<h2 id='setup' class='heading'>Setup</h2>
+
+<p>Add twitter-text directly to your Package.swift file:</p>
+<pre class="highlight plaintext"><code>dependencies: [
+    // ...
+    .package(url: "https://github.com/nysander/twitter-text.git", from:"0.0.1"),
+],
+targets: [
+.target(name: "Your App", dependencies: [
+    /// ...
+    .product(name: "twitter-text", package: "twitter-text"),
+]),
+</code></pre>
+
+<p>or via Xcode:</p>
+
+<p>search for <code>https://github.com/nysander/twitter-text.git</code> repository </p>
+
+<p><img src="https://github.com/nysander/twitter-text/tree/main/resources/Xcode-setup.png" alt="Xcode setup"></p>
+<h2 id='conformance-tests' class='heading'>Conformance tests</h2>
+
+<p>To run the Conformance test suite from the command line:</p>
+<pre class="highlight plaintext"><code>% swift test --enable-test-discovery
+</code></pre>
+
+<p>You can also run the tests from within Xcode itself. Open the project
+file and run the tests are you normally would (Cmd-U).</p>
+<h2 id='api' class='heading'>API</h2>
+
+<p>twitter-text 2.0 introduces configuration files that define how Tweets
+are parsed for length. This allows for backwards compatibility and
+flexibility going forward. Old-style traditional 140-character parsing
+is defined by the v1.json configuration file, whereas v2.json is
+updated for &ldquo;weighted&rdquo; Tweets where ranges of Unicode code points can
+have independent weights aside from the default weight. The sum of all
+code points, each weighted appropriately, should not exceed the max
+weighted length.</p>
+
+<p>Some old methods from twitter-text 1.0 have been marked deprecated,
+such as the various <code>+tweetLength:</code> methods. The new API is based on the
+following method, <code>-parseTweet:</code></p>
+<pre class="highlight plaintext"><code>- TwitterTextParser parseTweet(text:)
+</code></pre>
+
+<p>This method takes a string as input and returns a results object that
+contains information about the string. <code>TwitterTextParseResults</code>
+includes:</p>
+
+<ul>
+<li><p><code>weightedLength: Int</code>: the overall length of the tweet with code points
+weighted per the ranges defined in the configuration file.</p></li>
+<li><p><code>permillage: Int</code>: indicates the proportion (per thousand) of the weighted
+length in comparison to the max weighted length. A value &gt; 1000
+indicates input text that is longer than the allowable maximum.</p></li>
+<li><p><code>isValid: Bool</code>: indicates if input text length corresponds to a valid
+result.</p></li>
+<li><p><code>displayTextRange: NSRange</code>: An array of two unicode code point
+indices identifying the inclusive start and exclusive end of the
+displayable content of the Tweet. For more information, see
+the description of <code>display_text_range</code> here:
+<a href="https://developer.twitter.com/en/docs/tweets/tweet-updates">Tweet updates</a></p></li>
+<li><p><code>validDisplayTextRange: NSRange</code>: An array of two unicode code point
+indices identifying the inclusive start and exclusive end of the valid
+content of the Tweet. For more information on the extended Tweet
+payload see <a href="https://developer.twitter.com/en/docs/tweets/tweet-updates">Tweet updates</a></p></li>
+</ul>
+<h2 id='issues' class='heading'>Issues</h2>
+
+<p>Have a bug? Please create an issue here on GitHub!</p>
+
+<p><a href="https://github.com/nysander/twitter-text/issues">https://github.com/nysander/twitter-text/issues</a></p>
+<h2 id='authors' class='heading'>Authors</h2>
+
+<ul>
+<li>Paweł Madej - <a href="https://twitter.com/PawelMadejCK">Twitter</a> - <a href="https://github.com/nysander">GitHub</a></li>
+<li>Rizwan Mohamed Ibrahim - <a href="https://twitter.com/rizzu26">Twitter</a> - <a href="https://github.com/rizwankce">GitHub</a></li>
+</ul>
+<h2 id='source-of-inspiration' class='heading'>Source of inspiration</h2>
+
+<p>This library was directly based upon its Objective-C implementation which can be found in <a href="https://github.com/twitter/twitter-text">twitter/twitter-text</a> repository, written by <a href="https://github.com/psychs">Satoshi Nakagawa</a>, <a href="https://github.com/dlamacchia">David LaMacchia</a> and <a href="https://github.com/kehli">Keh-Li Sheng</a>.</p>
+
+<p>Version 3.1.0 was used as reference. All test case JSON files used in this library are directly copied from said repository to keep consistency and being sure that results are the same. </p>
+<h2 id='license' class='heading'>License</h2>
+
+<p>Copyright 2020 Paweł Madej, and other contributors</p>
+
+<p>Licensed under the <a href="https://github.com/nysander/twitter-text/blob/main/LICENSE">MIT License</a></p>
+
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2020 <a class="link" href="https://pawelmadej.com" target="_blank" rel="external">Paweł Madej</a>. All rights reserved. (Last updated: 2020-09-22)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.5</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

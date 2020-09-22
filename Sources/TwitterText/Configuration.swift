@@ -5,16 +5,16 @@
 
 import Foundation
 
-class TwitterTextConfiguration {
+public class Configuration {
     let version: Int
     let maxWeightedTweetLength: Int
     let scale: Int
     let defaultWeight: Int
     let transformedURLLength: Int
     let emojiParsingEnabled: Bool
-    let ranges: [TwitterTextWeightedRange]
+    let ranges: [WeightedRange]
 
-    struct Configuration: Decodable {
+    struct ConfigurationJSON: Decodable {
         let version: Int
         let maxWeightedTweetLength: Int
         let scale: Int
@@ -26,7 +26,7 @@ class TwitterTextConfiguration {
 
     init?(jsonData: Data) {
         do {
-            let config = try JSONDecoder().decode(Configuration.self, from: jsonData)
+            let config = try JSONDecoder().decode(ConfigurationJSON.self, from: jsonData)
 
             self.version = config.version
             self.maxWeightedTweetLength = config.maxWeightedTweetLength
@@ -34,8 +34,8 @@ class TwitterTextConfiguration {
             self.defaultWeight = config.defaultWeight
             self.transformedURLLength = config.transformedURLLength
             self.emojiParsingEnabled = config.emojiParsingEnabled ?? false
-//            let jsonRanges = jsonDictionary["ranges"]
-            var ranges: [TwitterTextWeightedRange] = []
+
+            var ranges: [WeightedRange] = []
 
             for rangeDict in config.ranges {
                 guard let start = rangeDict["start"],
@@ -46,7 +46,7 @@ class TwitterTextConfiguration {
                 var range = NSMakeRange(NSNotFound, NSNotFound)
                 range.location = start
                 range.length = end - range.location
-                let charWeightObject = TwitterTextWeightedRange(range: range, weight: charWeight)
+                let charWeightObject = WeightedRange(range: range, weight: charWeight)
                 ranges.append(charWeightObject)
             }
             self.ranges = ranges
@@ -56,7 +56,7 @@ class TwitterTextConfiguration {
         }
     }
 
-    public static func configuration(fromJSONResource jsonResource: String) -> TwitterTextConfiguration? {
+    public static func configuration(fromJSONResource jsonResource: String) -> Configuration? {
         let url = URL(fileURLWithPath: #file).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("config/\(jsonResource).json")
         guard let jsonData = try? Data(contentsOf: url) else {
             return nil
@@ -65,13 +65,13 @@ class TwitterTextConfiguration {
         return self.configuration(from: jsonData)
     }
 
-    public static func configuration(from jsonString: String) -> TwitterTextConfiguration? {
+    public static func configuration(from jsonString: String) -> Configuration? {
         let jsonData = Data(jsonString.utf8)
 
-        return TwitterTextConfiguration(jsonData: jsonData)
+        return Configuration(jsonData: jsonData)
     }
 
-    public static func configuration(from jsonData: Data) -> TwitterTextConfiguration? {
-        return TwitterTextConfiguration(jsonData: jsonData)
+    public static func configuration(from jsonData: Data) -> Configuration? {
+        return Configuration(jsonData: jsonData)
     }
 }
