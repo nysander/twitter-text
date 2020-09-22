@@ -49,7 +49,7 @@ final class TwitterTextTests: XCTestCase {
 
     func testLongDomain() {
         let text = "jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp.jp"
-        let entities = TwitterText.entities(inText: text)
+        let entities = TwitterText.entities(in: text)
 
         XCTAssertEqual(entities.count, 1)
 
@@ -62,7 +62,7 @@ final class TwitterTextTests: XCTestCase {
 
     func testJapaneseTLDFollowedByJapaneseCharacters() {
         let text = "テスト test.みんなです"
-        let entities = TwitterText.entities(inText: text)
+        let entities = TwitterText.entities(in: text)
 
         XCTAssertEqual(entities.count, 1)
 
@@ -75,7 +75,7 @@ final class TwitterTextTests: XCTestCase {
 
     func testJapaneseTLDFollowedByASCIICharacters() {
         let text = "テスト test.みんなabc"
-        let entities = TwitterText.entities(inText: text)
+        let entities = TwitterText.entities(in: text)
 
         XCTAssertEqual(entities.count, 0)
     }
@@ -112,7 +112,7 @@ final class TwitterTextTests: XCTestCase {
                 break
             }
 
-            let results = TwitterText.mentionsOrLists(inText: text)
+            let results = TwitterText.mentionsOrLists(in: text)
             if results.count == expected.count {
                 for index in 0..<results.count {
                     let expectedText = expected[index]
@@ -144,7 +144,7 @@ final class TwitterTextTests: XCTestCase {
                 break
             }
 
-            let results = TwitterText.mentionsOrLists(inText: text)
+            let results = TwitterText.mentionsOrLists(in: text)
 
             if results.count == expected.count {
                 for index in 0..<results.count {
@@ -193,7 +193,7 @@ final class TwitterTextTests: XCTestCase {
                 break
             }
 
-            let results = TwitterText.mentionsOrLists(inText: text)
+            let results = TwitterText.mentionsOrLists(in: text)
 
             if results.count == expected.count {
                 for index in 0..<results.count {
@@ -246,7 +246,7 @@ final class TwitterTextTests: XCTestCase {
                 break
             }
             let expected = testCase["expected"] as? String
-            let result = TwitterText.repliedScreenName(inText: text)
+            let result = TwitterText.repliedScreenName(in: text)
 
             if result != nil || expected != nil {
                 var actual: String? = nil
@@ -271,7 +271,7 @@ final class TwitterTextTests: XCTestCase {
                 break
             }
 
-            let results = TwitterText.URLs(inText: text)
+            let results = TwitterText.urls(in: text)
 
             if results.count == expected.count {
                 for index in 0..<results.count {
@@ -307,7 +307,7 @@ final class TwitterTextTests: XCTestCase {
                 break
             }
 
-            let results = TwitterText.URLs(inText: text)
+            let results = TwitterText.urls(in: text)
 
             if results.count == expected.count {
                 for index in 0..<results.count {
@@ -361,7 +361,7 @@ final class TwitterTextTests: XCTestCase {
                 break
             }
 
-            let results = TwitterText.hashtags(inText: text, checkingURLOverlap: true)
+            let results = TwitterText.hashtags(in: text, checkingURLOverlap: true)
 
             if results.count == expected.count {
                 for index in 0..<results.count {
@@ -400,7 +400,7 @@ final class TwitterTextTests: XCTestCase {
                 XCTFail()
                 break
             }
-            let results = TwitterText.hashtags(inText: text, checkingURLOverlap: true)
+            let results = TwitterText.hashtags(in: text, checkingURLOverlap: true)
 
             if results.count == expected.count {
                 for index in 0..<results.count {
@@ -440,7 +440,7 @@ final class TwitterTextTests: XCTestCase {
                 break
             }
 
-            let results = TwitterText.hashtags(inText: text, checkingURLOverlap: true)
+            let results = TwitterText.hashtags(in: text, checkingURLOverlap: true)
 
             if results.count == expected.count {
                 for index in 0..<results.count {
@@ -497,7 +497,7 @@ final class TwitterTextTests: XCTestCase {
                 break
             }
 
-            let results = TwitterText.symbols(inText: text, checkingURLOverlap: true)
+            let results = TwitterText.symbols(in: text, checkingURLOverlap: true)
 
             if results.count == expected.count {
                 for index in 0..<results.count {
@@ -537,7 +537,7 @@ final class TwitterTextTests: XCTestCase {
                 break
             }
 
-            let results = TwitterText.symbols(inText: text, checkingURLOverlap: true)
+            let results = TwitterText.symbols(in: text, checkingURLOverlap: true)
 
             if results.count == expected.count {
                 for index in 0..<results.count {
@@ -595,7 +595,7 @@ final class TwitterTextTests: XCTestCase {
             return
         }
 
-        Parser.setDefaultParser(with: Configuration.configuration(fromJSONResource: Parser.configurationClassic)!)
+        Parser.setDefaultParser(with: Configuration.configuration(fromJSONResource: ConfigurationType.classic)!)
 
         guard let tests = validation["tests"] as? [String: Any] else {
             XCTFail()
@@ -678,17 +678,17 @@ final class TwitterTextTests: XCTestCase {
     }
 
     func testUnicodePointTweetLengthCounting() {
-        Parser.setDefaultParser(with: Configuration.configuration(fromJSONResource: Parser.configurationV2)!)
+        Parser.setDefaultParser(with: Configuration.configuration(fromJSONResource: ConfigurationType.v2)!)
         self._testWeightedTweetsCountingWithTestSuite(testSuite: "WeightedTweetsCounterTest")
     }
 
     func testEmojiWeightedTweetLengthCounting() {
-        Parser.setDefaultParser(with: Configuration.configuration(fromJSONResource: Parser.configurationV3)!)
+        Parser.setDefaultParser(with: Configuration.configuration(fromJSONResource: ConfigurationType.v3)!)
         self._testWeightedTweetsCountingWithTestSuite(testSuite: "WeightedTweetsWithDiscountedEmojiCounterTest")
     }
 
     func testEmojiWeightedTweetLengthCountingWithDiscountedUnicode9Emoji() {
-        Parser.setDefaultParser(with: Configuration.configuration(fromJSONResource: Parser.configurationV3)!)
+        Parser.setDefaultParser(with: Configuration.configuration(fromJSONResource: ConfigurationType.v3)!)
         self._testWeightedTweetsCountingWithTestSuite(testSuite: "WeightedTweetsWithDiscountedUnicode9EmojiCounterTest")
     }
 
@@ -701,7 +701,8 @@ final class TwitterTextTests: XCTestCase {
             print("Info: in iOS \(ProcessInfo.processInfo.operatingSystemVersion) String().enumerateSubstrings(in:, options:) does not enumerate ranges correctly for Unicode 10; therefore, this test is being bypassed")
             return
         }
-        Parser.setDefaultParser(with: Configuration.configuration(fromJSONResource: Parser.configurationV3)!)
+
+        Parser.setDefaultParser(with: Configuration.configuration(fromJSONResource: ConfigurationType.v3)!)
         self._testWeightedTweetsCountingWithTestSuite(testSuite: "WeightedTweetsWithDiscountedUnicode10EmojiCounterTest")
     }
 
@@ -711,7 +712,7 @@ final class TwitterTextTests: XCTestCase {
         var text = "ZWJ: क्ष -> क्\u{200D}ष; ZWNJ: क्ष -> क्\u{200C}ष"
         text = self.stringByParsingUnicodeEscapes(string: text)
 
-        Parser.setDefaultParser(with: Configuration.configuration(fromJSONResource: Parser.configurationV3)!)
+        Parser.setDefaultParser(with: Configuration.configuration(fromJSONResource: ConfigurationType.v3)!)
         let results = Parser.defaultParser.parseTweet(text: text)
 
         XCTAssertEqual(results.weightedLength, 35)
@@ -803,7 +804,7 @@ final class TwitterTextTests: XCTestCase {
                 break
             }
 
-            let results = TwitterText.URLs(inText: text)
+            let results = TwitterText.urls(in: text)
             if results.count == expected.count {
                 for index in 0..<results.count {
                     let expectedText = expected[index]
@@ -837,7 +838,7 @@ final class TwitterTextTests: XCTestCase {
                 break
             }
 
-            let results = TwitterText.URLs(inText: text)
+            let results = TwitterText.urls(in: text)
             if results.count == expected.count {
                 for index in 0..<results.count {
                     let expectedText = expected[index]
@@ -886,9 +887,9 @@ final class TwitterTextTests: XCTestCase {
 
     func testTwitterTextParserConfigurationV2ToV3Transition() {
         guard let configurationV2 = Configuration
-                .configuration(fromJSONResource: Parser.configurationV2),
+                .configuration(fromJSONResource: ConfigurationType.v2),
               let configurationV3 = Configuration
-                .configuration(fromJSONResource: Parser.configurationV3) else {
+                .configuration(fromJSONResource: ConfigurationType.v3) else {
             XCTFail()
             return
         }

@@ -22,13 +22,6 @@
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nysander/XcodeProjects/twitter-text/Sources/TwitterText/Configuration.swift",
-      "line": 74,
-      "symbol": "Configuration.configuration(from:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.static",
-      "warning": "undocumented"
-    },
-    {
       "file": "/Users/nysander/XcodeProjects/twitter-text/Sources/TwitterText/Entity.swift",
       "line": 8,
       "symbol": "Entity",
@@ -121,28 +114,28 @@
     },
     {
       "file": "/Users/nysander/XcodeProjects/twitter-text/Sources/TwitterText/Parser.swift",
-      "line": 13,
+      "line": 9,
       "symbol": "Parser.defaultParser",
       "symbol_kind": "source.lang.swift.decl.var.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nysander/XcodeProjects/twitter-text/Sources/TwitterText/Parser.swift",
-      "line": 15,
+      "line": 11,
       "symbol": "Parser.setDefaultParser(with:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nysander/XcodeProjects/twitter-text/Sources/TwitterText/Parser.swift",
-      "line": 25,
+      "line": 21,
       "symbol": "Parser.init(with:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nysander/XcodeProjects/twitter-text/Sources/TwitterText/Parser.swift",
-      "line": 29,
+      "line": 25,
       "symbol": "Parser.parseTweet(text:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
@@ -164,83 +157,83 @@
     {
       "file": "/Users/nysander/XcodeProjects/twitter-text/Sources/TwitterText/TwitterText.swift",
       "line": 22,
-      "symbol": "TwitterText.entities(inText:)",
+      "symbol": "TwitterText.entities(in:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nysander/XcodeProjects/twitter-text/Sources/TwitterText/TwitterText.swift",
       "line": 59,
-      "symbol": "TwitterText.URLs(inText:)",
+      "symbol": "TwitterText.urls(in:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nysander/XcodeProjects/twitter-text/Sources/TwitterText/TwitterText.swift",
       "line": 144,
-      "symbol": "TwitterText.hashtags(inText:checkingURLOverlap:)",
+      "symbol": "TwitterText.hashtags(in:checkingURLOverlap:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nysander/XcodeProjects/twitter-text/Sources/TwitterText/TwitterText.swift",
       "line": 204,
-      "symbol": "TwitterText.symbols(inText:checkingURLOverlap:)",
+      "symbol": "TwitterText.symbols(in:checkingURLOverlap:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nysander/XcodeProjects/twitter-text/Sources/TwitterText/TwitterText.swift",
       "line": 254,
-      "symbol": "TwitterText.mentionedScreenNames(inText:)",
+      "symbol": "TwitterText.mentionedScreenNames(in:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nysander/XcodeProjects/twitter-text/Sources/TwitterText/TwitterText.swift",
-      "line": 272,
-      "symbol": "TwitterText.mentionsOrLists(inText:)",
+      "line": 271,
+      "symbol": "TwitterText.mentionsOrLists(in:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nysander/XcodeProjects/twitter-text/Sources/TwitterText/TwitterText.swift",
-      "line": 314,
-      "symbol": "TwitterText.repliedScreenName(inText:)",
+      "line": 313,
+      "symbol": "TwitterText.repliedScreenName(in:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nysander/XcodeProjects/twitter-text/Sources/TwitterText/TwitterText.swift",
-      "line": 337,
+      "line": 336,
       "symbol": "TwitterText.validHashtagBoundaryCharacterSet()",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nysander/XcodeProjects/twitter-text/Sources/TwitterText/TwitterText.swift",
-      "line": 345,
+      "line": 344,
       "symbol": "TwitterText.tweetLength(text:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nysander/XcodeProjects/twitter-text/Sources/TwitterText/TwitterText.swift",
-      "line": 349,
+      "line": 348,
       "symbol": "TwitterText.tweetLength(text:transformedURLLength:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nysander/XcodeProjects/twitter-text/Sources/TwitterText/TwitterText.swift",
-      "line": 397,
+      "line": 396,
       "symbol": "TwitterText.remainingCharacterCount(text:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nysander/XcodeProjects/twitter-text/Sources/TwitterText/TwitterText.swift",
-      "line": 401,
+      "line": 400,
       "symbol": "TwitterText.remainingCharacterCount(text:transformedURLLength:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
