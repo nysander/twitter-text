@@ -42,7 +42,7 @@ or via Xcode:
 
 search for `https://github.com/nysander/twitter-text.git` repository 
 
-![Xcode setup](https://raw.githubusercontent.com/nysander/twitter-text/main/resources/Xcode-setup.png)
+![Xcode setup](./resources/Xcode-setup.png)
 
 ## Conformance tests
 
