@@ -5,6 +5,7 @@
 
 import Foundation
 import UnicodeURL
+import CoreFoundation
 
 public class TwitterText {
     static let kMaxURLLength = 4096
@@ -366,7 +367,7 @@ public class TwitterText {
 
             let mutableString = NSMutableString(string: string)
             mutableString.deleteCharacters(in: urlRange)
-            string = String(mutableString)
+            string = mutableString as String
         }
 
         let len = string.count
