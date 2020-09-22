@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>TwitterTextParseResults Class Reference</title>
+    <title>EntityType Enumeration Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -13,11 +13,11 @@
     <script src="../js/jazzy.search.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/swift/Class/TwitterTextParseResults" class="dashAnchor"></a>
-    <a title="TwitterTextParseResults Class Reference"></a>
+    <a name="//apple_ref/swift/Enum/EntityType" class="dashAnchor"></a>
+    <a title="EntityType Enumeration Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">TwitterText 0.0.1 Docs</a> (58% documented)</p>
+        <p><a href="../index.html">TwitterText 0.0.1 Docs</a> (16% documented)</p>
         <p class="header-right"><a href="https://github.com/nysander/twitter-text"><img src="../img/gh.png"/>View on GitHub</a></p>
         <p class="header-right"><a href="dash-feed://https%3A%2F%2Fnysander.github.io%2Ftwitter-text%2Fdocsets%2FTwitterText.xml"><img src="../img/dash.png"/>Install in Dash</a></p>
         <p class="header-right">
@@ -31,7 +31,7 @@
       <p id="breadcrumbs">
         <a href="../index.html">TwitterText Reference</a>
         <img id="carat" src="../img/carat.png" />
-        TwitterTextParseResults Class Reference
+        EntityType Enumeration Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -41,22 +41,22 @@
             <a href="../Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="../Classes/Configuration.html">Configuration</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Entity.html">Entity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ParseResults.html">ParseResults</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Parser.html">Parser</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Classes/TwitterText.html">TwitterText</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/TwitterTextConfiguration.html">TwitterTextConfiguration</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/TwitterTextEntity.html">TwitterTextEntity</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/TwitterTextParseResults.html">TwitterTextParseResults</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/TwitterTextParser.html">TwitterTextParser</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/TwitterTextWeightedRange.html">TwitterTextWeightedRange</a>
+                <a href="../Classes/WeightedRange.html">WeightedRange</a>
               </li>
             </ul>
           </li>
@@ -64,7 +64,7 @@
             <a href="../Enums.html">Enumerations</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Enums/TwitterTextEntityType.html">TwitterTextEntityType</a>
+                <a href="../Enums/EntityType.html">EntityType</a>
               </li>
             </ul>
           </li>
@@ -73,18 +73,18 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>TwitterTextParseResults</h1>
+            <h1>EntityType</h1>
               <div class="declaration">
                 <div class="language">
                   
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">TwitterTextParseResults</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">EntityType</span> <span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                 </div>
               </div>
             <p>Undocumented</p>
 
               <div class="slightly-smaller">
-                <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/TwitterTextParseResults.swift#L8-L40">Show on GitHub</a>
+                <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/EntityType.swift#L8-L16">Show on GitHub</a>
               </div>
           </section>
           <section class="section task-group-section">
@@ -93,159 +93,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:11TwitterText0aB12ParseResultsC14weightedLengthSivp"></a>
-                    <a name="//apple_ref/swift/Property/weightedLength" class="dashAnchor"></a>
-                    <a class="token" href="#/s:11TwitterText0aB12ParseResultsC14weightedLengthSivp">weightedLength</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>The adjust tweet length based on char weights.</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">weightedLength</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div class="slightly-smaller">
-                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/TwitterTextParseResults.swift#L10">Show on GitHub</a>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:11TwitterText0aB12ParseResultsC10permillageSivp"></a>
-                    <a name="//apple_ref/swift/Property/permillage" class="dashAnchor"></a>
-                    <a class="token" href="#/s:11TwitterText0aB12ParseResultsC10permillageSivp">permillage</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Compute true weightedLength by weightedLength/permillage</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">private(set)</span> <span class="k">var</span> <span class="nv">permillage</span><span class="p">:</span> <span class="kt">Int</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div class="slightly-smaller">
-                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/TwitterTextParseResults.swift#L13">Show on GitHub</a>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:11TwitterText0aB12ParseResultsC7isValidSbvp"></a>
-                    <a name="//apple_ref/swift/Property/isValid" class="dashAnchor"></a>
-                    <a class="token" href="#/s:11TwitterText0aB12ParseResultsC7isValidSbvp">isValid</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>If the tweet is valid or not.</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">isValid</span><span class="p">:</span> <span class="kt">Bool</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div class="slightly-smaller">
-                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/TwitterTextParseResults.swift#L16">Show on GitHub</a>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:11TwitterText0aB12ParseResultsC07displayB5RangeSo8_NSRangeVvp"></a>
-                    <a name="//apple_ref/swift/Property/displayTextRange" class="dashAnchor"></a>
-                    <a class="token" href="#/s:11TwitterText0aB12ParseResultsC07displayB5RangeSo8_NSRangeVvp">displayTextRange</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Text range that is visible</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">displayTextRange</span><span class="p">:</span> <span class="kt">NSRange</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div class="slightly-smaller">
-                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/TwitterTextParseResults.swift#L19">Show on GitHub</a>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:11TwitterText0aB12ParseResultsC012validDisplayB5RangeSo8_NSRangeVvp"></a>
-                    <a name="//apple_ref/swift/Property/validDisplayTextRange" class="dashAnchor"></a>
-                    <a class="token" href="#/s:11TwitterText0aB12ParseResultsC012validDisplayB5RangeSo8_NSRangeVvp">validDisplayTextRange</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Text range that is valid under Twitter</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">validDisplayTextRange</span><span class="p">:</span> <span class="kt">NSRange</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div class="slightly-smaller">
-                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/TwitterTextParseResults.swift#L22">Show on GitHub</a>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:11TwitterText0aB12ParseResultsC14weightedLength10permillage5valid12displayRange0hJ0ACSi_SiSbSo8_NSRangeVAJtcfc"></a>
-                    <a name="//apple_ref/swift/Method/init(weightedLength:permillage:valid:displayRange:validRange:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:11TwitterText0aB12ParseResultsC14weightedLength10permillage5valid12displayRange0hJ0ACSi_SiSbSo8_NSRangeVAJtcfc">init(weightedLength:<wbr>permillage:<wbr>valid:<wbr>displayRange:<wbr>validRange:<wbr>)</a>
+                    <a name="/s:11TwitterText10EntityTypeO3urlyA2CmF"></a>
+                    <a name="//apple_ref/swift/Element/url" class="dashAnchor"></a>
+                    <a class="token" href="#/s:11TwitterText10EntityTypeO3urlyA2CmF">url</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -260,16 +110,192 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="n"><a href="../Classes/TwitterTextParseResults.html#/s:11TwitterText0aB12ParseResultsC14weightedLengthSivp">weightedLength</a></span> <span class="nv">length</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span>
-            <span class="nv">permillage</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span>
-            <span class="nv">valid</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">,</span>
-            <span class="nv">displayRange</span><span class="p">:</span> <span class="kt">NSRange</span><span class="p">,</span>
-            <span class="nv">validRange</span><span class="p">:</span> <span class="kt">NSRange</span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">url</span></code></pre>
 
                         </div>
                       </div>
                       <div class="slightly-smaller">
-                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/TwitterTextParseResults.swift#L24-L34">Show on GitHub</a>
+                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/EntityType.swift#L">Show on GitHub</a>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:11TwitterText10EntityTypeO10screenNameyA2CmF"></a>
+                    <a name="//apple_ref/swift/Element/screenName" class="dashAnchor"></a>
+                    <a class="token" href="#/s:11TwitterText10EntityTypeO10screenNameyA2CmF">screenName</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">screenName</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div class="slightly-smaller">
+                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/EntityType.swift#L">Show on GitHub</a>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:11TwitterText10EntityTypeO7hashtagyA2CmF"></a>
+                    <a name="//apple_ref/swift/Element/hashtag" class="dashAnchor"></a>
+                    <a class="token" href="#/s:11TwitterText10EntityTypeO7hashtagyA2CmF">hashtag</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">hashtag</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div class="slightly-smaller">
+                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/EntityType.swift#L">Show on GitHub</a>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:11TwitterText10EntityTypeO8listnameyA2CmF"></a>
+                    <a name="//apple_ref/swift/Element/listname" class="dashAnchor"></a>
+                    <a class="token" href="#/s:11TwitterText10EntityTypeO8listnameyA2CmF">listname</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">listname</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div class="slightly-smaller">
+                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/EntityType.swift#L">Show on GitHub</a>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:11TwitterText10EntityTypeO6symbolyA2CmF"></a>
+                    <a name="//apple_ref/swift/Element/symbol" class="dashAnchor"></a>
+                    <a class="token" href="#/s:11TwitterText10EntityTypeO6symbolyA2CmF">symbol</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">symbol</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div class="slightly-smaller">
+                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/EntityType.swift#L">Show on GitHub</a>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:11TwitterText10EntityTypeO9tweetCharyA2CmF"></a>
+                    <a name="//apple_ref/swift/Element/tweetChar" class="dashAnchor"></a>
+                    <a class="token" href="#/s:11TwitterText10EntityTypeO9tweetCharyA2CmF">tweetChar</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">tweetChar</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div class="slightly-smaller">
+                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/EntityType.swift#L">Show on GitHub</a>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:11TwitterText10EntityTypeO14tweetEmojiCharyA2CmF"></a>
+                    <a name="//apple_ref/swift/Element/tweetEmojiChar" class="dashAnchor"></a>
+                    <a class="token" href="#/s:11TwitterText10EntityTypeO14tweetEmojiCharyA2CmF">tweetEmojiChar</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">tweetEmojiChar</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div class="slightly-smaller">
+                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/EntityType.swift#L">Show on GitHub</a>
                       </div>
                     </section>
                   </div>

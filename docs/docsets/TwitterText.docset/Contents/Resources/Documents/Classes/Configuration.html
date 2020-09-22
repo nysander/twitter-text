@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>TwitterTextConfiguration Class Reference</title>
+    <title>Configuration Class Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -13,11 +13,11 @@
     <script src="../js/jazzy.search.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/swift/Class/TwitterTextConfiguration" class="dashAnchor"></a>
-    <a title="TwitterTextConfiguration Class Reference"></a>
+    <a name="//apple_ref/swift/Class/Configuration" class="dashAnchor"></a>
+    <a title="Configuration Class Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">TwitterText 0.0.1 Docs</a> (58% documented)</p>
+        <p><a href="../index.html">TwitterText 0.0.1 Docs</a> (16% documented)</p>
         <p class="header-right"><a href="https://github.com/nysander/twitter-text"><img src="../img/gh.png"/>View on GitHub</a></p>
         <p class="header-right"><a href="dash-feed://https%3A%2F%2Fnysander.github.io%2Ftwitter-text%2Fdocsets%2FTwitterText.xml"><img src="../img/dash.png"/>Install in Dash</a></p>
         <p class="header-right">
@@ -31,7 +31,7 @@
       <p id="breadcrumbs">
         <a href="../index.html">TwitterText Reference</a>
         <img id="carat" src="../img/carat.png" />
-        TwitterTextConfiguration Class Reference
+        Configuration Class Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -41,22 +41,22 @@
             <a href="../Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="../Classes/Configuration.html">Configuration</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Entity.html">Entity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ParseResults.html">ParseResults</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Parser.html">Parser</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Classes/TwitterText.html">TwitterText</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/TwitterTextConfiguration.html">TwitterTextConfiguration</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/TwitterTextEntity.html">TwitterTextEntity</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/TwitterTextParseResults.html">TwitterTextParseResults</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/TwitterTextParser.html">TwitterTextParser</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/TwitterTextWeightedRange.html">TwitterTextWeightedRange</a>
+                <a href="../Classes/WeightedRange.html">WeightedRange</a>
               </li>
             </ul>
           </li>
@@ -64,7 +64,7 @@
             <a href="../Enums.html">Enumerations</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Enums/TwitterTextEntityType.html">TwitterTextEntityType</a>
+                <a href="../Enums/EntityType.html">EntityType</a>
               </li>
             </ul>
           </li>
@@ -73,18 +73,18 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>TwitterTextConfiguration</h1>
+            <h1>Configuration</h1>
               <div class="declaration">
                 <div class="language">
                   
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">TwitterTextConfiguration</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">Configuration</span></code></pre>
 
                 </div>
               </div>
             <p>Undocumented</p>
 
               <div class="slightly-smaller">
-                <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/TwitterTextConfiguration.swift#L8-L77">Show on GitHub</a>
+                <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/Configuration.swift#L8-L77">Show on GitHub</a>
               </div>
           </section>
           <section class="section task-group-section">
@@ -93,9 +93,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:11TwitterText0aB13ConfigurationC13configuration16fromJSONResourceACSgSS_tFZ"></a>
+                    <a name="/s:11TwitterText13ConfigurationC13configuration16fromJSONResourceACSgSS_tFZ"></a>
                     <a name="//apple_ref/swift/Method/configuration(fromJSONResource:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:11TwitterText0aB13ConfigurationC13configuration16fromJSONResourceACSgSS_tFZ">configuration(fromJSONResource:<wbr>)</a>
+                    <a class="token" href="#/s:11TwitterText13ConfigurationC13configuration16fromJSONResourceACSgSS_tFZ">configuration(fromJSONResource:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -110,12 +110,12 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">configuration</span><span class="p">(</span><span class="n">fromJSONResource</span> <span class="nv">jsonResource</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">TwitterTextConfiguration</span><span class="p">?</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">configuration</span><span class="p">(</span><span class="n">fromJSONResource</span> <span class="nv">jsonResource</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Configuration</span><span class="p">?</span></code></pre>
 
                         </div>
                       </div>
                       <div class="slightly-smaller">
-                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/TwitterTextConfiguration.swift#L59-L66">Show on GitHub</a>
+                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/Configuration.swift#L59-L66">Show on GitHub</a>
                       </div>
                     </section>
                   </div>
@@ -123,9 +123,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:11TwitterText0aB13ConfigurationC13configuration4fromACSgSS_tFZ"></a>
+                    <a name="/s:11TwitterText13ConfigurationC13configuration4fromACSgSS_tFZ"></a>
                     <a name="//apple_ref/swift/Method/configuration(from:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:11TwitterText0aB13ConfigurationC13configuration4fromACSgSS_tFZ">configuration(from:<wbr>)</a>
+                    <a class="token" href="#/s:11TwitterText13ConfigurationC13configuration4fromACSgSS_tFZ">configuration(from:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -140,12 +140,12 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">configuration</span><span class="p">(</span><span class="n">from</span> <span class="nv">jsonString</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">TwitterTextConfiguration</span><span class="p">?</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">configuration</span><span class="p">(</span><span class="n">from</span> <span class="nv">jsonString</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Configuration</span><span class="p">?</span></code></pre>
 
                         </div>
                       </div>
                       <div class="slightly-smaller">
-                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/TwitterTextConfiguration.swift#L68-L72">Show on GitHub</a>
+                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/Configuration.swift#L68-L72">Show on GitHub</a>
                       </div>
                     </section>
                   </div>
@@ -153,9 +153,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:11TwitterText0aB13ConfigurationC13configuration4fromACSg10Foundation4DataV_tFZ"></a>
+                    <a name="/s:11TwitterText13ConfigurationC13configuration4fromACSg10Foundation4DataV_tFZ"></a>
                     <a name="//apple_ref/swift/Method/configuration(from:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:11TwitterText0aB13ConfigurationC13configuration4fromACSg10Foundation4DataV_tFZ">configuration(from:<wbr>)</a>
+                    <a class="token" href="#/s:11TwitterText13ConfigurationC13configuration4fromACSg10Foundation4DataV_tFZ">configuration(from:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -170,12 +170,12 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">configuration</span><span class="p">(</span><span class="n">from</span> <span class="nv">jsonData</span><span class="p">:</span> <span class="kt">Data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">TwitterTextConfiguration</span><span class="p">?</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">configuration</span><span class="p">(</span><span class="n">from</span> <span class="nv">jsonData</span><span class="p">:</span> <span class="kt">Data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Configuration</span><span class="p">?</span></code></pre>
 
                         </div>
                       </div>
                       <div class="slightly-smaller">
-                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/TwitterTextConfiguration.swift#L74-L76">Show on GitHub</a>
+                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/Configuration.swift#L74-L76">Show on GitHub</a>
                       </div>
                     </section>
                   </div>

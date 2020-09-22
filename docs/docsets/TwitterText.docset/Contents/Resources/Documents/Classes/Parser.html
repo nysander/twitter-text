@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>TwitterTextParser Class Reference</title>
+    <title>Parser Class Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -13,11 +13,11 @@
     <script src="../js/jazzy.search.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/swift/Class/TwitterTextParser" class="dashAnchor"></a>
-    <a title="TwitterTextParser Class Reference"></a>
+    <a name="//apple_ref/swift/Class/Parser" class="dashAnchor"></a>
+    <a title="Parser Class Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">TwitterText 0.0.1 Docs</a> (58% documented)</p>
+        <p><a href="../index.html">TwitterText 0.0.1 Docs</a> (16% documented)</p>
         <p class="header-right"><a href="https://github.com/nysander/twitter-text"><img src="../img/gh.png"/>View on GitHub</a></p>
         <p class="header-right"><a href="dash-feed://https%3A%2F%2Fnysander.github.io%2Ftwitter-text%2Fdocsets%2FTwitterText.xml"><img src="../img/dash.png"/>Install in Dash</a></p>
         <p class="header-right">
@@ -31,7 +31,7 @@
       <p id="breadcrumbs">
         <a href="../index.html">TwitterText Reference</a>
         <img id="carat" src="../img/carat.png" />
-        TwitterTextParser Class Reference
+        Parser Class Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -41,22 +41,22 @@
             <a href="../Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="../Classes/Configuration.html">Configuration</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Entity.html">Entity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ParseResults.html">ParseResults</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Parser.html">Parser</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Classes/TwitterText.html">TwitterText</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/TwitterTextConfiguration.html">TwitterTextConfiguration</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/TwitterTextEntity.html">TwitterTextEntity</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/TwitterTextParseResults.html">TwitterTextParseResults</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/TwitterTextParser.html">TwitterTextParser</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/TwitterTextWeightedRange.html">TwitterTextWeightedRange</a>
+                <a href="../Classes/WeightedRange.html">WeightedRange</a>
               </li>
             </ul>
           </li>
@@ -64,7 +64,7 @@
             <a href="../Enums.html">Enumerations</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Enums/TwitterTextEntityType.html">TwitterTextEntityType</a>
+                <a href="../Enums/EntityType.html">EntityType</a>
               </li>
             </ul>
           </li>
@@ -73,18 +73,18 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>TwitterTextParser</h1>
+            <h1>Parser</h1>
               <div class="declaration">
                 <div class="language">
                   
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">TwitterTextParser</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">Parser</span></code></pre>
 
                 </div>
               </div>
             <p>Undocumented</p>
 
               <div class="slightly-smaller">
-                <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/TwitterTextParser.swift#L8-L519">Show on GitHub</a>
+                <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/Parser.swift#L8-L335">Show on GitHub</a>
               </div>
           </section>
           <section class="section task-group-section">
@@ -93,9 +93,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:11TwitterText0aB6ParserC07defaultC0ACvpZ"></a>
+                    <a name="/s:11TwitterText6ParserC07defaultC0ACvpZ"></a>
                     <a name="//apple_ref/swift/Variable/defaultParser" class="dashAnchor"></a>
-                    <a class="token" href="#/s:11TwitterText0aB6ParserC07defaultC0ACvpZ">defaultParser</a>
+                    <a class="token" href="#/s:11TwitterText6ParserC07defaultC0ACvpZ">defaultParser</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -103,32 +103,19 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
-<ul>
-<li>(instancetype)defaultParser NS_SWIFT_NAME(defaultParser());
-dispatch_sync([self _queue], ^{
-@autoreleasepool {
-    if (!sDefaultParser) {
-        TwitterTextConfiguration *configuration = [TwitterTextConfiguration configurationFromJSONResource:kTwitterTextParserConfigurationV3];
-        sDefaultParser = [[TwitterTextParser alloc] initWithConfiguration:configuration];
-    }
-}
-});
-return sDefaultParser;
-}</li>
-</ul>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="k">var</span> <span class="nv">defaultParser</span><span class="p">:</span> <span class="kt">TwitterTextParser</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="k">var</span> <span class="nv">defaultParser</span><span class="p">:</span> <span class="kt">Parser</span></code></pre>
 
                         </div>
                       </div>
                       <div class="slightly-smaller">
-                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/TwitterTextParser.swift#L24">Show on GitHub</a>
+                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/Parser.swift#L">Show on GitHub</a>
                       </div>
                     </section>
                   </div>
@@ -136,9 +123,9 @@ return sDefaultParser;
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:11TwitterText0aB6ParserC010setDefaultC04withyAA0aB13ConfigurationC_tFZ"></a>
+                    <a name="/s:11TwitterText6ParserC010setDefaultC04withyAA13ConfigurationC_tFZ"></a>
                     <a name="//apple_ref/swift/Method/setDefaultParser(with:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:11TwitterText0aB6ParserC010setDefaultC04withyAA0aB13ConfigurationC_tFZ">setDefaultParser(with:<wbr>)</a>
+                    <a class="token" href="#/s:11TwitterText6ParserC010setDefaultC04withyAA13ConfigurationC_tFZ">setDefaultParser(with:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -146,27 +133,19 @@ return sDefaultParser;
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
-<ul>
-<li>(void)setDefaultParserWithConfiguration:(TwitterTextConfiguration *)configuration {
-dispatch_async([self _queue], ^{
-@autoreleasepool {
-    sDefaultParser = [[TwitterTextParser alloc] initWithConfiguration:configuration];
-}
-});</li>
-</ul>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">setDefaultParser</span><span class="p">(</span><span class="n">with</span> <span class="nv">configuration</span><span class="p">:</span> <span class="kt"><a href="../Classes/TwitterTextConfiguration.html">TwitterTextConfiguration</a></span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">setDefaultParser</span><span class="p">(</span><span class="n">with</span> <span class="nv">configuration</span><span class="p">:</span> <span class="kt"><a href="../Classes/Configuration.html">Configuration</a></span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
                       <div class="slightly-smaller">
-                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/TwitterTextParser.swift#L37-L39">Show on GitHub</a>
+                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/Parser.swift#L15-L17">Show on GitHub</a>
                       </div>
                     </section>
                   </div>
@@ -174,9 +153,9 @@ dispatch_async([self _queue], ^{
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:11TwitterText0aB6ParserC4withAcA0aB13ConfigurationC_tcfc"></a>
+                    <a name="/s:11TwitterText6ParserC4withAcA13ConfigurationC_tcfc"></a>
                     <a name="//apple_ref/swift/Method/init(with:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:11TwitterText0aB6ParserC4withAcA0aB13ConfigurationC_tcfc">init(with:<wbr>)</a>
+                    <a class="token" href="#/s:11TwitterText6ParserC4withAcA13ConfigurationC_tcfc">init(with:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -184,22 +163,19 @@ dispatch_async([self _queue], ^{
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
-<ul>
-<li>(instancetype)initWithConfiguration:(TwitterTextConfiguration *)configuration;</li>
-</ul>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="n">with</span> <span class="nv">configuration</span><span class="p">:</span> <span class="kt"><a href="../Classes/TwitterTextConfiguration.html">TwitterTextConfiguration</a></span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="n">with</span> <span class="nv">configuration</span><span class="p">:</span> <span class="kt"><a href="../Classes/Configuration.html">Configuration</a></span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
                       <div class="slightly-smaller">
-                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/TwitterTextParser.swift#L56-L62">Show on GitHub</a>
+                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/Parser.swift#L25-L27">Show on GitHub</a>
                       </div>
                     </section>
                   </div>
@@ -207,9 +183,9 @@ dispatch_async([self _queue], ^{
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:11TwitterText0aB6ParserC10parseTweet4textAA0aB12ParseResultsCSS_tF"></a>
+                    <a name="/s:11TwitterText6ParserC10parseTweet4textAA12ParseResultsCSS_tF"></a>
                     <a name="//apple_ref/swift/Method/parseTweet(text:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:11TwitterText0aB6ParserC10parseTweet4textAA0aB12ParseResultsCSS_tF">parseTweet(text:<wbr>)</a>
+                    <a class="token" href="#/s:11TwitterText6ParserC10parseTweet4textAA12ParseResultsCSS_tF">parseTweet(text:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -217,22 +193,19 @@ dispatch_async([self _queue], ^{
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
-<ul>
-<li>(TwitterTextParseResults *)parseTweet:(NSString *)text;</li>
-</ul>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">parseTweet</span><span class="p">(</span><span class="nv">text</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/TwitterTextParseResults.html">TwitterTextParseResults</a></span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">parseTweet</span><span class="p">(</span><span class="nv">text</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/ParseResults.html">ParseResults</a></span></code></pre>
 
                         </div>
                       </div>
                       <div class="slightly-smaller">
-                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/TwitterTextParser.swift#L65-L326">Show on GitHub</a>
+                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/Parser.swift#L29-L190">Show on GitHub</a>
                       </div>
                     </section>
                   </div>
@@ -240,9 +213,9 @@ dispatch_async([self _queue], ^{
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:11TwitterText0aB6ParserC22maxWeightedTweetLengthSiyF"></a>
+                    <a name="/s:11TwitterText6ParserC22maxWeightedTweetLengthSiyF"></a>
                     <a name="//apple_ref/swift/Method/maxWeightedTweetLength()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:11TwitterText0aB6ParserC22maxWeightedTweetLengthSiyF">maxWeightedTweetLength()</a>
+                    <a class="token" href="#/s:11TwitterText6ParserC22maxWeightedTweetLengthSiyF">maxWeightedTweetLength()</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -250,10 +223,7 @@ dispatch_async([self _queue], ^{
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
-<ul>
-<li>(NSInteger)maxWeightedTweetLength;</li>
-</ul>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
@@ -265,7 +235,7 @@ dispatch_async([self _queue], ^{
                         </div>
                       </div>
                       <div class="slightly-smaller">
-                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/TwitterTextParser.swift#L329-L332">Show on GitHub</a>
+                        <a href="https://github.com/nysander/twitter-text/tree/0.0.1/Sources/TwitterText/Parser.swift#L192-L194">Show on GitHub</a>
                       </div>
                     </section>
                   </div>
