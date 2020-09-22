@@ -34,7 +34,7 @@ public class TwitterTextConfiguration {
             self.defaultWeight = config.defaultWeight
             self.transformedURLLength = config.transformedURLLength
             self.emojiParsingEnabled = config.emojiParsingEnabled ?? false
-//            let jsonRanges = jsonDictionary["ranges"]
+
             var ranges: [TwitterTextWeightedRange] = []
 
             for rangeDict in config.ranges {
