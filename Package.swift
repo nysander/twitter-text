@@ -14,7 +14,7 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(url: "https://github.com/nysander/UnicodeURL.git", from: "0.0.3")
+        .package(url: "https://github.com/nysander/UnicodeURL.git", from: "0.1.0")
     ],
 
     targets: [
