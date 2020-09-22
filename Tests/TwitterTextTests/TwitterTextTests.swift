@@ -31,21 +31,20 @@ final class TwitterTextTests: XCTestCase {
         XCTAssertTrue(set.contains("@"))
         XCTAssertTrue(set.contains(","))
         XCTAssertTrue(set.contains("="))
-        XCTAssertTrue(set.contains("\u{00BF}"))
-        XCTAssertTrue(set.contains("\u{00BF}"))
-        XCTAssertFalse(set.contains("\u{00C0}"))
-        XCTAssertFalse(set.contains("\u{00D6}"))
-        XCTAssertTrue(set.contains("\u{00D7}"))
+        XCTAssertTrue(set.contains(" ".unicodeScalars.first!))
+        XCTAssertTrue(set.contains("\u{00BF}".unicodeScalars.first!))
+        XCTAssertTrue(set.contains("\u{00BF}".unicodeScalars.first!))
+        XCTAssertFalse(set.contains("\u{00C0}".unicodeScalars.first!))
+        XCTAssertFalse(set.contains("\u{00D6}".unicodeScalars.first!))
+        XCTAssertTrue(set.contains("\u{00D7}".unicodeScalars.first!))
+        XCTAssertFalse(set.contains("\u{00E0}".unicodeScalars.first!))
 
-        /// NSString *validLongCharacterString = @"\U0001FFFF";
-        let validLongCharacterString = "\u{0001FFFF}"
-        /// XCTAssertTrue([set longCharacterIsMember:CFStringGetLongCharacterForSurrogatePair([validLongCharacterString     characterAtIndex:0], [validLongCharacterString characterAtIndex:1])]);
-        XCTFail("Fix above commented assertion")
+        let characterSet = set as NSCharacterSet
+        let validLongCharacterString = "\u{0001FFFF}" as NSString
+        XCTAssertTrue(characterSet.longCharacterIsMember(CFStringGetLongCharacterForSurrogatePair(validLongCharacterString.character(at: 0),validLongCharacterString.character(at: 1))))
 
-        /// NSString *invalidLongCharacterString = @"\U00020000";
-        let invalidLongCharacterString = "\u{00020000}"
-        /// XCTAssertFalse([set longCharacterIsMember:CFStringGetLongCharacterForSurrogatePair([invalidLongCharacterString  characterAtIndex:0], [invalidLongCharacterString characterAtIndex:1])]);
-        XCTFail("Fix above commented assertion")
+        let invalidLongCharacterString = "\u{00020000}" as NSString
+        XCTAssertFalse(characterSet.longCharacterIsMember(CFStringGetLongCharacterForSurrogatePair(invalidLongCharacterString.character(at: 0), invalidLongCharacterString.character(at: 1))))
     }
 
     func testLongDomain() {
@@ -695,22 +694,13 @@ final class TwitterTextTests: XCTestCase {
 
     func testEmojiWeightedTweetLengthCountingWithDiscountedUnicode10Emoji() {
         /// // TODO: drop-iOS-10: when dropping support for iOS 10, remove the #if, #endif and everything in between
-        /// #if __IPHONE_11_0 > __IPHONE_OS_VERSION_MIN_REQUIRED
-        /// if (@available(iOS 11, *)) {
-        /// } else {
-        ///     NSLog(@"Info: in iOS %@ -[NSString enumerateSubstringsInRange:options:usingBlock:] does not enumerate ranges correctly for Unicode 10; therefore, this test is being bypassed",
-        ///            [NSProcessInfo processInfo].operatingSystemVersionString);
-        ///     return;
-        /// }
-        /// #endif // #if __IPHONE_11_0 > __IPHONE_OS_VERSION_MIN_REQUIRED
-
-        XCTFail("check above conditions #if ... #endif")
         if #available(iOS 11, *) {
-        } else {
-            print("Info: in iOS \(ProcessInfo.processInfo.operatingSystemVersionString) - String().enumerateSubstrings(in:options:body:) does not enumerate ranges correctly for Unicode 10; therefore, this test is being bypassed")
+
+        }
+        else {
+            print("Info: in iOS \(ProcessInfo.processInfo.operatingSystemVersion) String().enumerateSubstrings(in:, options:) does not enumerate ranges correctly for Unicode 10; therefore, this test is being bypassed")
             return
         }
-
         Parser.setDefaultParser(with: Configuration.configuration(fromJSONResource: Parser.configurationV3)!)
         self._testWeightedTweetsCountingWithTestSuite(testSuite: "WeightedTweetsWithDiscountedUnicode10EmojiCounterTest")
     }
