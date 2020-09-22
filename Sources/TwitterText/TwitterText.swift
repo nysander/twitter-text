@@ -915,7 +915,20 @@ public class TwitterText {
     private static func isValidHostAndLength(urlLength: Int, urlProtocol: String?, host: String?) -> Bool {
         guard var host = host else { return false }
         var urlLength = urlLength
-        var hostUrl: URL? = URL(unicodeString: host)
+        var hostUrl: URL?
+        do {
+           hostUrl  = try URL(unicodeUrlString: host)
+        }
+        catch  let error as UnicodeURLConvertError {
+            if error.error == .invalidDNSLength {
+                return false
+            }
+            else {
+                hostUrl = URL(string: host)
+            }
+        }
+        catch { }
+
         if hostUrl == nil {
             hostUrl = URL.init(string: host)
         }
