@@ -4,6 +4,7 @@
 //  License: MIT (see LICENCE files for details)
 
 import XCTest
+import CoreFoundation
 @testable import TwitterText
 
 final class TwitterTextTests: XCTestCase {
@@ -929,7 +930,7 @@ final class TwitterTextTests: XCTestCase {
 
             if hexRange.location != NSNotFound, let rHexRange = Range(hexRange, in: string) {
                 let hexString = String(string[rHexRange])
-                let value = strtol(NSString(string: hexString).utf8String, nil, 16)
+                let value = strtol(NSString(string: hexString).utf8String!, nil, 16)
 
                 if value < 0x10000 {
                     string = string.replacingCharacters(in: Range(patternRange, in: string)!,
@@ -942,7 +943,7 @@ final class TwitterTextTests: XCTestCase {
                             break
                         }
                         string = string.replacingCharacters(in: range,
-                                                            with: String(NSString(characters: surrogates, length: 2)))
+                                                            with: NSString(characters: surrogates, length: 2) as String)
                         resultLength = 2
                     }
                 }
