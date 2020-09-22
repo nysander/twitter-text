@@ -1,5 +1,4 @@
-<h1 align="center">twitter-text</h1>
-
+<img src="https://raw.githubusercontent.com/nysander/twitter-text/main/resources/TwitterText@2x.png" alt="TwitterText logo">
 <p align="center">
     <a href="LICENSE">
         <img src="https://img.shields.io/badge/license-MIT-brightgreen.svg" alt="MIT License">
@@ -7,7 +6,7 @@
     <a href="https://swift.org">
         <img src="https://img.shields.io/badge/swift-5.1-brightgreen.svg" alt="Swift 5.1">
     </a>
-    <img src="https://img.shields.io/github/workflow/status/nysander/twitter-text/ci" alt="Github Actions">
+    <img src="https://img.shields.io/github/workflow/status/nysander/twitter-text/CI" alt="Github Actions">
 </p>
 <p align="center">
 <a href="https://swiftpackageindex.com/nysander/twitter-text">

@@ -7,11 +7,7 @@ import Foundation
 import CoreFoundation
 
 public class Parser {
-    static let configurationClassic = "v1"
-    static let configurationV2 = "v2"
-    static let configurationV3 = "v3"
-
-    public static var defaultParser = Parser(with: Configuration.configuration(fromJSONResource: Parser.configurationV3)!)
+    public static var defaultParser = Parser(with: Configuration.configuration(fromJSONResource: ConfigurationType.v3)!)
 
     public static func setDefaultParser(with configuration: Configuration) {
         defaultParser = Parser(with: configuration)
@@ -83,7 +79,7 @@ public class Parser {
             return composedCharIndex + entity.range.length
         }
 
-        let urlEntities = TwitterText.URLs(inText: normalizedText)
+        let urlEntities = TwitterText.urls(in: normalizedText)
 
         var isValid = true
         var weightedLength = 0
@@ -152,8 +148,10 @@ public class Parser {
             if textIndex < urlEntity.range.location {
                 weightedLength += self.length(of: normalizedText, range: NSMakeRange(textIndex, urlEntity.range.location - textIndex), countingBlock: textUnitCountingBlock)
             }
-
-            weightedLength += textUnitCountingBlock(0, normalizedText, urlEntity, normalizedText.substring(with: Range(urlEntity.range, in: normalizedText)!))
+            guard let entityRange = Range(urlEntity.range, in: normalizedText) else {
+                break
+            }
+            weightedLength += textUnitCountingBlock(0, normalizedText, urlEntity, String(normalizedText[entityRange]))
 
             textIndex = urlEntity.range.location + urlEntity.range.length
         }
@@ -162,10 +160,14 @@ public class Parser {
         // handle trailing text
         weightedLength += self.length(of: normalizedText, range: NSMakeRange(textIndex, normalizedTextLength - textIndex), countingBlock: textUnitCountingBlock)
 
-        assert(!NSEqualRanges(normalizedRanges[displayStartIndex], rangeNotFound), "displayStartIndex should map to existing index in original string")
-        assert(!NSEqualRanges(normalizedRanges[displayEndIndex], rangeNotFound), "displayEndIndex should map to existing index in original string")
-        assert(!NSEqualRanges(normalizedRanges[validStartIndex], rangeNotFound), "validStartIndex should map to existing index in original string")
-        assert(!NSEqualRanges(normalizedRanges[validEndIndex], rangeNotFound), "validEndIndex should map to existing index in original string")
+        assert(!NSEqualRanges(normalizedRanges[displayStartIndex], rangeNotFound),
+               "displayStartIndex should map to existing index in original string")
+        assert(!NSEqualRanges(normalizedRanges[displayEndIndex], rangeNotFound),
+               "displayEndIndex should map to existing index in original string")
+        assert(!NSEqualRanges(normalizedRanges[validStartIndex], rangeNotFound),
+               "validStartIndex should map to existing index in original string")
+        assert(!NSEqualRanges(normalizedRanges[validEndIndex], rangeNotFound),
+               "validEndIndex should map to existing index in original string")
 
         if displayStartIndex == NSNotFound {
             displayStartIndex = 0
@@ -185,7 +187,7 @@ public class Parser {
         let validRange = NSMakeRange(normalizedRanges[validStartIndex].location,
                                      NSMaxRange(normalizedRanges[validEndIndex]) - normalizedRanges[validStartIndex].location)
         let scaledWeightedLength = weightedLength / configuration.scale
-        let permillage = TwitterText.kPermillageScaleFactor * scaledWeightedLength / self.maxWeightedTweetLength()
+        let permillage = TwitterText.permillageScaleFactor * scaledWeightedLength / self.maxWeightedTweetLength()
 
         return ParseResults(weightedLength: scaledWeightedLength, permillage: permillage, valid: isValid, displayRange: displayRange, validRange: validRange)
     }

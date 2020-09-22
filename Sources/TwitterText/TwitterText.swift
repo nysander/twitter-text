@@ -8,36 +8,36 @@ import UnicodeURL
 import CoreFoundation
 
 public class TwitterText {
-    static let kMaxURLLength = 4096
-    static let kMaxTCOSlugLength = 40
-    static let kMaxTweetLengthLegacy = 140
-    static let kTransformedURLLength = 23
-    static let kPermillageScaleFactor = 1000
+    static let maxURLLength = 4096
+    static let maxTCOSlugLength = 40
+    static let maxTweetLengthLegacy = 140
+    static let transformedURLLength = 23
+    static let permillageScaleFactor = 1000
 
     /// The backend adds http:// for normal links and https to *.twitter.com URLs
     /// (it also rewrites http to https for URLs matching *.twitter.com).
     /// We always add https://. By making the assumption that kURLProtocolLength
     /// is https, the trade off is we'll disallow a http URL that is 4096 characters.
-    static let kURLProtocolLength = 8
+    static let urlProtocolLength = 8
 
-    public static func entities(inText text: String) -> [Entity] {
+    public static func entities(in text: String) -> [Entity] {
         if text.isEmpty {
             return []
         }
 
         var results: [Entity] = []
-        let urls = self.URLs(inText: text)
+        let urls = self.urls(in: text)
         results.append(contentsOf: urls)
 
-        let hashtags = self.hashtags(inText: text, withURLEntities: urls)
+        let hashtags = self.hashtags(in: text, with: urls)
         results.append(contentsOf: hashtags)
 
-        let symbols = self.symbols(inText: text, withURLEntities: urls)
+        let symbols = self.symbols(in: text, with: urls)
         results.append(contentsOf: symbols)
 
         var addingItems: [Entity] = []
 
-        let mentionsAndLists = mentionsOrLists(inText: text)
+        let mentionsAndLists = mentionsOrLists(in: text)
         for entity in mentionsAndLists {
             let entityRange = entity.range
             var found = false
@@ -57,7 +57,7 @@ public class TwitterText {
         return results
     }
 
-    public static func URLs(inText text: String) -> [Entity] {
+    public static func urls(in text: String) -> [Entity] {
         if text.isEmpty {
             return []
         }
@@ -84,14 +84,21 @@ public class TwitterText {
                 continue
             }
 
-            let urlRange = urlResult.range(at: ValidURLGroup.url.rawValue)
-            let precedingRange = urlResult.range(at: ValidURLGroup.preceding.rawValue)
-            let protocolRange = urlResult.range(at: ValidURLGroup.urlProtocol.rawValue)
-            let domainRange = urlResult.range(at: ValidURLGroup.domain.rawValue)
+            let nsUrlRange = urlResult.range(at: ValidURLGroup.url.rawValue)
+            let nsPrecedingRange = urlResult.range(at: ValidURLGroup.preceding.rawValue)
+            let nsProtocolRange = urlResult.range(at: ValidURLGroup.urlProtocol.rawValue)
+            let nsDomainRange = urlResult.range(at: ValidURLGroup.domain.rawValue)
 
-            let protocolStr = protocolRange.location != NSNotFound ? text.substring(with: Range(protocolRange, in: text)!) : nil
-            if protocolStr == nil || protocolStr?.count == 0 {
-                let preceding = precedingRange.location != NSNotFound ? text.substring(with: Range(precedingRange, in: text)!) : nil
+            var urlProtocol: String? = nil
+            if nsProtocolRange.location != NSNotFound, let protocolRange = Range(nsProtocolRange, in: text) {
+                urlProtocol = String(text[protocolRange])
+            }
+
+            if urlProtocol == nil || urlProtocol?.count == 0 {
+                var preceding: String? = nil
+                if nsPrecedingRange.location != NSNotFound, let precedingRange = Range(nsPrecedingRange, in: text) {
+                    preceding = String(text[precedingRange])
+                }
                 if let set = preceding?.rangeOfCharacter(from: self.invalidURLWithoutProtocolPrecedingCharSet, options: [.backwards, .anchored]) {
                     let suffixRange = NSRange(set, in: preceding!)
                     if suffixRange.location != NSNotFound {
@@ -100,12 +107,18 @@ public class TwitterText {
                 }
             }
 
-            let r = Range(urlRange, in: text)
-            var url = urlRange.location != NSNotFound ? text.substring(with: r!) : nil
-            let host = domainRange.location != NSNotFound ? text.substring(with: Range(domainRange, in: text)!) : nil
+            var url: String? = nil
+            if nsUrlRange.location != NSNotFound, let urlRange = Range(nsUrlRange, in: text) {
+                url = String(text[urlRange])
+            }
 
-            let start = urlRange.location
-            var end = NSMaxRange(urlRange)
+            var host: String? = nil
+            if nsDomainRange.location != NSNotFound, let domainRange = Range(nsDomainRange, in: text) {
+                host = String(text[domainRange])
+            }
+
+            let start = nsUrlRange.location
+            var end = NSMaxRange(nsUrlRange)
 
             let tcoResult: NSTextCheckingResult?
             if let url = url {
@@ -115,24 +128,30 @@ public class TwitterText {
             }
 
             if let tcoResult = tcoResult, tcoResult.numberOfRanges >= 2 {
-                let tcoRange = tcoResult.range(at: 0)
-                let tcoUrlSlugRange = tcoResult.range(at: 1)
+                let nsTcoRange = tcoResult.range(at: 0)
+                let nsTcoUrlSlugRange = tcoResult.range(at: 1)
 
-                if tcoRange.location == NSNotFound || tcoUrlSlugRange.location == NSNotFound {
+                if nsTcoRange.location == NSNotFound || nsTcoUrlSlugRange.location == NSNotFound {
                     continue
                 }
 
-                let tcoUrlSlug = text.substring(with: Range(tcoUrlSlugRange, in: text)!)
+                guard let tcoUrlSlugRange = Range(nsTcoUrlSlugRange, in: text) else {
+                    continue
+                }
 
-                if tcoUrlSlug.utf16.count > TwitterText.kMaxTCOSlugLength {
+                let tcoUrlSlug = String(text[tcoUrlSlugRange])
+
+                if tcoUrlSlug.utf16.count > TwitterText.maxTCOSlugLength {
                     continue
                 } else {
-                    url = url?.substring(with: Range(tcoRange, in: url!)!)
+                    if let unwrappedUrl = url, let tcoRange = Range(nsTcoRange, in: unwrappedUrl) {
+                        url = String(unwrappedUrl[tcoRange])
+                    }
                     end = start + url!.utf16.count
                 }
             }
 
-            if isValidHostAndLength(urlLength: url!.utf16.count, urlProtocol: protocolStr, host: host) {
+            if isValidHostAndLength(urlLength: url!.utf16.count, urlProtocol: urlProtocol, host: host) {
                 let entity = Entity(withType: .url, range: NSMakeRange(start, end - start))
                 results.append(entity)
                 allRange = entity.range
@@ -142,20 +161,20 @@ public class TwitterText {
         return results
     }
 
-    public static func hashtags(inText text: String, checkingURLOverlap: Bool) -> [Entity] {
+    public static func hashtags(in text: String, checkingURLOverlap: Bool) -> [Entity] {
         if text.isEmpty {
             return []
         }
 
         var urls: [Entity] = []
         if checkingURLOverlap {
-            urls = self.URLs(inText: text)
+            urls = self.urls(in: text)
         }
 
-        return self.hashtags(inText: text, withURLEntities: urls)
+        return self.hashtags(in: text, with: urls)
     }
 
-    static func hashtags(inText text: String, withURLEntities urlEntities: [Entity]) -> [Entity] {
+    static func hashtags(in text: String, with urlEntities: [Entity]) -> [Entity] {
         if text.isEmpty {
             return []
         }
@@ -202,20 +221,20 @@ public class TwitterText {
         return results
     }
 
-    public static func symbols(inText text: String, checkingURLOverlap: Bool) -> [Entity] {
+    public static func symbols(in text: String, checkingURLOverlap: Bool) -> [Entity] {
         if text.isEmpty {
             return []
         }
 
         var urls: [Entity] = []
         if checkingURLOverlap {
-            urls = self.URLs(inText: text)
+            urls = self.urls(in: text)
         }
 
-        return symbols(inText: text, withURLEntities: urls)
+        return symbols(in: text, with: urls)
     }
 
-    static func symbols(inText text: String, withURLEntities urlEntities: [Entity]) -> [Entity] {
+    static func symbols(in text: String, with urlEntities: [Entity]) -> [Entity] {
         if text.isEmpty {
             return []
         }
@@ -225,7 +244,7 @@ public class TwitterText {
         var position = 0
 
         while true {
-            let matchResult = self.validSymbolRegexp.firstMatch(in: text, options: .withoutAnchoringBounds, range: NSMakeRange(position, len - position))
+            let matchResult = self.validSymbolRegexp.firstMatch(in: text, options: [.withoutAnchoringBounds], range: NSMakeRange(position, len - position))
 
             guard let result = matchResult, result.numberOfRanges >= 2 else {
                 break
@@ -252,13 +271,12 @@ public class TwitterText {
         return results
     }
 
-    public static func mentionedScreenNames(inText text: String) -> [Entity] {
-
+    public static func mentionedScreenNames(in text: String) -> [Entity] {
         if text.isEmpty {
             return []
         }
 
-        let mentionsOrLists = self.mentionsOrLists(inText: text)
+        let mentionsOrLists = self.mentionsOrLists(in: text)
         var results: [Entity] = []
 
         for entity in mentionsOrLists {
@@ -270,7 +288,7 @@ public class TwitterText {
         return results
     }
 
-    public static func mentionsOrLists(inText text: String) -> [Entity] {
+    public static func mentionsOrLists(in text: String) -> [Entity] {
         if text.isEmpty {
             return []
         }
@@ -312,7 +330,7 @@ public class TwitterText {
         return results
     }
 
-    public static func repliedScreenName(inText text: String) -> Entity? {
+    public static func repliedScreenName(in text: String) -> Entity? {
         if text.isEmpty {
             return nil
         }
@@ -344,7 +362,7 @@ public class TwitterText {
     }
 
     public static func tweetLength(text: String) -> Int {
-        return self.tweetLength(text: text, transformedURLLength: kTransformedURLLength)
+        return self.tweetLength(text: text, transformedURLLength: transformedURLLength)
     }
 
     public static func tweetLength(text: String, transformedURLLength: Int) -> Int {
@@ -358,7 +376,7 @@ public class TwitterText {
         // Remove URLs from text and add t.co length
         var string = text
         var urlLengthOffset = 0
-        let urlEntities = URLs(inText: text)
+        let urlEntities = urls(in: text)
 
         for urlEntity in urlEntities.reversed() {
             let entity = urlEntity
@@ -396,11 +414,11 @@ public class TwitterText {
     }
 
     public static func remainingCharacterCount(text: String) -> Int {
-        return self.remainingCharacterCount(text: text, transformedURLLength: kTransformedURLLength)
+        return self.remainingCharacterCount(text: text, transformedURLLength: transformedURLLength)
     }
 
     public static func remainingCharacterCount(text: String, transformedURLLength: Int) -> Int {
-        return kMaxTweetLengthLegacy - self.tweetLength(text: text, transformedURLLength: transformedURLLength)
+        return maxTweetLengthLegacy - self.tweetLength(text: text, transformedURLLength: transformedURLLength)
     }
 
     // MARK: - Private Methods
@@ -488,9 +506,9 @@ public class TwitterText {
         // back in when checking vs. our maximum allowed length of a URL, if necessary.
         var urlLengthWithProtocol = urlLength
         if urlProtocol == nil {
-            urlLengthWithProtocol += TwitterText.kURLProtocolLength
+            urlLengthWithProtocol += TwitterText.urlProtocolLength
         }
-        return urlLengthWithProtocol <= kMaxURLLength
 
+        return urlLengthWithProtocol <= maxURLLength
     }
 }
