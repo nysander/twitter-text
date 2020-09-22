@@ -5,28 +5,28 @@
 
 import Foundation
 
-public class TwitterTextParser {
+public class Parser {
     static let configurationClassic = "v1"
     static let configurationV2 = "v2"
     static let configurationV3 = "v3"
 
-    public static var defaultParser = TwitterTextParser(with: TwitterTextConfiguration.configuration(fromJSONResource: TwitterTextParser.configurationV3)!)
+    public static var defaultParser = Parser(with: Configuration.configuration(fromJSONResource: Parser.configurationV3)!)
 
-    public static func setDefaultParser(with configuration: TwitterTextConfiguration) {
-        defaultParser = TwitterTextParser(with: configuration)
+    public static func setDefaultParser(with configuration: Configuration) {
+        defaultParser = Parser(with: configuration)
     }
 
-    let configuration: TwitterTextConfiguration
+    let configuration: Configuration
 
     static var queue: DispatchQueue {
         return DispatchQueue(label: "twitterText")
     }
 
-    public init(with configuration: TwitterTextConfiguration) {
+    public init(with configuration: Configuration) {
         self.configuration = configuration
     }
 
-    public func parseTweet(text: String) -> TwitterTextParseResults {
+    public func parseTweet(text: String) -> ParseResults {
         var normalizedText: String = ""
         var normalizedTextLength: Int
 
@@ -39,7 +39,7 @@ public class TwitterTextParser {
 
         if normalizedTextLength == 0 {
             let rangeZero: NSRange = NSMakeRange(0, 0)
-            return TwitterTextParseResults(weightedLength: 0, permillage: 0, valid: true, displayRange: rangeZero, validRange: rangeZero)
+            return ParseResults(weightedLength: 0, permillage: 0, valid: true, displayRange: rangeZero, validRange: rangeZero)
         }
 
         let rangeNotFound = NSMakeRange(NSNotFound, NSNotFound)
@@ -91,25 +91,25 @@ public class TwitterTextParser {
         var displayStartIndex = NSNotFound
         var displayEndIndex = NSNotFound
 
-        let textUnitCountingBlock: (_ previousLength: Int, _ blockText: String, _ entity: TwitterTextEntity, _ substring: String) -> Int = { previousLength, blockText, entity, substring in
+        let textUnitCountingBlock: (_ previousLength: Int, _ blockText: String, _ entity: Entity, _ substring: String) -> Int = { previousLength, blockText, entity, substring in
             let range = entity.range
             var updatedLength = previousLength
 
             switch entity.type {
-                case .TwitterTextEntityURL:
+                case .url:
                     updatedLength = previousLength + self.configuration.transformedURLLength * self.configuration.scale
-                case .TwitterTextEntityTweetEmojiChar:
+                case .tweetEmojiChar:
                     updatedLength = previousLength + self.configuration.defaultWeight
-                case .TwitterTextEntityTweetChar:
+                case .tweetChar:
                     updatedLength = previousLength + self.length(ofWeightedChar: substring)
                 // Do nothing for these entity types.
-                case .TwitterTextEntityScreenName:
+                case .screenName:
                     fallthrough
-                case .TwitterTextEntityHashtag:
+                case .hashtag:
                     fallthrough
-                case .TwitterTextEntityListName:
+                case .listname:
                     fallthrough
-                case .TwitterTextEntitySymbol:
+                case .symbol:
                     fallthrough
                 default:
                     break
@@ -128,7 +128,7 @@ public class TwitterTextParser {
             }
 
             if range.location + range.length <= blockText.utf16.count {
-                let invalidResult = TwitterText.invalidCharacterRegexp.firstMatch(in: blockText, options: .init(rawValue: 0), range: range)
+                let invalidResult = TwitterText.invalidCharacterRegexp.firstMatch(in: blockText, options: [], range: range)
 
                 if invalidResult != nil {
                     isValid = false
@@ -186,7 +186,7 @@ public class TwitterTextParser {
         let scaledWeightedLength = weightedLength / configuration.scale
         let permillage = TwitterText.kPermillageScaleFactor * scaledWeightedLength / self.maxWeightedTweetLength()
 
-        return TwitterTextParseResults(weightedLength: scaledWeightedLength, permillage: permillage, valid: isValid, displayRange: displayRange, validRange: validRange)
+        return ParseResults(weightedLength: scaledWeightedLength, permillage: permillage, valid: isValid, displayRange: displayRange, validRange: validRange)
     }
 
     public func maxWeightedTweetLength() -> Int {
@@ -195,14 +195,15 @@ public class TwitterTextParser {
 
     // MARK: - Private methods
 
-    private func length(of text: String, range: NSRange, countingBlock: @escaping (Int, String, TwitterTextEntity, String) -> Int) -> Int {
+    private func length(of text: String, range: NSRange, countingBlock: @escaping (Int, String, Entity, String) -> Int) -> Int {
         var length = 0
         var emojiRanges: [NSRange] = []
-        if self.configuration.emojiParsingEnabled {
 
             // TODO: How to handle this?
-            let emojiRegexp = try! NSRegularExpression(pattern: TwitterTextRegexp.emojiPattern, options: NSRegularExpression.Options(rawValue: 0))
-            let emojiMatches = emojiRegexp.matches(in: text, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: range)
+        if self.configuration.emojiParsingEnabled {
+            let emojiRegexp = try! NSRegularExpression(pattern: Regexp.emojiPattern, options: [])
+            let emojiMatches = emojiRegexp.matches(in: text, options: [], range: range)
+
             for match in emojiMatches {
                 emojiRanges.append(match.range)
             }
@@ -275,8 +276,8 @@ public class TwitterTextParser {
         ///     }
             let textString = text as NSString
             textString.enumerateSubstrings(in: range, options: .byComposedCharacterSequences) { (substring, substringRange, enclosingRange, stop) in
-                let type = (self.configuration.emojiParsingEnabled && emojiRanges.contains(substringRange)) ? TwitterTextEntityType.TwitterTextEntityTweetEmojiChar : TwitterTextEntityType.TwitterTextEntityTweetChar
-                length = countingBlock(length, textString as String, TwitterTextEntity.init(withType: type, range: substringRange), substring!)
+                let type = (self.configuration.emojiParsingEnabled && emojiRanges.contains(substringRange)) ? EntityType.tweetEmojiChar : EntityType.tweetChar
+                length = countingBlock(length, textString as String, Entity.init(withType: type, range: substringRange), substring!)
             }
         } else {
             assert(false, "range (\(NSStringFromRange(range))) outside bounds of text.count (\(text.count)) for text \"\(text)\"")

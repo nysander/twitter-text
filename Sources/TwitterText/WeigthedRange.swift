@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class TwitterTextWeightedRange {
+public class WeightedRange {
     /// Contiguous unicode region
     public let range: NSRange
 

@@ -5,11 +5,11 @@
 
 import Foundation
 
-public class TwitterTextEntity {
-    var type: TwitterTextEntityType
+public class Entity {
+    var type: EntityType
     var range: NSRange
 
-    public init(withType type: TwitterTextEntityType, range: NSRange) {
+    public init(withType type: EntityType, range: NSRange) {
         self.type = type
         self.range = range
     }

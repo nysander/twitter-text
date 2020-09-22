@@ -19,12 +19,12 @@ public class TwitterText {
     /// is https, the trade off is we'll disallow a http URL that is 4096 characters.
     static let kURLProtocolLength = 8
 
-    public static func entities(inText text: String) -> [TwitterTextEntity] {
+    public static func entities(inText text: String) -> [Entity] {
         if text.isEmpty {
             return []
         }
 
-        var results: [TwitterTextEntity] = []
+        var results: [Entity] = []
         let urls = self.URLs(inText: text)
         results.append(contentsOf: urls)
 
@@ -34,7 +34,7 @@ public class TwitterText {
         let symbols = self.symbols(inText: text, withURLEntities: urls)
         results.append(contentsOf: symbols)
 
-        var addingItems: [TwitterTextEntity] = []
+        var addingItems: [Entity] = []
 
         let mentionsAndLists = mentionsOrLists(inText: text)
         for entity in mentionsAndLists {
@@ -56,12 +56,12 @@ public class TwitterText {
         return results
     }
 
-    public static func URLs(inText text: String) -> [TwitterTextEntity] {
+    public static func URLs(inText text: String) -> [Entity] {
         if text.isEmpty {
             return []
         }
 
-        var results: [TwitterTextEntity] = []
+        var results: [Entity] = []
         let len = text.utf16.count
         var position = 0
         var allRange = NSMakeRange(0, 0)
@@ -83,10 +83,10 @@ public class TwitterText {
                 continue
             }
 
-            let urlRange = urlResult.range(at: TWUValidURLGroup.TWUValidURLGroupURL.rawValue)
-            let precedingRange = urlResult.range(at: TWUValidURLGroup.TWUValidURLGroupPreceding.rawValue)
-            let protocolRange = urlResult.range(at: TWUValidURLGroup.TWUValidURLGroupProtocol.rawValue)
-            let domainRange = urlResult.range(at: TWUValidURLGroup.TWUValidURLGroupDomain.rawValue)
+            let urlRange = urlResult.range(at: ValidURLGroup.url.rawValue)
+            let precedingRange = urlResult.range(at: ValidURLGroup.preceding.rawValue)
+            let protocolRange = urlResult.range(at: ValidURLGroup.urlProtocol.rawValue)
+            let domainRange = urlResult.range(at: ValidURLGroup.domain.rawValue)
 
             let protocolStr = protocolRange.location != NSNotFound ? text.substring(with: Range(protocolRange, in: text)!) : nil
             if protocolStr == nil || protocolStr?.count == 0 {
@@ -132,7 +132,7 @@ public class TwitterText {
             }
 
             if isValidHostAndLength(urlLength: url!.utf16.count, urlProtocol: protocolStr, host: host) {
-                let entity = TwitterTextEntity(withType: .TwitterTextEntityURL, range: NSMakeRange(start, end - start))
+                let entity = Entity(withType: .url, range: NSMakeRange(start, end - start))
                 results.append(entity)
                 allRange = entity.range
             }
@@ -141,12 +141,12 @@ public class TwitterText {
         return results
     }
 
-    public static func hashtags(inText text: String, checkingURLOverlap: Bool) -> [TwitterTextEntity] {
+    public static func hashtags(inText text: String, checkingURLOverlap: Bool) -> [Entity] {
         if text.isEmpty {
             return []
         }
 
-        var urls: [TwitterTextEntity] = []
+        var urls: [Entity] = []
         if checkingURLOverlap {
             urls = self.URLs(inText: text)
         }
@@ -154,12 +154,12 @@ public class TwitterText {
         return self.hashtags(inText: text, withURLEntities: urls)
     }
 
-    static func hashtags(inText text: String, withURLEntities urlEntities: [TwitterTextEntity]) -> [TwitterTextEntity] {
+    static func hashtags(inText text: String, withURLEntities urlEntities: [Entity]) -> [Entity] {
         if text.isEmpty {
             return []
         }
 
-        var results: [TwitterTextEntity] = []
+        var results: [Entity] = []
         let len = text.utf16.count
         var position = 0
 
@@ -190,7 +190,7 @@ public class TwitterText {
                 }
 
                 if matchOk {
-                    let entity = TwitterTextEntity(withType: .TwitterTextEntityHashtag, range: hashtagRange)
+                    let entity = Entity(withType: .hashtag, range: hashtagRange)
                     results.append(entity)
                 }
             }
@@ -201,12 +201,12 @@ public class TwitterText {
         return results
     }
 
-    public static func symbols(inText text: String, checkingURLOverlap: Bool) -> [TwitterTextEntity] {
+    public static func symbols(inText text: String, checkingURLOverlap: Bool) -> [Entity] {
         if text.isEmpty {
             return []
         }
 
-        var urls: [TwitterTextEntity] = []
+        var urls: [Entity] = []
         if checkingURLOverlap {
             urls = self.URLs(inText: text)
         }
@@ -214,12 +214,12 @@ public class TwitterText {
         return symbols(inText: text, withURLEntities: urls)
     }
 
-    static func symbols(inText text: String, withURLEntities urlEntities: [TwitterTextEntity]) -> [TwitterTextEntity] {
+    static func symbols(inText text: String, withURLEntities urlEntities: [Entity]) -> [Entity] {
         if text.isEmpty {
             return []
         }
 
-        var results: [TwitterTextEntity] = []
+        var results: [Entity] = []
         let len = text.utf16.count
         var position = 0
 
@@ -241,7 +241,7 @@ public class TwitterText {
             }
 
             if matchOk {
-                let entity = TwitterTextEntity(withType: .TwitterTextEntitySymbol, range: symbolRange)
+                let entity = Entity(withType: .symbol, range: symbolRange)
                 results.append(entity)
             }
 
@@ -251,17 +251,17 @@ public class TwitterText {
         return results
     }
 
-    public static func mentionedScreenNames(inText text: String) -> [TwitterTextEntity] {
+    public static func mentionedScreenNames(inText text: String) -> [Entity] {
 
         if text.isEmpty {
             return []
         }
 
         let mentionsOrLists = self.mentionsOrLists(inText: text)
-        var results: [TwitterTextEntity] = []
+        var results: [Entity] = []
 
         for entity in mentionsOrLists {
-            if entity.type == .TwitterTextEntityScreenName {
+            if entity.type == .screenName {
                 results.append(entity)
             }
         }
@@ -269,12 +269,12 @@ public class TwitterText {
         return results
     }
 
-    public static func mentionsOrLists(inText text: String) -> [TwitterTextEntity] {
+    public static func mentionsOrLists(inText text: String) -> [Entity] {
         if text.isEmpty {
             return []
         }
 
-        var results: [TwitterTextEntity] = []
+        var results: [Entity] = []
         let len = text.utf16.count
         var position = 0
 
@@ -295,10 +295,10 @@ public class TwitterText {
                 let listNameRange = result.range(at: 4)
 
                 if listNameRange.location == NSNotFound {
-                    let entity = TwitterTextEntity(withType: .TwitterTextEntityScreenName, range: NSMakeRange(atSignRange.location, NSMaxRange(screenNameRange) - atSignRange.location))
+                    let entity = Entity(withType: .screenName, range: NSMakeRange(atSignRange.location, NSMaxRange(screenNameRange) - atSignRange.location))
                     results.append(entity)
                 } else {
-                    let entity = TwitterTextEntity(withType: .TwitterTextEntityListName, range: NSMakeRange(atSignRange.location, NSMaxRange(listNameRange) - atSignRange.location))
+                    let entity = Entity(withType: .listname, range: NSMakeRange(atSignRange.location, NSMaxRange(listNameRange) - atSignRange.location))
                     results.append(entity)
                 }
             } else {
@@ -311,7 +311,7 @@ public class TwitterText {
         return results
     }
 
-    public static func repliedScreenName(inText text: String) -> TwitterTextEntity? {
+    public static func repliedScreenName(inText text: String) -> Entity? {
         if text.isEmpty {
             return nil
         }
@@ -331,13 +331,13 @@ public class TwitterText {
             return nil
         }
 
-        return TwitterTextEntity(withType: .TwitterTextEntityScreenName, range: replyRange)
+        return Entity(withType: .screenName, range: replyRange)
     }
 
     public static func validHashtagBoundaryCharacterSet() -> CharacterSet {
         var set: CharacterSet = .letters
         set.formUnion(.decimalDigits)
-        set.formUnion(CharacterSet(charactersIn: TwitterTextRegexp.TWHashtagSpecialChars + "&"))
+        set.formUnion(CharacterSet(charactersIn: Regexp.TWHashtagSpecialChars + "&"))
 
         return set.inverted
     }
@@ -404,29 +404,29 @@ public class TwitterText {
 
     // MARK: - Private Methods
 
-    internal static let invalidCharacterRegexp = try! NSRegularExpression(pattern: TwitterTextRegexp.TWUInvalidCharactersPattern, options: .caseInsensitive)
+    internal static let invalidCharacterRegexp = try! NSRegularExpression(pattern: Regexp.TWUInvalidCharactersPattern, options: .caseInsensitive)
 
-    private static let validGTLDRegexp = try! NSRegularExpression(pattern: TwitterTextRegexp.TWUValidGTLD, options: .caseInsensitive)
+    private static let validGTLDRegexp = try! NSRegularExpression(pattern: Regexp.TWUValidGTLD, options: .caseInsensitive)
 
-    private static let validURLRegexp = try! NSRegularExpression(pattern: TwitterTextRegexp.TWUValidURLPatternString, options: .caseInsensitive)
+    private static let validURLRegexp = try! NSRegularExpression(pattern: Regexp.TWUValidURLPatternString, options: .caseInsensitive)
 
-    private static let validDomainRegexp = try! NSRegularExpression(pattern: TwitterTextRegexp.TWUValidDomain, options: .caseInsensitive)
+    private static let validDomainRegexp = try! NSRegularExpression(pattern: Regexp.TWUValidDomain, options: .caseInsensitive)
 
-    private static let validTCOURLRegexp = try! NSRegularExpression(pattern: TwitterTextRegexp.TWUValidTCOURL, options: .caseInsensitive)
+    private static let validTCOURLRegexp = try! NSRegularExpression(pattern: Regexp.TWUValidTCOURL, options: .caseInsensitive)
 
-    private static let validHashtagRegexp = try! NSRegularExpression(pattern: TwitterTextRegexp.TWUValidHashtag, options: .caseInsensitive)
+    private static let validHashtagRegexp = try! NSRegularExpression(pattern: Regexp.TWUValidHashtag, options: .caseInsensitive)
 
-    private static let endHashtagRegexp = try! NSRegularExpression(pattern: TwitterTextRegexp.TWUEndHashTagMatch, options: .caseInsensitive)
+    private static let endHashtagRegexp = try! NSRegularExpression(pattern: Regexp.TWUEndHashTagMatch, options: .caseInsensitive)
 
-    private static let validSymbolRegexp = try! NSRegularExpression(pattern: TwitterTextRegexp.TWUValidSymbol, options: .caseInsensitive)
+    private static let validSymbolRegexp = try! NSRegularExpression(pattern: Regexp.TWUValidSymbol, options: .caseInsensitive)
 
-    private static let validMentionOrListRegexp = try! NSRegularExpression(pattern: TwitterTextRegexp.TWUValidMentionOrList, options: .caseInsensitive)
+    private static let validMentionOrListRegexp = try! NSRegularExpression(pattern: Regexp.TWUValidMentionOrList, options: .caseInsensitive)
 
-    private static let validReplyRegexp = try! NSRegularExpression(pattern: TwitterTextRegexp.TWUValidReply, options: .caseInsensitive)
+    private static let validReplyRegexp = try! NSRegularExpression(pattern: Regexp.TWUValidReply, options: .caseInsensitive)
 
-    private static let endMentionRegexp = try! NSRegularExpression(pattern: TwitterTextRegexp.TWUEndMentionMatch, options: .caseInsensitive)
+    private static let endMentionRegexp = try! NSRegularExpression(pattern: Regexp.TWUEndMentionMatch, options: .caseInsensitive)
 
-    private static let validDomainSucceedingCharRegexp = try! NSRegularExpression(pattern: TwitterTextRegexp.TWUEndMentionMatch, options: .caseInsensitive)
+    private static let validDomainSucceedingCharRegexp = try! NSRegularExpression(pattern: Regexp.TWUEndMentionMatch, options: .caseInsensitive)
 
     private static let invalidURLWithoutProtocolPrecedingCharSet: CharacterSet = {
         CharacterSet.init(charactersIn: "-_./")

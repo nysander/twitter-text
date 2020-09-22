@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class TwitterTextParseResults {
+public class ParseResults {
     /// The adjust tweet length based on char weights.
     public let weightedLength: Int
 
