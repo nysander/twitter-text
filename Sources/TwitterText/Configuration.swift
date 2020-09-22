@@ -62,16 +62,12 @@ public class Configuration {
             return nil
         }
 
-        return self.configuration(from: jsonData)
+        return Configuration(jsonData: jsonData)
     }
 
     public static func configuration(from jsonString: String) -> Configuration? {
         let jsonData = Data(jsonString.utf8)
 
-        return Configuration(jsonData: jsonData)
-    }
-
-    public static func configuration(from jsonData: Data) -> Configuration? {
         return Configuration(jsonData: jsonData)
     }
 }
