@@ -489,13 +489,6 @@
         ]
       },
       {
-        "description": "Extract valid URL: http://chilp.it/?77e8fd",
-        "text": "text http://chilp.it/?77e8fd",
-        "expected": [
-          "http://chilp.it/?77e8fd"
-        ]
-      },
-      {
         "description": "Extract valid URL: http://x.com/oneletterdomain",
         "text": "text http://x.com/oneletterdomain",
         "expected": [
