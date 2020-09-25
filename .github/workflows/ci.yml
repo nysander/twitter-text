@@ -14,12 +14,29 @@ jobs:
         uses: actions/checkout@v1
       - name: Build and Test
         run: swift test
-  linux:
+  linux_5-2:
       runs-on: ubuntu-latest
 
       strategy:
         matrix:
           swift: ["5.2"]
+
+      container:
+        image: swift:${{ matrix.swift }}
+
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v1
+        - name: Build
+          run: swift build
+        - name: Test
+          run: swift test --enable-test-discovery
+  linux_5-3:
+      runs-on: ubuntu-latest
+
+      strategy:
+        matrix:
+          swift: ["5.3"]
 
       container:
         image: swift:${{ matrix.swift }}
