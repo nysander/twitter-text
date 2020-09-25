@@ -275,7 +275,10 @@ final class TwitterTextTests: XCTestCase {
         //            "http://chilp.it/?77e8fd"
         //            ]
         //        },
+        var counter = 0
         for testCase in urls {
+            counter += 1
+            print(counter)
             guard let text = testCase["text"] as? String,
                   let expected = testCase["expected"] as? [String] else {
                 XCTFail()
