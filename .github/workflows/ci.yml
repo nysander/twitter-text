@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, crashing-test ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, develop, crashing-test ]
 jobs:
   macos:
     runs-on: macOS-latest
