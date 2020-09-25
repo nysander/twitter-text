@@ -277,10 +277,21 @@ public class Parser {
         ///         NSAssert(NO, @"range (%@) outside bounds of text.length (%lu) for text \"%@\"", NSStringFromRange(range), (unsigned long)text.length, text);
         ///         length = text.length;
         ///     }
-            let textString = text as NSString
-            textString.enumerateSubstrings(in: range, options: .byComposedCharacterSequences) { (substring, substringRange, enclosingRange, stop) in
-                let type = (self.configuration.emojiParsingEnabled && emojiRanges.contains(substringRange)) ? EntityType.tweetEmojiChar : EntityType.tweetChar
-                length = countingBlock(length, textString as String, Entity.init(withType: type, range: substringRange), substring!)
+            let textString = text
+            let rrange = Range(range, in: textString)!
+            let rangeLength = text.distance(from: rrange.lowerBound, to: rrange.upperBound)
+            var substringLength = 0
+            textString.enumerateSubstrings(in: rrange, options: .byComposedCharacterSequences) { (substring, substringRange, enclosingRange, stop) in
+                // enumerateSubStrings is not enumerating correctly on linux
+                // so to make it work, here stopping the loop when we reach range length is equal to substring length
+                if rangeLength == substringLength  {
+                    stop = true
+                }
+                else {
+                let type = (self.configuration.emojiParsingEnabled && emojiRanges.contains(NSRange(substringRange, in: textString))) ? EntityType.tweetEmojiChar : EntityType.tweetChar
+                length = countingBlock(length, textString as String, Entity.init(withType: type, range: NSRange(substringRange, in: textString)), substring!)
+                substringLength += text.distance(from: substringRange.lowerBound, to: substringRange.upperBound)
+                }
             }
         } else {
             assert(false, "range (\(NSStringFromRange(range))) outside bounds of text.count (\(text.count)) for text \"\(text)\"")
