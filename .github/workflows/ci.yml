@@ -19,24 +19,7 @@ jobs:
 
       strategy:
         matrix:
-          swift: ["5.2"]
-
-      container:
-        image: swift:${{ matrix.swift }}
-
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v1
-        - name: Build
-          run: swift build
-        - name: Test
-          run: swift test --enable-test-discovery
-  linux_5-3:
-      runs-on: ubuntu-latest
-
-      strategy:
-        matrix:
-          swift: ["5.3"]
+          swift: ["5.2", "5.3"]
 
       container:
         image: swift:${{ matrix.swift }}
