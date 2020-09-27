@@ -318,45 +318,6 @@
         }
       },
       {
-        "description": "Long tweet with url in the middle, overflow at char index 284",
-        "text": "285 chars- http://www.twitter.com/jack xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-",
-        "expected": {
-          "weightedLength": 299,
-          "valid": false,
-          "permillage": 1067,
-          "displayRangeStart": 0,
-          "displayRangeEnd": 302,
-          "validRangeStart": 0,
-          "validRangeEnd": 283
-        }
-      },
-      {
-        "description": "Long tweet with url at the end, overflow at char index 265",
-        "text": "xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx- http://www.twitter.com/jack ",
-        "expected": {
-          "weightedLength": 289,
-          "valid": false,
-          "permillage": 1032,
-          "displayRangeStart": 0,
-          "displayRangeEnd": 292,
-          "validRangeStart": 0,
-          "validRangeEnd": 264
-        }
-      },
-      {
-        "description": "10 url string, no overflow",
-        "text": "https://www.twitter.com/aloha https://www.twitter.com/aloha https://www.twitter.com/aloha https://www.twitter.com/aloha https://www.twitter.com/aloha https://www.twitter.com/aloha https://www.twitter.com/aloha https://www.twitter.com/aloha https://www.twitter.com/aloha https://www.twitter.com/aloha ",
-        "expected": {
-          "weightedLength": 240,
-          "valid": true,
-          "permillage": 857,
-          "displayRangeStart": 0,
-          "displayRangeEnd": 299,
-          "validRangeStart": 0,
-          "validRangeEnd": 299
-        }
-      },
-      {
         "description": "160 CJK char, overflow at char index 140",
         "text": "故人西辞黄鹤楼，烟花三月下扬州。孤帆远影碧空尽，唯见长江天际流。朱雀桥边野草花，乌衣巷口夕阳斜。旧时王谢堂前燕，飞入寻常百姓家。朝辞白帝彩云间，千里江陵一日还。两岸猿声啼不住，轻舟已过万重山。泪湿罗巾梦不成，夜深前殿按歌声。红颜未老恩先断，斜倚薰笼坐到明。独在异乡为异客，每逢佳节倍思亲。遥知兄弟登高处，遍插茱萸少一人。",
         "expected": {
@@ -580,45 +541,6 @@
         }
       },
       {
-        "description": "Long tweet with url in the middle, overflow at char index 284",
-        "text": "285 chars- http://www.twitter.com/jack xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-",
-        "expected": {
-          "weightedLength": 299,
-          "valid": false,
-          "permillage": 1067,
-          "displayRangeStart": 0,
-          "displayRangeEnd": 302,
-          "validRangeStart": 0,
-          "validRangeEnd": 283
-        }
-      },
-      {
-        "description": "Long tweet with url at the end, overflow at char index 265",
-        "text": "xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx- http://www.twitter.com/jack ",
-        "expected": {
-          "weightedLength": 289,
-          "valid": false,
-          "permillage": 1032,
-          "displayRangeStart": 0,
-          "displayRangeEnd": 292,
-          "validRangeStart": 0,
-          "validRangeEnd": 264
-        }
-      },
-      {
-        "description": "10 url string, no overflow",
-        "text": "https://www.twitter.com/aloha https://www.twitter.com/aloha https://www.twitter.com/aloha https://www.twitter.com/aloha https://www.twitter.com/aloha https://www.twitter.com/aloha https://www.twitter.com/aloha https://www.twitter.com/aloha https://www.twitter.com/aloha https://www.twitter.com/aloha ",
-        "expected": {
-          "weightedLength": 240,
-          "valid": true,
-          "permillage": 857,
-          "displayRangeStart": 0,
-          "displayRangeEnd": 299,
-          "validRangeStart": 0,
-          "validRangeEnd": 299
-        }
-      },
-      {
         "description": "160 CJK char, overflow at char index 140",
         "text": "故人西辞黄鹤楼，烟花三月下扬州。孤帆远影碧空尽，唯见长江天际流。朱雀桥边野草花，乌衣巷口夕阳斜。旧时王谢堂前燕，飞入寻常百姓家。朝辞白帝彩云间，千里江陵一日还。两岸猿声啼不住，轻舟已过万重山。泪湿罗巾梦不成，夜深前殿按歌声。红颜未老恩先断，斜倚薰笼坐到明。独在异乡为异客，每逢佳节倍思亲。遥知兄弟登高处，遍插茱萸少一人。",
         "expected": {
@@ -830,19 +752,6 @@
           "displayRangeEnd": 8,
           "validRangeStart": 0,
           "validRangeEnd": 3
-        }
-      },
-      {
-        "description": "Tweet text containing directional characters should be considered valid",
-        "text": "⁦‪http://foobar.پاکستان/‬⁩",
-        "expected": {
-          "weightedLength": 31,
-          "valid": true,
-          "permillage": 110,
-          "displayRangeStart": 0,
-          "displayRangeEnd": 25,
-          "validRangeStart": 0,
-          "validRangeEnd": 25
         }
       }
     ]
