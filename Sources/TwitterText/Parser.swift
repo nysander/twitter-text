@@ -277,22 +277,26 @@ public class Parser {
         ///         NSAssert(NO, @"range (%@) outside bounds of text.length (%lu) for text \"%@\"", NSStringFromRange(range), (unsigned long)text.length, text);
         ///         length = text.length;
         ///     }
-            let textString = text
-            let rrange = Range(range, in: textString)!
-            let rangeLength = text.distance(from: rrange.lowerBound, to: rrange.upperBound)
+            #if os(Linux)
+            let rangeLength = text[Range(range, in: text)!].utf16.count
             var substringLength = 0
-            textString.enumerateSubstrings(in: rrange, options: .byComposedCharacterSequences) { (substring, substringRange, enclosingRange, stop) in
-                // enumerateSubStrings is not enumerating correctly on linux
-                // so to make it work, here stopping the loop when we reach range length is equal to substring length
-                if rangeLength == substringLength  {
-                    stop = true
+            text.enumerateSubstrings(in: Range(range, in: text)!, options: .byComposedCharacterSequences) { (substring, substringRange, enclosingRange, stop) in
+                if rangeLength != substringLength {
+                    let type = (self.configuration.emojiParsingEnabled && emojiRanges.contains(NSRange(substringRange, in: text))) ? EntityType.tweetEmojiChar : EntityType.tweetChar
+                    length = countingBlock(length, text, Entity.init(withType: type, range: NSRange(substringRange, in: text)), substring!)
+                    let substringNSRange = NSRange.init(enclosingRange, in: text)
+                    substringLength += (substring?.utf16.count)!
                 }
                 else {
-                let type = (self.configuration.emojiParsingEnabled && emojiRanges.contains(NSRange(substringRange, in: textString))) ? EntityType.tweetEmojiChar : EntityType.tweetChar
-                length = countingBlock(length, textString as String, Entity.init(withType: type, range: NSRange(substringRange, in: textString)), substring!)
-                substringLength += text.distance(from: substringRange.lowerBound, to: substringRange.upperBound)
+                    stop = true
                 }
             }
+            #else
+            text.enumerateSubstrings(in: Range(range, in: text)!, options: .byComposedCharacterSequences) { (substring, substringRange, enclosingRange, stop) in
+                let type = (self.configuration.emojiParsingEnabled && emojiRanges.contains(NSRange(substringRange, in: text))) ? EntityType.tweetEmojiChar : EntityType.tweetChar
+                length = countingBlock(length, text, Entity.init(withType: type, range: NSRange(substringRange, in: text)), substring!)
+            }
+            #endif
         } else {
             assert(false, "range (\(NSStringFromRange(range))) outside bounds of text.count (\(text.count)) for text \"\(text)\"")
             length = text.count
