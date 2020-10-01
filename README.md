@@ -27,7 +27,7 @@ validity, parse @mentions, #hashtags, URLs, and more.
 
 Add twitter-text directly to your Package.swift file:
 
-```
+```swift
 dependencies: [
     // ...
     .package(url: "https://github.com/nysander/twitter-text.git", from:"0.0.1"),
@@ -48,7 +48,7 @@ search for `https://github.com/nysander/twitter-text.git` repository
 
 To run the Conformance test suite from the command line:
 
-```
+```sh
 % swift test --enable-test-discovery
 ```
 
