@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum ConfigurationType: String {
+public enum ConfigurationType: String {
     case classic = "v1"
     case v2 = "v2"
     case v3 = "v3"
