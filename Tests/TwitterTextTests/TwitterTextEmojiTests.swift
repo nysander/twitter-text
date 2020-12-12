@@ -64,4 +64,8 @@ final class TwitterTextEmojiTests: XCTestCase {
         XCTAssertFalse("A".isEmoji)
         XCTAssertFalse("Á".isEmoji)
     }
+
+    func testConfiguration() {
+        let _ = Configuration.configuration(fromJSONResource: ConfigurationType.v3)
+    }
 }
