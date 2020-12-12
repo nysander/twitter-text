@@ -57,12 +57,10 @@ public class Configuration {
     }
 
     public static func configuration(fromType type: ConfigurationType) -> Configuration? {
-        let url = URL(fileURLWithPath: #file).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("config/\(type.rawValue).json")
-        Swift.print(url.absoluteURL)
-        guard let jsonData = try? Data(contentsOf: url) else {
+        guard let url = Bundle.module.url(forResource: type.rawValue, withExtension: "json"),
+              let jsonData = try? Data(contentsOf: url) else {
             return nil
         }
-
         return Configuration(jsonData: jsonData)
     }
 
