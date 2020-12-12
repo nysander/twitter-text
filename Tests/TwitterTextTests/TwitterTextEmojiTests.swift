@@ -66,6 +66,6 @@ final class TwitterTextEmojiTests: XCTestCase {
     }
 
     func testConfiguration() {
-        let _ = Configuration.configuration(fromJSONResource: ConfigurationType.v3)
+        let _ = Configuration.configuration(fromType: ConfigurationType.v3)
     }
 }

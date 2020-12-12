@@ -7,7 +7,7 @@ import Foundation
 import CoreFoundation
 
 public class Parser {
-    public static var defaultParser = Parser(with: Configuration.configuration(fromJSONResource: ConfigurationType.v3)!)
+    public static var defaultParser = Parser(with: Configuration.configuration(fromType: ConfigurationType.v3)!)
 
     public static func setDefaultParser(with configuration: Configuration) {
         defaultParser = Parser(with: configuration)
