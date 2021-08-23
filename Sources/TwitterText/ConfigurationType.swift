@@ -7,8 +7,8 @@
 
 import Foundation
 
-enum ConfigurationType {
-    static let classic = "v1"
-    static let v2 = "v2"
-    static let v3 = "v3"
+public enum ConfigurationType {
+    public static let classic = "v1"
+    public static let v2 = "v2"
+    public static let v3 = "v3"
 }
