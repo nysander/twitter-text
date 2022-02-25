@@ -6,8 +6,8 @@
 import Foundation
 
 public class Entity {
-    var type: EntityType
-    var range: NSRange
+    public internal(set) var type: EntityType
+    public internal(set) var range: NSRange
 
     public init(withType type: EntityType, range: NSRange) {
         self.type = type
