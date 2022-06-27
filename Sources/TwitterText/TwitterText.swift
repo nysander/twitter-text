@@ -74,7 +74,7 @@ public class TwitterText {
                 break
             }
 
-            guard let urlResult = self.validURLRegexp.firstMatch(in: text, options: [.withoutAnchoringBounds] , range: NSMakeRange(position, len - position)) else {
+            guard let urlResult = self.validURLRegexp?.firstMatch(in: text, options: [.withoutAnchoringBounds] , range: NSMakeRange(position, len - position)) else {
                 break
             }
 
@@ -122,7 +122,7 @@ public class TwitterText {
 
             let tcoResult: NSTextCheckingResult?
             if let url = url {
-                tcoResult = self.validTCOURLRegexp.firstMatch(in: url, options: [], range: NSMakeRange(0, url.utf16.count))
+                tcoResult = self.validTCOURLRegexp?.firstMatch(in: url, options: [], range: NSMakeRange(0, url.utf16.count))
             } else {
                 tcoResult = nil
             }
@@ -184,7 +184,7 @@ public class TwitterText {
         var position = 0
 
         while true {
-            let matchResult = self.validHashtagRegexp.firstMatch(in: text, options: [.withoutAnchoringBounds], range: NSMakeRange(position, len - position))
+            let matchResult = self.validHashtagRegexp?.firstMatch(in: text, options: [.withoutAnchoringBounds], range: NSMakeRange(position, len - position))
 
             guard let result = matchResult, result.numberOfRanges > 1 else {
                 break
@@ -203,8 +203,8 @@ public class TwitterText {
             if matchOk {
                 let afterStart = NSMaxRange(hashtagRange)
                 if afterStart < len {
-                    let endMatchRange = self.endHashtagRegexp.rangeOfFirstMatch(in: text, options: [], range: NSMakeRange(afterStart, len - afterStart))
-                    if endMatchRange.location != NSNotFound {
+                    if let endMatchRange = self.endHashtagRegexp?.rangeOfFirstMatch(in: text, options: [], range: NSMakeRange(afterStart, len - afterStart)),
+                        endMatchRange.location != NSNotFound {
                         matchOk = false
                     }
                 }
@@ -244,7 +244,7 @@ public class TwitterText {
         var position = 0
 
         while true {
-            let matchResult = self.validSymbolRegexp.firstMatch(in: text, options: [.withoutAnchoringBounds], range: NSMakeRange(position, len - position))
+            let matchResult = self.validSymbolRegexp?.firstMatch(in: text, options: [.withoutAnchoringBounds], range: NSMakeRange(position, len - position))
 
             guard let result = matchResult, result.numberOfRanges >= 2 else {
                 break
@@ -298,7 +298,7 @@ public class TwitterText {
         var position = 0
 
         while true {
-            let matchResult = self.validMentionOrListRegexp.firstMatch(in: text, options: [.withoutAnchoringBounds], range: NSMakeRange(position, len - position))
+            let matchResult = self.validMentionOrListRegexp?.firstMatch(in: text, options: [.withoutAnchoringBounds], range: NSMakeRange(position, len - position))
 
             guard let result = matchResult, result.numberOfRanges >= 5 else {
                 break
@@ -307,8 +307,8 @@ public class TwitterText {
             let allRange = result.range
             var end = NSMaxRange(allRange)
 
-            let endMentionRange = self.endMentionRegexp.rangeOfFirstMatch(in: text, options: [], range: NSMakeRange(end, len - end))
-            if endMentionRange.location == NSNotFound {
+            if let endMentionRange = self.endMentionRegexp?.rangeOfFirstMatch(in: text, options: [], range: NSMakeRange(end, len - end)),
+                endMentionRange.location == NSNotFound {
                 let atSignRange = result.range(at: 2)
                 let screenNameRange = result.range(at: 3)
                 let listNameRange = result.range(at: 4)
@@ -336,7 +336,7 @@ public class TwitterText {
         }
 
         let len = text.utf16.count
-        let matchResult = self.validReplyRegexp.firstMatch(in: text, options: [.withoutAnchoringBounds, .anchored], range: NSMakeRange(0, len))
+        let matchResult = self.validReplyRegexp?.firstMatch(in: text, options: [.withoutAnchoringBounds, .anchored], range: NSMakeRange(0, len))
 
         guard let result =  matchResult, result.numberOfRanges >= 2 else {
             return nil
@@ -344,9 +344,8 @@ public class TwitterText {
 
         let replyRange = result.range(at: 1)
         let replyEnd = NSMaxRange(replyRange)
-        let endMentionRange = self.endMentionRegexp.rangeOfFirstMatch(in: text, options: [], range: NSMakeRange(replyEnd, len - replyEnd))
-
-        if endMentionRange.location != NSNotFound {
+        if let endMentionRange = self.endMentionRegexp?.rangeOfFirstMatch(in: text, options: [], range: NSMakeRange(replyEnd, len - replyEnd)),
+            endMentionRange.location != NSNotFound {
             return nil
         }
 
@@ -423,29 +422,29 @@ public class TwitterText {
 
     // MARK: - Private Methods
 
-    internal static let invalidCharacterRegexp = try! NSRegularExpression(pattern: Regexp.TWUInvalidCharactersPattern, options: .caseInsensitive)
+    internal static let invalidCharacterRegexp = try? NSRegularExpression(pattern: Regexp.TWUInvalidCharactersPattern, options: .caseInsensitive)
 
-    private static let validGTLDRegexp = try! NSRegularExpression(pattern: Regexp.TWUValidGTLD, options: .caseInsensitive)
+    private static let validGTLDRegexp = try? NSRegularExpression(pattern: Regexp.TWUValidGTLD, options: .caseInsensitive)
 
-    private static let validURLRegexp = try! NSRegularExpression(pattern: Regexp.TWUValidURLPatternString, options: .caseInsensitive)
+    private static let validURLRegexp = try? NSRegularExpression(pattern: Regexp.TWUValidURLPatternString, options: .caseInsensitive)
 
-    private static let validDomainRegexp = try! NSRegularExpression(pattern: Regexp.TWUValidDomain, options: .caseInsensitive)
+    private static let validDomainRegexp = try? NSRegularExpression(pattern: Regexp.TWUValidDomain, options: .caseInsensitive)
 
-    private static let validTCOURLRegexp = try! NSRegularExpression(pattern: Regexp.TWUValidTCOURL, options: .caseInsensitive)
+    private static let validTCOURLRegexp = try? NSRegularExpression(pattern: Regexp.TWUValidTCOURL, options: .caseInsensitive)
 
-    private static let validHashtagRegexp = try! NSRegularExpression(pattern: Regexp.TWUValidHashtag, options: .caseInsensitive)
+    private static let validHashtagRegexp = try? NSRegularExpression(pattern: Regexp.TWUValidHashtag, options: .caseInsensitive)
 
-    private static let endHashtagRegexp = try! NSRegularExpression(pattern: Regexp.TWUEndHashTagMatch, options: .caseInsensitive)
+    private static let endHashtagRegexp = try? NSRegularExpression(pattern: Regexp.TWUEndHashTagMatch, options: .caseInsensitive)
 
-    private static let validSymbolRegexp = try! NSRegularExpression(pattern: Regexp.TWUValidSymbol, options: .caseInsensitive)
+    private static let validSymbolRegexp = try? NSRegularExpression(pattern: Regexp.TWUValidSymbol, options: .caseInsensitive)
 
-    private static let validMentionOrListRegexp = try! NSRegularExpression(pattern: Regexp.TWUValidMentionOrList, options: .caseInsensitive)
+    private static let validMentionOrListRegexp = try? NSRegularExpression(pattern: Regexp.TWUValidMentionOrList, options: .caseInsensitive)
 
-    private static let validReplyRegexp = try! NSRegularExpression(pattern: Regexp.TWUValidReply, options: .caseInsensitive)
+    private static let validReplyRegexp = try? NSRegularExpression(pattern: Regexp.TWUValidReply, options: .caseInsensitive)
 
-    private static let endMentionRegexp = try! NSRegularExpression(pattern: Regexp.TWUEndMentionMatch, options: .caseInsensitive)
+    private static let endMentionRegexp = try? NSRegularExpression(pattern: Regexp.TWUEndMentionMatch, options: .caseInsensitive)
 
-    private static let validDomainSucceedingCharRegexp = try! NSRegularExpression(pattern: Regexp.TWUEndMentionMatch, options: .caseInsensitive)
+    private static let validDomainSucceedingCharRegexp = try? NSRegularExpression(pattern: Regexp.TWUEndMentionMatch, options: .caseInsensitive)
 
     private static let invalidURLWithoutProtocolPrecedingCharSet: CharacterSet = {
         CharacterSet.init(charactersIn: "-_./")

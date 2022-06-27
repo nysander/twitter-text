@@ -125,7 +125,7 @@ public class Parser {
             }
 
             if range.location + range.length <= blockText.utf16.count {
-                let invalidResult = TwitterText.invalidCharacterRegexp.firstMatch(in: blockText, options: [], range: range)
+                let invalidResult = TwitterText.invalidCharacterRegexp?.firstMatch(in: blockText, options: [], range: range)
 
                 if invalidResult != nil {
                     isValid = false
@@ -204,11 +204,12 @@ public class Parser {
 
             // TODO: How to handle this?
         if self.configuration.emojiParsingEnabled {
-            let emojiRegexp = try! NSRegularExpression(pattern: Regexp.emojiPattern, options: [])
-            let emojiMatches = emojiRegexp.matches(in: text, options: [], range: range)
+            if let emojiRegexp = try? NSRegularExpression(pattern: Regexp.emojiPattern, options: []) {
+                let emojiMatches = emojiRegexp.matches(in: text, options: [], range: range)
 
-            for match in emojiMatches {
-                emojiRanges.append(match.range)
+                for match in emojiMatches {
+                    emojiRanges.append(match.range)
+                }
             }
         }
 
