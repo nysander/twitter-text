@@ -147,11 +147,11 @@ public class TwitterText {
                     if let unwrappedUrl = url, let tcoRange = Range(nsTcoRange, in: unwrappedUrl) {
                         url = String(unwrappedUrl[tcoRange])
                     }
-                    end = start + url!.utf16.count
+                    end = start + (url?.utf16.count ?? 0)
                 }
             }
 
-            if isValidHostAndLength(urlLength: url!.utf16.count, urlProtocol: urlProtocol, host: host) {
+            if isValidHostAndLength(urlLength: url?.utf16.count, urlProtocol: urlProtocol, host: host) {
                 let entity = Entity(withType: .url, range: NSMakeRange(start, end - start))
                 results.append(entity)
                 allRange = entity.range
@@ -450,9 +450,9 @@ public class TwitterText {
         CharacterSet.init(charactersIn: "-_./")
     }()
 
-    private static func isValidHostAndLength(urlLength: Int, urlProtocol: String?, host: String?) -> Bool {
+    private static func isValidHostAndLength(urlLength: Int?, urlProtocol: String?, host: String?) -> Bool {
+        guard var urlLength = urlLength else { return false }
         guard var host = host else { return false }
-        var urlLength = urlLength
         var hostUrl: URL?
         do {
            hostUrl  = try URL(unicodeUrlString: host)
