@@ -81,6 +81,21 @@ final class TwitterTextTests: XCTestCase {
         XCTAssertEqual(entities.count, 0)
     }
 
+    func testURLWithZeroWidthJoinerFailsParsingButDoesntCrash() {
+        // The "2" character in the URL has a zero-width-joiner which causes parsing to fail, but the library shouldn't crash
+        let text = "Heroes 🚀 https://t.co/11111112‍"
+        let entities = TwitterText.entities(in: text)
+
+        XCTAssertEqual(entities.count, 0)
+    }
+
+    func testURLWithoutZeroWidthJoinerParsesOneEntity() {
+        let text = "Heroes 🚀 https://t.co/11111112"
+        let entities = TwitterText.entities(in: text)
+
+        XCTAssertEqual(entities.count, 1)
+    }
+
     func testExtract() {
         let filename = conformanceRootDirectory.appendingPathComponent("extract.json")
         guard let jsonData = try? String(contentsOf: filename, encoding: .utf8).data(using: .utf8),

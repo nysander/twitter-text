@@ -21,7 +21,12 @@ let package = Package(
         .target(
             name: "TwitterText",
             dependencies: ["UnicodeURL"],
-            resources: [.process("Config")]
+            path: "Sources/TwitterText",
+            resources: [
+                    .copy("config/v1.json"),
+                    .copy("config/v2.json"),
+                    .copy("config/v3.json"),
+            ]
         ),
         .testTarget(name: "TwitterTextTests", dependencies: ["TwitterText"])
     ]
