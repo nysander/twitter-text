@@ -64,4 +64,5 @@ final class TwitterTextEmojiTests: XCTestCase {
         XCTAssertFalse("A".isEmoji)
         XCTAssertFalse("Á".isEmoji)
     }
+    
 }
